@@ -22,44 +22,71 @@
 
 ### Functional requirements
 
-| ID | Requirement | CW requirement |
-|---|---|---|
-| FR-01 | [System behaviour] | R1 |
-| FR-02 | [System behaviour] | R2 |
-| FR-03 | [System behaviour] | R3 |
-| FR-04 | [System behaviour] | R4 |
-| FR-05 | [System behaviour] | R5 |
-| FR-06 | [System behaviour] | R6 |
+| Ref | Area | Expected behaviour |
+|:---:|---|---|
+| **R1** | Approval | Clubs submit events for review. Returned requests can be edited; approved event details are locked. |
+| **R2** | Booking | Students discover and reserve approved events, subject to capacity and timetable checks. |
+| **R3** | Attendance | Students scan a rotating event QR code. The server checks the code, booking and check-in window. |
+| **R4** | Offline use | Scans can be saved without internet and submitted later, with clear verification statuses. |
+| **R5** | Points | Verified attendance earns points. Students can view their progress, and invalid awards can be reversed. |
+| **R6** | Access | University sign-in and backend permissions restrict users to their authorised roles and records. |
 
 ### Non-functional requirements
 
-| ID | Quality | Requirement / target |
-|---|---|---|
-| NFR-01 | Security | [How roles and permissions are protected] |
-| NFR-02 | Usability | [How the app stays clear and easy to use] |
-| NFR-03 | Reliability | [How errors or offline use are handled] |
-| NFR-04 | Performance | [Measurable target, if agreed] |
+| Area | Expected standard |
+|---|---|
+| **Security** | Role permissions and attendance checks are enforced in the backend, not only in the interface. |
+| **Reliability** | Offline records survive app restarts and retries cannot create duplicate attendance or points. |
+| **Data integrity** | Concurrent bookings cannot exceed event capacity; point corrections remain traceable. |
+| **Usability** | Booking errors and attendance statuses have clear messages, especially while offline. |
+| **Responsiveness** | Scanning and local saving remain usable without waiting for a network response. |
 
 ### User stories and acceptance criteria
 
-[Include Student, Club, and Admin stories covering R1–R6. Mark each Must-have or Nice-to-have, and include exceptional and cheating cases.]
+**Event approval and booking**
 
-| ID | Actor | Priority / type | User story | Acceptance criteria |
-|---|---|---|---|---|
-| S-R1-01 | [Actor] | [Must / normal] | [As a…, I want…, so that…] | Given…, when…, then… |
-| S-R2-01 | [Actor] | [Must / exceptional] | [Story] | Given…, when…, then… |
-| S-R3-01 | [Actor] | [Must / cheating] | [Story] | Given…, when…, then… |
-| S-R4-01 | [Actor] | [Must / exceptional] | [Story] | Given…, when…, then… |
-| S-R5-01 | [Actor] | [Must / normal] | [Story] | Given…, when…, then… |
-| S-R6-01 | [Actor] | [Must / normal] | [Story] | Given…, when…, then… |
+| Story | Actor / priority | User need | Acceptance criteria |
+|---|---|---|---|
+| **US01 · R1** | Club Committee · Must-have | As a committee member, I want to submit an event for approval. | Title, description, category, date, time, venue, capacity and requested points are required. Invalid submissions are blocked. |
+| **US02 · R1** | Club Committee · Must-have | As a committee member, I want to see decisions and respond to feedback. | Pending, Approved, Rejected and Returned statuses are shown. Returned requests can be revised; approved details cannot. |
+| **US03 · R1** | Admin · Must-have | As an admin, I want to approve, reject or return requests. | Only authorised admins can change decisions in the backend. Only approved events open for booking. |
+| **US04 · R2** | Student · Must-have | As a student, I want to find events that suit my interests. | Approved events show their date, venue, points and availability. Search, filters and empty results work correctly. |
+| **US05 · R2** | Student · Must-have | As a student, I want to reserve a place without double-booking. | Full, duplicate and clashing bookings are refused. The server prevents overbooking, even for simultaneous requests. |
+| **US06 · R2** | Club Committee · Must-have | As a committee member, I want to manage an event's booking availability. | Events can become Full, Closed or Cancelled without changing approved details. Cancelled bookings are clearly shown to students. |
 
-### Proposed feature: Interest Passport
+**Check-in and offline attendance**
 
-**Feature:** [Explain interest tags, event recommendations, and progress stamps.]
+| Story | Actor / priority | User need | Acceptance criteria |
+|---|---|---|---|
+| **US07 · R3** | Club Committee · Must-have | As a committee member, I want to display a QR code for check-in. | The code identifies the event, rotates every 30 seconds and is available only during the check-in window. |
+| **US08 · R3** | Student · Must-have | As a student, I want to scan the event QR code to record attendance. | The booking must match the signed-in account and event. Unbooked students, duplicate check-ins, altered codes and online scans outside the valid QR or check-in window are rejected. Offline scans are verified after upload. |
+| **US09 · R4** | Student · Must-have | As a student, I want to save a scan when I have no internet. | The scan survives an app restart and shows **Pending Sync**. No points or streak credit are awarded yet. |
+| **US10 · R4** | Student · Must-have | As a student, I want to know if my saved scan was accepted. | Uploads retry after reconnection. Status becomes **Verified** or **Rejected**, with a reason. Invalid codes and repeated attendance IDs cannot earn credit; suspicious offline timestamps are flagged for review. |
 
-**Value:** [How it helps students find relevant events or encourages participation.]
+**Points and role permissions**
 
-**Scope:** [What is included in this version; note any future extensions.]
+| Story | Actor / priority | User need | Acceptance criteria |
+|---|---|---|---|
+| **US11 · R5** | Student · Must-have | As a student, I want to see my points and attendance history. | Only verified attendance adds points. Pending and rejected claims do not affect the total. |
+| **US12 · R5** | Admin · Must-have | As an admin, I want to correct wrongly awarded points. | Authorised reversals are recorded and the student's total and affected streak are recalculated. |
+| **US13 · R6** | All roles · Must-have | As a university user, I want to sign in with my account. | Selecting Student, Club Committee or Admin at launch does not grant access; the backend verifies the role. |
+| **US14 · R6** | Student · Must-have | As a student, I want my records kept private. | Students cannot access another student's bookings, attendance or points, including through direct backend requests. |
+| **US15 · R6** | Club Committee · Must-have | As a committee member, I want access to my club's events only. | Club membership is checked. Members cannot manage other clubs' events or approve requests. |
+
+### Original features
+
+| Feature | Benefit | Scope |
+|---|---|---|
+| **Personalised recommendations** | Helps students find events without browsing the entire marketplace. | Editable interests: Leadership, Sports, Tech, Volunteering, Arts and Career. **Recommended for You** ranks approved upcoming events using interests and past verified attendance. Similar-student activity is an optional extension. |
+| **Weekly attendance streak** | Makes regular participation visible in the progress screen. | Consecutive Monday-to-Sunday weeks count when they contain verified attendance. Late verification and reversals update the streak. |
+
+| Story | Actor / priority | User need | Acceptance criteria |
+|---|---|---|---|
+| **US16 · Feature 1** | Student · Must-have | As a student, I want suggestions based on my interests. | Tags can be edited; recommended events reflect interests and verified attendance. New users receive tag-based suggestions. |
+| **US17 · Feature 1** | Student · Nice-to-have | As a student, I want suggestions informed by similar students' activity. | Aggregated activity may improve rankings without exposing individual attendance histories. |
+| **US18 · Feature 2** | Student · Must-have | As a student, I want to track consecutive weeks of participation. | A week counts once after verification. Pending scans do not count; later corrections update the relevant week. |
+
+**Attendance limitation:** A live QR code could be forwarded to someone at home, and shared account credentials could allow impersonation. The rotating code alone cannot prove physical presence. Offline phone timestamps can also be manipulated, so questionable records may need review rather than automatic approval.
 
 ## 3. Challenges, risks, and assumptions
 
