@@ -6,17 +6,11 @@
 | [Name] | xxxxxxxx | Technical design and diagrams |
 | Wong Cheuk Kei | 20602511 | UI/UX design and wireframes |
 
-> **Target:** approximately 1,500 words, excluding UI components and diagrams.
 
 ## 1. Project overview
 
-Campus events can be difficult for students to discover, while clubs need a clear way to manage event submissions, bookings and attendance. The proposed s-CPD app is a native Android app for University of Nottingham Malaysia students and club committees. Students can find events through search and personalised recommendations, book places, check in with an event’s rotating QR code or short-lived backup code, and track verified attendance. Club committees can submit events, manage bookings and run check-in. The s-CPD office reviews submissions through the backend; approved event details are locked. QR scans made offline remain pending until the server verifies them. Only eligible verified attendance earns 3 points and contributes to the weekly streak. The two added features are personalised recommendations and attendance streaks.
+s-CPD is a native Android app for University of Nottingham Malaysia students and club committees. Students discover and book events, check in using a rotating QR code, and track verified attendance. Committees submit events and manage bookings and check-in. The s-CPD office reviews submissions through the backend. The app adds personalised recommendations and weekly attendance streaks.
 
-### Actors
-
-- **Student:** [Main actions]
-- **Club representative:** [Main actions]
-- **Admin / s-CPD office:** [Main actions and whether handled in the backend]
 
 ## 2. Requirements analysis
 
@@ -24,11 +18,11 @@ Campus events can be difficult for students to discover, while clubs need a clea
 
 | Ref | Area | Expected behaviour |
 |:---:|---|---|
-| **R1** | Event review | Club Committee submits events; Admin approves them or requests changes. **Approved** details are locked. |
+| **R1** | Event review | Club Committee submits an event for **Pending review**. Admin can approve it, request changes, or reject it. **Changes requested** submissions can be edited and resubmitted; **Rejected** is final and cannot be booked. **Approved** event details are locked. |
 | **R2** | Discovery and booking | Students browse approved events, reserve available places and manage bookings through **My Events**. |
 | **R3** | Check-in | Committee displays a rotating QR and backup code. Student check-ins are validated against bookings and event times. |
 | **R4** | Offline use | QR scans can be saved as **Pending sync** and verified later. Manual code entry requires internet. |
-| **R5** | Points and progress | **Verified** attendance earns **3 points**. Invalid awards can be reversed. |
+| **R5** | Points and progress | Eligible **Verified** attendance earns **3 points** once. Points can be reversed if a record is later invalidated. |
 | **R6** | Access | Student and Club Committee use the Android app. Admin approvals and corrections are backend-only. |
 
 ### Non-functional requirements
@@ -47,22 +41,22 @@ Campus events can be difficult for students to discover, while clubs need a clea
 
 | Story | Actor / priority | User need and acceptance criteria | Screen in Section 5 |
 |---|---|---|---|
-| **US-01 · R1** | Club Committee · Must-have | I want to create and submit events from **Dashboard**. Required details are checked; submitting produces **Pending review**. **Changes requested** shows feedback and allows editing and resubmission; **Approved** details cannot be edited. | Dashboard / Submission |
-| **US-02 · R1** | Admin · Must-have | I want to approve, reject or request changes to event submissions. Only authorised admins can make these decisions in the backend. Only **Approved** events can be booked. | Backend only |
+| **US-01 · R1** | Club Committee · Must-have | I want to create and submit events from **Dashboard**. Submission produces **Pending review**. **Changes requested** submissions show feedback and can be edited and resubmitted. **Approved** details are locked. **Rejected** submissions are closed and cannot be booked. | Dashboard / Submission |
+| **US-02 · R1** | Admin · Must-have | I want to approve, reject or request changes to event submissions. Admin can approve, request changes or reject in the backend. **Changes requested** allows editing and resubmission; **Rejected** is final; **Approved** details are locked, and the event can be booked. The Committee sees the decision and reason in Submissions.  | Backend only |
 | **US-03 · R1, R2** | Club Committee · Must-have | I want to cancel an approved event. Cancellation closes bookings and informs booked students without unlocking approved details. | Submission approved |
 | **US-04 · R2** | Student · Must-have | I want to find suitable activities. **Home** and **Explore** show approved events, search, filters, recommendations and useful empty/offline states. | Home / Explore |
 | **US-05 · R2** | Student · Must-have | I want to book an available event. **Event details** explains full capacity and clashes; **Review booking** rechecks them on the server. Concurrent requests cannot overbook, and only success opens **Booking confirmed**. | Event details / Review booking |
 | **US-06 · R2** | Student · Must-have | I want to check or cancel my booking. **My Events** opens **Your booking**; cancelling releases the place and opens **Booking cancelled**. **Booked** applies only before the event. | My Events / Your booking |
-| **US-07 · R2, R5** | Club Committee · Must-have | I want to review participation. **Events > Upcoming > Bookings** shows reservations; **Events > Past > Attendance summary** shows attendance outcomes. | Events / Attendance summary |
+| **US-07 · R2, R5** | Club Committee · Must-have | I want to review participation. Before an event, **Events > Upcoming > Bookings** shows reservations. During it, **Scan > active check-in > Attendee list** shows live check-ins. After it ends, **Events > Past > Attendance summary > Attendee list** shows final outcomes. | Events / Bookings / Attendance summary |
 
 **Check-in and offline attendance**
 
 | Story | Actor / priority | User need and acceptance criteria | Screen in Section 5 |
 |---|---|---|---|
 | **US-08 · R3** | Club Committee · Must-have | I want to manage check-in using **Scan**. The QR and six-digit backup code refresh every 30 seconds during an active session. Lost connectivity pauses new code display; ending check-in closes the session, not pending claims. | Scan / End check-in |
-| **US-09 · R3** | Student · Must-have | I want to scan the displayed event QR. The server checks my account, booking, event window and duplicate attendance; altered, replayed or expired online codes are rejected. | Scan |
-| **US-10 · R3** | Student · Must-have | I want a fallback when the camera fails. **Enter code manually** checks the current backup code online; an incorrect or expired code is rejected. | Enter code manually |
-| **US-11 · R4** | Student · Must-have | I want to keep an offline scan. It survives app restarts as **Pending sync**, without awarding points or a streak. | Pending sync |
+| **US-09 · R3** | Student · Must-have | I want to scan the displayed event QR. The server ties the scan to the signed-in student’s own booking and rejects a booking mismatch. A live QR relay or shared account may still allow someone to check in for a friend; this remains a security limitation. | Scan |
+| **US-10 · R3** | Student · Must-have | I want a fallback when the camera fails. **Enter code manually** checks the current backup code online; an incorrect or expired code is rejected. Manual code entry requires online server verification. If the student is offline, no attendance record is saved or queued; they must reconnect and enter the current code. | Enter code manually |
+| **US-11 · R4** | Student · Must-have | I want to keep an offline QR scan. It survives app restarts as **Pending sync**, without awarding points or a streak. | Pending sync |
 | **US-12 · R3, R4** | Student · Must-have | I want a reliable verification result. Upload retries after reconnection; valid records become **Verified**, while invalid or duplicate claims become **Rejected** with a reason. Suspicious offline timestamps are flagged for review. | Attendance verification result |
 | **US-13 · R3, R4** | Club Committee · Must-have | I want an accurate attendee list. **Attendee list** and **Attendance summary** distinguish **Verified**, **Pending sync**, **Rejected** and **No-show**. A pending scan is not treated as a no-show. | Attendee list / Attendance summary |
 
@@ -70,7 +64,7 @@ Campus events can be difficult for students to discover, while clubs need a clea
 
 | Story | Actor / priority | User need and acceptance criteria | Screen in Section 5 |
 |---|---|---|---|
-| **US-14 · R5** | Student · Must-have | I want to track my points. **Progress** and **Attendance history** award **3 points** once per **Verified** event. **Pending sync**, **Rejected** and **No-show** earn zero. | Progress / Attendance history |
+| **US-14 · R5** | Student · Must-have | I want to track my points. **Progress** and **Attendance history** award **3 points** once per eligible **Verified** attendance. **Pending sync**, **Rejected** and **No-show** earn zero. | Progress / Attendance history |
 | **US-15 · R5** | Admin · Must-have | I want to correct incorrect attendance. An authorised backend reversal removes 3 points, records the correction and updates the streak and stamps. | Backend only |
 | **US-16 · R6** | Student / Club Committee · Must-have | I want to sign in securely. **Welcome to s-CPD** offers the two app roles; **Sign in to s-CPD** checks university credentials and actual permissions. Invalid sign-in or unauthorised committee access displays an error. | Student entry / Committee entry |
 | **US-17 · R6** | Student · Must-have | I want my records kept private. Backend checks prevent access to another student's bookings, points and attendance; **Profile** supports interests, notifications and sign-out. | Profile / Privacy & settings |
@@ -82,9 +76,9 @@ Campus events can be difficult for students to discover, while clubs need a clea
 |---|:---:|:---:|:---:|
 | Browse events and manage own bookings | Yes | No | No |
 | Scan QR and view own points | Yes | No | No |
-| Create, revise or cancel club events | No | Own club | No |
+| Create drafts; edit drafts or Changes requested submissions; cancel approved events | No | Own club | No |
 | Run check-in, view club bookings/attendance | No | Own club | No |
-| Approve events or request changes | No | No | Yes |
+| Approve, request changes to, or reject event submissions | No | No | Yes |
 | Reverse invalid attendance and points | No | No | Yes |
 
 ### Original features
@@ -109,14 +103,17 @@ Campus events can be difficult for students to discover, while clubs need a clea
 
 | Risk / challenge | Response | Remaining limitation |
 |---|---|---|
-| [Example: checking in for a friend] | [Defence] | [Weakness] |
-| [Example: poor connection at an event] | [Offline handling] | [Limitation] |
-| [Example: incorrect role access] | [Permission checks] | [Limitation] |
+| A student shares a live QR or backup code so someone else can check in. | Rotate both codes every 30 seconds; verify the signed-in account’s booking, check-in window and duplicate status on the server. | A code can still be relayed while it is valid, and shared accounts cannot prove who used the device. |
+| Offline scans may be delayed or have altered timestamps. | Save QR scans as **Pending sync** with a unique ID; award no points until server verification. Manual code entry requires internet. | A device’s clock can be manipulated, so suspicious records may need review or rejection. |
+| Simultaneous bookings could exceed event capacity. | Check capacity and timetable clashes in a server transaction; make retries idempotent. | A connection failure can leave the student unsure whether a booking succeeded, so the app should refresh its status. |
+| Incorrect role or club access could expose data. | Check university identity, role and club membership in backend rules and functions. | A compromised university account may still be misused. |
 
 ### Assumptions
 
-- [Assumption about accounts, roles, or Club membership]
-- [Assumption about devices, connectivity, or event information]
+- Students and committee members have University of Nottingham accounts; the backend maintains their roles and club memberships.
+- Event details, capacity and eligibility are confirmed during review. Approved event details are locked.
+- A committee device needs internet to start or refresh check-in codes. A student can save a captured QR scan offline; manual code entry needs internet.
+- One eligible, server-verified attendance earns 3 points. Streak weeks run Monday to Sunday in Malaysia time.
 
 ## 4. Technical design
  
@@ -128,7 +125,7 @@ The app has two sets of screens: **Student** (Home, Explore, My Events, Progress
  
 **Roles and authentication.** The University sign-in (role selection) screen offers Student or Club Committee. Choosing one only selects the sign-in screen and grants nothing. After university sign-in, the backend reads the role stored on the account (set by the backend, never by the app). Security rules and Cloud Functions check it on every request, so a student cannot call committee operations, and the UI shows only the screens for the verified role. If the role does not match, the Committee access not authorised screen offers Continue as Student or Return to Sign in.
  
-**DG-01 Use-case diagram (R1–R6)**
+**DG-01 Use-case overview (R1–R6)**
  
 ```mermaid
 flowchart LR
@@ -157,15 +154,14 @@ flowchart LR
  
   subgraph Backend["Firebase backend"]
     V["Verify attendance on server"]
-    P["Award 3 points after verification"]
-    A1["Review event: Approved or Changes requested - console"]
+    P["Award 3 points after eligible attendance is verified"]
+    A1["Review event: Approved, Changes requested or Rejected - console"]
     A2["Revoke invalid attendance - console"]
-    A3["Mark event as featured - console"]
   end
  
   Student --- S1 & S2 & S3 & S4 & S5 & S6 & S7 & S8 & S9
   Committee --- C1 & C2 & C3 & C4 & C5 & C6
-  Admin --- A1 & A2 & A3
+  Admin --- A1 & A2
   S6 -.->|includes| V
   V -.->|includes| P
 ```
@@ -245,8 +241,9 @@ flowchart TD
   SQ -->|offline after capture| PS["Attendance pending sync"]
   SQ -->|expired code| QE["Event QR expired"]
   SQ -->|other event| WE["Wrong event"]
-  SQ -->|offline, no scan| NI["No internet student"]
+  SQ -->|offline, no scan| NI["No connection"]
   SQ --> MC["Enter code manually"]
+  MC -->|offline; no record saved| NI
   QE --> SQ
   WE --> SQ
   MC --> IC["Manual entry → Invalid code"]
@@ -280,6 +277,7 @@ flowchart TD
     DASH["Committee dashboard"]
     EV["Committee Events"]
     SC["Scan"]
+    SUB["Submissions"]
   end
  
   DASH -->|Create event| CE["Create event"]
@@ -288,6 +286,9 @@ flowchart TD
   DASH -->|Pending review card| PR
   DASH -->|Changes requested card| NC["Submission needs changes"]
   NC -->|Edit submission, resubmit| SR
+  SUB -->|Open pending review| PR
+  SUB -->|Open changes requested| NC
+  SUB -->|View final decision and reason| RJ["Rejected submission (final)"]
   DASH -->|Approved card| AE["Approved event"]
   AE -->|Cancel event| CA["Cancel approved event"]
   PR -->|Withdraw submission| DASH
@@ -301,7 +302,8 @@ flowchart TD
   AE -->|Start check-in| ST["Start check-in"]
   SC -->|Active| ST
   SC -->|Upcoming, not yet open| NO["Scan - Check in not yet open"]
-  ST --> OG["Attendance verified (ongoing)"]
+  ST -->|View live attendees| AL
+  AL -->|Back to active check-in| ST
   ST -->|offline| PA["Check-in paused"]
   ST -->|End check-in| EC["Confirm end → Check-in closed"]
   EC --> CC["Check-in closed"]
@@ -317,16 +319,16 @@ flowchart TD
  
 | Area | Terms | Notes |
 |---|---|---|
-| Event review | Pending review, Approved, Changes requested | Admin sets Approved or Changes requested in the backend console. A Draft is an unsubmitted event, not a review status. |
-| Booking | Booked, Cancelled, No-show | Booked applies only before the event. After check-in closes, a booking without an attendance record becomes No-show. |
-| Attendance | Verified, Pending sync, Rejected, No-show | Verified and Rejected come only from the server. Pending sync is a saved scan awaiting the server. |
-| Points | 3 points per Verified attendance | Never awarded for a booking, a scan, Pending sync or Rejected. |
+| Event review | Draft, Pending review, Approved, Changes requested, Rejected | Draft is not a review status. Admin reviews submissions in the backend: **Approved** locks event details; **Changes requested** allows edits and resubmission; **Rejected** is final and cannot be booked. |
+| Booking / participation | Booked, Cancelled, No-show | **Booked** applies before the event. **Cancelled** releases the place. Mark **No-show** only after the event and the sync grace period, when no attendance scan was saved. A **Pending sync** scan is not a no-show. |
+| Attendance record | Pending sync, Verified, Rejected | **Pending sync** is a captured offline QR scan waiting for the server. The server decides whether it becomes **Verified** or **Rejected**. Rejected attendance is separate from a rejected event. |
+| Points | +3 per eligible Verified attendance; 0 otherwise | Award points once, only after server verification. Bookings, **Pending sync**, **Rejected** and **No-show** earn no points. If verified attendance is later invalidated, reverse the 3 points and recalculate progress. |
  
 ### Data model
  
 **DG-05 Event lifecycle (R1)**
  
-A club creates an event as a Draft and submits it for review. Admin approves it or returns it as Changes requested, and the committee can edit and resubmit. Once Approved, details are locked because security rules reject edits to an approved event, so a club cannot change an event after approval (R1). The only committee action after approval is Cancel event, which notifies all booked students and cancels their bookings.
+A club creates an event as a Draft and submits it for Pending review. Admin can approve it, request changes, or reject it. The Committee can edit and resubmit events marked Changes requested; Rejected events are final and cannot be booked. Approved event details are locked by backend rules. After approval, the Committee can cancel the event, which closes bookings and notifies booked students.
  
 ```mermaid
 stateDiagram-v2
@@ -335,6 +337,7 @@ stateDiagram-v2
   PendingReview --> Draft: club withdraws submission
   PendingReview --> ChangesRequested: admin requests changes
   PendingReview --> Approved: admin approves
+  PendingReview --> Rejected: admin rejects
   ChangesRequested --> PendingReview: club edits and resubmits
   state "Pending review" as PendingReview
   state "Changes requested" as ChangesRequested
@@ -349,6 +352,7 @@ stateDiagram-v2
   }
   Approved --> Cancelled: committee cancels event
   Cancelled --> [*]
+  Rejected --> [*]
   note right of Approved
     Details locked from here on (R1)
   end note
@@ -357,28 +361,34 @@ stateDiagram-v2
 **DG-06 Booking and attendance lifecycle (R2–R5)**
  
 ```mermaid
-stateDiagram-v2
-  [*] --> Booked: student confirms Review booking
-  Booked --> Cancelled: student cancels or event cancelled
-  Booked --> PendingSync: QR scan saved while offline
-  Booked --> Verified: server verifies scan or backup code
-  Booked --> Rejected: server rejects scan
-  Booked --> NoShow: check-in closes with no record
-  PendingSync --> Verified: sync accepted, 3 points credited
-  PendingSync --> Rejected: sync refused with reason
-  NoShow --> Verified: late upload accepted within delay cap
-  Verified --> Rejected: record later found invalid, points reversed
-  state "Pending sync" as PendingSync
-  state "No-show" as NoShow
-  Cancelled --> [*]
-  Verified --> [*]
-  Rejected --> [*]
-  NoShow --> [*]
+flowchart LR
+  subgraph Booking["Booking status"]
+    BOOKED["Booked (before event)"]
+    CANCELLED["Cancelled"]
+    NOSHOW["No-show"]
+    BOOKED -->|Student cancels or event is cancelled| CANCELLED
+    BOOKED -->|Event ends and sync grace expires with no saved scan| NOSHOW
+  end
+
+  subgraph Attendance["Attendance record status"]
+    NONE["No attendance record"]
+    PENDING["Pending sync"]
+    VERIFIED["Verified"]
+    REJECTED["Rejected"]
+    NONE -->|Offline QR scan captured| PENDING
+    NONE -->|Online QR or backup code accepted; 3 points if eligible| VERIFIED
+    NONE -->|Server rejects attempt| REJECTED
+    PENDING -->|Sync accepted; 3 points if eligible| VERIFIED
+    PENDING -->|Sync rejected or upload window expires| REJECTED
+    VERIFIED -->|Later invalidated; reverse 3 points| REJECTED
+  end
 ```
- 
+
+A booking remains **Booked** while its attendance record is **Pending sync**. It becomes **No-show** only after the event and sync grace period if no scan was saved.
+
 **DG-07 Entity-relationship diagram (R1–R5)**
  
-All entities use stable IDs (`userId`, `clubId`, `eventId`, `bookingId`, `attendanceId`). `attendanceId` is a UUID created on the device, so a retried upload cannot create a duplicate. The event's QR secret is a server-only field. Each Verified attendance earns a fixed 3 points. Points are stored as a ledger (one row per award or reversal) so they can be revoked with an audit trail, and the weekly streak counts Monday-to-Sunday weeks containing at least one Verified attendance. Recommended for you is ranked from saved interests (USER_INTEREST, EVENT_TAG) and Verified attendance history, and any similar-student signal would use aggregated counts only. Interest stamps and the points milestone on the Your progress screen are calculated from the ledger and event tags, so they are not stored. Booking capacity and schedule-clash checks run in one Cloud Function transaction, so two students cannot take the last place or hold overlapping bookings.
+All entities use stable IDs (`userId`, `clubId`, `eventId`, `bookingId`, `attendanceId`). `attendanceId` is a UUID created on the device, so a retried upload cannot create a duplicate. The event's QR secret is a server-only field. Each eligible Verified attendance earns 3 points once, after server verification. Points are stored as a ledger (one row per award or reversal) so they can be revoked with an audit trail, and the weekly streak counts Monday-to-Sunday weeks containing at least one Verified attendance. The STREAK record stores a summary derived from verified attendance; recalculate it from the attendance and points records after a verification or reversal. Recommended for you is ranked from saved interests (USER_INTEREST, EVENT_TAG) and Verified attendance history, and any similar-student signal would use aggregated counts only. Interest stamps and the points milestone on the Your progress screen are calculated from the ledger and event tags, so they are not stored. Booking capacity and schedule-clash checks run in one Cloud Function transaction, so two students cannot take the last place or hold overlapping bookings.
  
 ```mermaid
 erDiagram
@@ -411,11 +421,11 @@ erDiagram
     int capacity
     bool eligible "counts for points"
     int pointsAward "3"
-    string reviewStatus "draft, pending_review, changes_requested, approved"
+    string reviewStatus "draft, pending_review, changes_requested, approved, rejected"
     string reviewComment "admin feedback"
     string eventState "booking_open, full, check_in_open, check_in_closed, cancelled"
     datetime checkInClosedAt
-    bool featured "set by admin"
+    bool featured "shown in Home Featured section"
     string posterUrl
     string venueApprovalUrl
     string qrSecret "server only"
@@ -479,7 +489,7 @@ erDiagram
   BOOKING ||--o| ATTENDANCE_RECORD : "leads to"
   EVENT ||--o{ ATTENDANCE_RECORD : has
   USER ||--o{ ATTENDANCE_RECORD : submits
-  ATTENDANCE_RECORD ||--o| POINTS_LEDGER : earns
+  ATTENDANCE_RECORD ||--o{ POINTS_LEDGER : has award or reversal entries
   USER ||--o{ POINTS_LEDGER : owns
   USER ||--o| STREAK : has
   USER ||--o{ USER_INTEREST : selects
@@ -536,7 +546,7 @@ sequenceDiagram
  
 ### Offline sync
  
-Without a connection a QR scan still works. The record is saved in Room as Pending sync and shown in the attendance list, with no points or streak credit yet. If nothing was scanned while offline, there is no record and nothing to sync (No internet student). WorkManager uploads Pending sync records when the network returns and sets each one to Verified or Rejected from the server's answer. Failed uploads stay Pending sync and retry with backoff, which is safe because uploads are idempotent. Points and streak credit come only from the server after verification. If a Verified record is later found invalid, it becomes Rejected, the ledger gets a reversing entry, totals and streak are recalculated, and the student sees it on Progress points removed.
+Without a connection a QR scan still works. The record is saved in Room as Pending sync and shown in the attendance list, with no points or streak credit yet. If no QR was captured while offline, no attendance record is saved or queued; show the **No connection** state. Manual code entry must be retried when online. WorkManager uploads Pending sync records when the network returns and sets each one to Verified or Rejected from the server's answer. Failed uploads stay Pending sync and retry with backoff, which is safe because uploads are idempotent. Points and streak credit come only from the server after verification. If a Verified record is later found invalid, it becomes Rejected, the ledger gets a reversing entry, totals and streak are recalculated, and the student sees it on Progress points removed.
  
 **DG-09 Offline sync sequence (R4, R5)**
  
@@ -652,7 +662,7 @@ Committee event submissions
 <img width="2952" height="1862" alt="COMMITTEE · Submissions" src="https://github.com/user-attachments/assets/27eb2d00-39f8-48e9-84d8-c9816f1f05af" />
 
 
-Committee members create drafts and submit events for review. They can view **Pending review** and **Changes requested** states, edit and resubmit returned events, and view approved details as locked. Approved events can be cancelled.
+Committee members create drafts and submit events for review. In **Submissions**, they can see **Pending review**, **Changes requested**, or a final **Rejected** decision and its reason. They can edit and resubmit events marked **Changes requested**. Approved details are locked, but the event can be cancelled.
 
 ### Committee Events — R1, R2, R3
 
@@ -686,5 +696,5 @@ Committee - account and sign-out
 <img width="920" height="1062" alt="COMMITTEE · Account" src="https://github.com/user-attachments/assets/483af387-fca3-4742-97cb-cbfb77e126b2" />
 
 
-Committee members can view their verified club access and sign out, with a confirmation step.
+Committee members can view their verified club access and sign out with a confirmation step.
 
