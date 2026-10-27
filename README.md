@@ -1,16 +1,16 @@
 **COMP3040 Mobile Device Programming — CW1 Part 1: Requirements and Analysis**
 
-| Group member | Main responsibility |
-|---|---|
-| [Name] | Requirements and user stories: R1–R6 |
-| [Name] | Technical design and diagrams |
-| [Name] | UI/UX design and wireframes |
+| Group member | Student ID | Main responsibility |
+|---|---|---|
+| [Name] | xxxxxxxx | Requirements and user stories: R1–R6 |
+| [Name] | xxxxxxxx | Technical design and diagrams |
+| Wong Cheuk Kei | 20602511 | UI/UX design and wireframes |
 
 > **Target:** approximately 1,500 words, excluding UI components and diagrams.
 
 ## 1. Project overview
 
-[Describe the problem, the app’s purpose, and its scope.]
+Campus events can be difficult for students to discover, while clubs need a clear way to manage event submissions, bookings and attendance. The proposed s-CPD app is a native Android app for University of Nottingham Malaysia students and club committees. Students can find events through search and personalised recommendations, book places, check in with an event’s rotating QR code or short-lived backup code, and track verified attendance. Club committees can submit events, manage bookings and run check-in. The s-CPD office reviews submissions through the backend; approved event details are locked. QR scans made offline remain pending until the server verifies them. Only eligible verified attendance earns 3 points and contributes to the weekly streak. The two added features are personalised recommendations and attendance streaks.
 
 ### Actors
 
@@ -339,7 +339,124 @@ sequenceDiagram
 ```
 [If Admin review is handled in the backend, explain that no Admin Android screen is required.]
 
-## 6. References
+## 5. UI design and wireframes
 
-- [Coursework description sheet]
-- [Other sources, assets, or tools used]
+These wireframes show the main Student and Club Committee journeys and their key states. Admin event review is handled in the backend, so Admin mobile screens are not included.
+
+**Header behaviour:** The main dashboard and landing screens use an expanded header with the campus background, blue overlay and university branding. As the user scrolls, it collapses into a compact dark-blue app bar. Secondary screens use the compact header. These are states of one header design, not separate designs.
+
+### Student entry and interests — R6
+
+Student - entry and interests
+<img width="1936" height="1133" alt="STUDENT · Entry" src="https://github.com/user-attachments/assets/5089640b-e6f5-4c04-b6f0-de759e6683ff" />
+
+Users choose Student or Club Committee before signing in. University sign-in verifies their actual permissions. Students can select interests to personalise event suggestions.
+
+### Event discovery — R2, Feature 1
+
+Student - explore events
+<img width="2952" height="2433" alt="STUDENT · Explore" src="https://github.com/user-attachments/assets/a851cde4-a013-4d5e-beda-ffb61c8c5ab6" />
+
+
+Students browse featured and recommended events, search and filter the listings, and see helpful empty-result or offline states.
+
+### Event details and booking — R2
+
+Student - booking flow
+<img width="3460" height="1764" alt="STUDENT · Booking" src="https://github.com/user-attachments/assets/e3332479-1304-4c51-b495-c442de9b0d16" />
+
+
+**Navigation note:** Students can reach an event from either Home or Explore. On Home, they open a Featured or Recommended event; recommendation cards show why the event matches them. In Explore, they open an event from search results or filtered listings. Both routes lead to the same event details and booking flow. The repeated event screens show different entry points and recommendation context, not separate versions of the event.
+
+Event details show availability and relevant information. The flow covers full events, timetable clashes, booking review and confirmation.
+
+### My Events and cancellations — R2
+
+Student - My Events
+<img width="1936" height="1896" alt="STUDENT · My Events" src="https://github.com/user-attachments/assets/fbc3e433-122a-4b5b-90da-b67a8d63858f" />
+
+
+Students view upcoming and past bookings, open booking details, and cancel a booking. The confirmation and cancelled states show the outcome.
+
+### Attendance and check-in — R3, R4
+
+Student - attendance and check-in
+<img width="7524" height="1941" alt="STUDENT · Attendance" src="https://github.com/user-attachments/assets/57184104-4fa9-4309-b11d-b7edc2f2533b" />
+
+
+Students scan the Committee’s rotating QR or enter its current backup code. Invalid and expired codes show an error. Offline scans show Pending sync; manual code entry requires an online server check. Attendance is Verified only after server confirmation.
+
+### Points and progress — R5, Feature 2
+
+Student - progress and attendance history
+<img width="1936" height="1628" alt="STUDENT · Progress" src="https://github.com/user-attachments/assets/dda466bc-6d65-4241-b677-984224fc7cd8" />
+
+
+Students view verified points, attendance history, interest stamps and their weekly streak. Pending records do not earn points or streak credit; invalid attendance can have its points removed.
+
+### Profile and settings — R6
+
+Student - profile and account settings
+<img width="3460" height="1406" alt="STUDENT · Account" src="https://github.com/user-attachments/assets/a74ee55b-092f-4e6c-8eff-cfa1fc43b9f1" />
+
+
+Students view their profile, manage interests and notification preferences, adjust privacy settings and sign out.
+
+### Committee entry and access — R6
+
+Committee - entry and sign-in
+<img width="1936" height="1089" alt="COMMITTEE · Entry" src="https://github.com/user-attachments/assets/453d9c01-b26a-4c9c-bc9b-c4d30dc15b02" />
+
+
+Committee members choose their role and sign in with their university account. Selecting a role does not grant access; the app checks permissions after sign-in. The screens also show sign-in and unauthorised-access errors.
+
+### Committee dashboard — R1, R3, R6
+
+Committee - dashboard
+<img width="920" height="1931" alt="COMMITTEE · Dashboard" src="https://github.com/user-attachments/assets/53a18d9b-592f-4d95-baae-ad7c783e1fee" />
+
+
+The dashboard summarises event and submission statuses, links to event creation and check-in, and shows the next public event. The Account button provides access to the committee profile.
+
+### Event submissions — R1
+
+Committee event submissions
+<img width="2952" height="1862" alt="COMMITTEE · Submissions" src="https://github.com/user-attachments/assets/27eb2d00-39f8-48e9-84d8-c9816f1f05af" />
+
+
+Committee members create drafts and submit events for review. They can view **Pending review** and **Changes requested** states, edit and resubmit returned events, and view approved details as locked. Approved events can be cancelled.
+
+### Committee Events — R1, R2, R3
+
+Committee - Events
+<img width="1428" height="1711" alt="COMMITTEE · Committee Events" src="https://github.com/user-attachments/assets/c42f9d64-c1c3-42a9-988b-c38518721569" />
+
+
+The Upcoming tab shows events and links to their booking lists. The Past tab links to attendance summaries. An empty state lets the committee create an event.
+
+### Check-in — R3, R4, R5
+
+Committee - check-in
+<img width="4476" height="1580" alt="COMMITTEE · Check-in" src="https://github.com/user-attachments/assets/7e67621e-a690-4107-9ffd-318be6f34ad2" />
+
+
+The committee displays a rotating event QR and its short-lived backup code. Check-in can be paused when offline; a stale code cannot be used. Ending check-in closes the session, while saved scans still need server verification.
+
+### Bookings and attendance — R2, R3, R4, R5
+
+Committee - bookings and attendance
+<img width="2444" height="1400" alt="COMMITTEE · Attendees" src="https://github.com/user-attachments/assets/8ec9d0c6-5f36-41e7-856a-3eae5653a0a9" />
+
+
+**Navigation note:** Committee Events manages scheduled events: before an event starts, Upcoming opens its bookings; after it ends, Past opens its attendance summary. During an event, Scan is used to display the rotating QR and backup code and open the live attendee list. Ending check-in leads to the attendance summary.
+
+The booking list and attendance summary show **Verified**, **Pending sync**, **Rejected** and **No-show** records. Only server-verified attendance earns 3 points; closing check-in does not verify pending scans.
+
+### Committee account — R6
+
+Committee - account and sign-out
+<img width="920" height="1062" alt="COMMITTEE · Account" src="https://github.com/user-attachments/assets/483af387-fca3-4742-97cb-cbfb77e126b2" />
+
+
+Committee members can view their verified club access and sign out, with a confirmation step.
+
