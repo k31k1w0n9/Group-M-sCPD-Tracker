@@ -3,7 +3,7 @@
 | Group member | Student ID | Main responsibility |
 |---|---|---|
 | Moiz Israr Malik | 20705922 | Requirements and user stories: R1–R6 |
-| [Name] | xxxxxxxx | Technical design and diagrams |
+| Tham Wing Lok | 20611657 | Technical design and diagrams |
 | Wong Cheuk Kei | 20602511 | UI/UX design and wireframes |
 
 
