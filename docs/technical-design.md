@@ -37,7 +37,7 @@ flowchart LR
  
   subgraph Backend["Firebase backend"]
     V["Verify attendance on server"]
-    P["Award 3 points after eligible attendance is verified"]
+    P["Award 3 points once after eligible attendance is verified"]
     A1["Review event: Approved, Changes requested or Rejected - console"]
     A2["Revoke invalid attendance - console"]
   end
@@ -46,7 +46,7 @@ flowchart LR
   Committee --- S1 & C1 & C2 & C3 & C4 & C5 & C6
   Admin --- A1 & A2
   S6 -.->|includes| V
-  V -.->|includes| P
+  V -.->|Verified and eligible| P
 ```
  
 **DG-02 Architecture diagram (R4, R6)**
@@ -107,17 +107,28 @@ flowchart TD
  
   HOME --> ED["Event details points"]
   EX --> ED
-  ED -->|places left| RB["Review booking"]
-  ED -->|0 places or overlap| EF["Event full"]
+  ED -->|Place available and no clash| RB["Review booking"]
+  ED -->|No places available| EF["Event full"]
+  ED -->|Overlapping booking| CL["Schedule clash"]
   EF -->|Browse alternatives| EX
-  EF -->|View existing booking| ME
-  RB --> BK["You’re booked"]
+  CL -->|View existing booking| ME
+  RB -->|Confirm| BP["Booking in progress"]
+  BP -->|Server confirms| BK["Booking confirmed"]
+  BP -->|Capacity changed| EF
+  BP -->|Clash found| CL
+  BP -->|Request failed or status uncertain| BF["Booking failed"]
+  BF -->|Check booking status before retrying| RB
   BK --> ME
  
-  ME -->|View booking| CB["Cancel booking confirmation - Your booking"]
-  CB -->|Cancel booking| BC["Booking cancelled"]
-  CB -->|Keep booking| ME
+  ME -->|View booking| VB["Your booking"]
+  VB -->|Cancel| CB["Confirm booking cancellation"]
+  CB -->|Confirm| CX["Cancellation in progress"]
+  CX -->|Server confirms| BC["Booking cancelled"]
+  CX -->|Retryable failure| CF["Cancellation failed"]
+  CF -->|Retry| CX
+  CB -->|Keep booking| VB
   BC --> ME
+  ME -->|Organiser cancelled| EC["Event cancelled by organiser"]
  
   ME -->|Open attendance| PH{"Attendance stage for this booking"}
   PF -->|Open attendance| PH
@@ -125,6 +136,9 @@ flowchart TD
   PH -->|Checkpoint open| CQ["Scan checkpoint QR"]
   PH -->|Checkpoint not open| CW["Wait for checkpoint"]
   PH -->|Already verified| AC["Already checked in"]
+  PH -->|Review pending| AR["Under review"]
+  PH -->|One stage verified, other required stage missing after deadline| IA["Incomplete attendance"]
+  PH -->|Deadline passed without a received claim| NSH["No-show"]
   CW -->|Checkpoint opens| CQ
   SQ -->|Online QR accepted| V{"Which required stages are verified?"}
   CQ -->|Online QR accepted| V
@@ -137,16 +151,25 @@ flowchart TD
   MC --> IC["Invalid code"]
   MC --> CE["Code expired"]
   MC -->|Online code accepted| V
-  PS -->|Accepted after sync| V
+  PS -->|Reconnect| UP["Sync in progress"]
+  UP -->|Retryable or uncertain result| UR["Retry sync"]
+  UR -->|Retry same request| UP
+  UP -->|Stage accepted| V
+  UP -->|Claim flagged| AR
+  UP -->|Claim rejected| RA["Rejected attendance"]
   QE & WE --> PH
-  V -->|All required stages| AV["Attendance verified"]
-  V -->|Checkpoint still required| CW
+  V -->|All required stages verified| AV["Attendance verified"]
+  V -->|Checkpoint not yet open| CW
+  V -->|Checkpoint open| CQ
   V -->|Another saved scan awaits upload| PS
+  AR -->|Office verifies attendance| AV
+  AR -->|Office rejects with reason| RA
  
   PG --> AH["Attendance history"]
   PG --> FS["Your first stamp"]
   PG --> PP["Progress points removed"]
-  AH --> RA["Rejected attendance"]
+  AH --> RA
+  AH --> IA
  
   PF --> PSET["Privacy & settings"]
   PSET --> NS["Notification settings"]
@@ -173,21 +196,39 @@ flowchart TD
   end
  
   DASH -->|Create event| CE["Create event"]
-  CE -->|Submit for review| SR["Submission received"]
+  SUB -->|Create or edit draft| CE
+  CE -->|Submit for review| SP["Submitting"]
+  SP -->|Server confirms| SR["Submission received"]
+  SP -->|Retryable failure| SF["Submission retry"]
+  SF -->|Retry| SP
   SR --> PR["Pending review"]
   DASH -->|Pending review card| PR
   DASH -->|Changes requested card| NC["Submission needs changes"]
-  NC -->|Edit submission, resubmit| SR
+  NC -->|Edit submission, resubmit| SP
   SUB -->|Open pending review| PR
   SUB -->|Open changes requested| NC
   SUB -->|View final decision and reason| RJ["Rejected submission (final)"]
   DASH -->|Approved card| AE["Approved event"]
-  AE -->|Cancel event| CA["Cancel approved event"]
-  PR -->|Withdraw submission| DASH
+  SUB -->|Open approved event| AE
+  AE -->|Cancel event| CA["Confirm event cancellation"]
+  CA -->|Confirm| CI["Cancelling event"]
+  CI -->|Server confirms| CD["Cancellation confirmed"]
+  CI -->|Retryable failure| CR["Cancellation retry"]
+  CR -->|Retry| CI
+  CD --> EV
+  PR -->|Withdraw submission| WC["Confirm withdrawal"]
+  WC -->|Confirm| WI["Withdrawing"]
+  WI -->|Server confirms| WD["Withdrawn, returned to Draft"]
+  WI -->|Retryable failure| WR["Withdrawal retry"]
+  WR -->|Retry| WI
+  WD -->|Edit draft| CE
+  WD -->|Return| SUB
  
   EV -->|Upcoming: View bookings| BL["Event bookings list"]
   EV -->|Upcoming: View submission, Review feedback| PR
-  EV -->|Past: View attendance summary| AS["Attendance summary → Attendee list"]
+  EV -->|Past: View attendance| PV{"Sync deadline passed?"}
+  PV -->|No| SY["Awaiting sync"]
+  PV -->|Yes| AS["Attendance summary"]
   AS --> AL["Attendee list / all registered attendees"]
   EV --> EE["Committee Events Empty"]
  
@@ -200,10 +241,12 @@ flowchart TD
   CP -->|View live attendees| LA
   ST & CP -->|Offline| PA["Check-in paused"]
   ST -->|End check-in| EC["Confirm end check-in"]
-  CP -->|Close checkpoint| EC
-  EC --> CC["Check-in closed"]
-  CC -->|Uploads still accepted| SY["Awaiting sync"]
-  SY -->|View results as decisions are recorded| AS
+  CP -->|Close checkpoint| PC["Confirm checkpoint closure"]
+  PC --> CC["Check-in closed"]
+  EC --> CC
+  CC -->|View attendance| PV
+  SY -->|Deadline reached| AS
+  AS -->|Flagged claims remain visible| AL
   CC -->|Back to Events| EV
  
   DASH --> CACC["Committee account"]
@@ -217,14 +260,15 @@ flowchart TD
 |---|---|---|
 | Event review | Draft, Pending review, Approved, Changes requested, Rejected | Draft is not a review status. Admin reviews submissions in the backend: **Approved** locks event details; **Changes requested** allows edits and resubmission; **Rejected** is final and cannot be booked. |
 | Booking / participation | Booked, Cancelled, No-show | **Booked** reserves a place. **Cancelled** releases it. Assign **No-show** after the sync deadline if the server has received no attendance claim. A received claim still under review stays unresolved. |
-| Attendance record | Pending sync, Awaiting sync, Under review, Incomplete attendance, Verified, Rejected | **Pending sync** describes a scan saved on the student’s device. The committee sees server-received claims and uses **Awaiting sync** while it can still receive missing claims. **Under review** means a received claim is awaiting an office decision. A verified arrival with a missing required checkpoint becomes **Incomplete attendance** after the deadline. **Verified** requires all stages. **Rejected** includes the reason. |
-| Points | +3 per eligible Verified attendance, 0 otherwise | Award points once after the server verifies all required stages. If verified attendance is later invalidated, reverse the 3 points and recalculate progress. |
+| Student scan queue | Pending sync, Sync deadline passed | **Pending sync** describes a scan saved on the student’s device. A queue item can expire without a server rejection. Reconcile an uncertain upload by request ID. |
+| Attendance record | Awaiting sync, Under review, Incomplete attendance, Verified, Rejected | **Awaiting sync** means the server may still receive missing claims. **Under review** stays unresolved until an authorised office decision. After the deadline, one verified stage with the other required stage missing is **Incomplete attendance**. A verified arrival at an event where the organiser never opened the required checkpoint goes to office review. **Verified** requires all stages or an authorised office decision. **Rejected** includes the reason. |
+| Points | +3 per eligible Verified attendance, 0 otherwise | Award points once after attendance is verified. If an authorised correction invalidates a credited record, reverse its award once and recalculate progress. |
  
 ### Data model
  
 **DG-05 Event lifecycle (R1)**
  
-A club creates an event as a Draft and submits it for Pending review. Admin can approve it, request changes, or reject it. The Committee can edit and resubmit events marked Changes requested; Rejected events are final and cannot be booked. Approved event details are locked by backend rules. After approval, the Committee can cancel the event, which closes bookings and notifies booked students.
+A club creates an event as a Draft and submits it for Pending review. Admin can approve it, request changes, or reject it. The Committee can edit and resubmit events marked Changes requested. Withdrawing a pending submission returns the same event to Draft, where it stays unpublished and can be edited and resubmitted. Rejected events are final and cannot be booked. Approved event details are locked by backend rules. After approval, the Committee can cancel the event, which closes bookings and notifies booked students.
  
 ```mermaid
 stateDiagram-v2
@@ -266,29 +310,39 @@ flowchart LR
     BOOKED -->|Sync deadline passes with no claim received| NOSHOW
   end
 
-  subgraph Attendance["Attendance record status"]
-    NONE["No attendance record"]
+  subgraph Device["Student scan queue"]
     PENDING["Pending sync"]
+    ACK["Server result saved locally"]
+    EXPIRED["Sync deadline passed"]
+    PENDING -->|Definitive response saved| ACK
+    PENDING -->|Confirmed expired without accepted receipt| EXPIRED
+  end
+
+  subgraph Attendance["Server attendance outcome"]
+    NONE["No claim received"]
     REVIEW["Under review"]
     STAGE["Stage verified"]
     VERIFIED["Verified"]
     INCOMPLETE["Incomplete attendance"]
     REJECTED["Rejected"]
-    NONE -->|Offline QR scan captured| PENDING
     NONE -->|Online QR or backup code accepted| STAGE
-    NONE -->|Server rejects attempt| REJECTED
-    PENDING -->|Sync accepted| STAGE
-    PENDING -->|Suspicious claim received| REVIEW
-    REVIEW -->|Claim accepted| STAGE
-    REVIEW -->|Review rejects claim| REJECTED
-    PENDING -->|Sync rejected or upload window expires| REJECTED
-    STAGE -->|All required stages verified, award 3 points if eligible| VERIFIED
-    STAGE -->|Verified arrival but required checkpoint missing after deadline| INCOMPLETE
-    VERIFIED -->|Later invalidated, reverse 3 points| REJECTED
+    NONE -->|Uploaded QR accepted| STAGE
+    NONE -->|Received evidence flagged| REVIEW
+    NONE -->|Received evidence rejected| REJECTED
+    STAGE -->|All required stages verified| VERIFIED
+    STAGE -->|Other required stage opened but evidence missing at deadline| INCOMPLETE
+    STAGE -->|Arrival verified and required checkpoint never opened| REVIEW
+    REVIEW -->|Office verifies an individual stage| STAGE
+    REVIEW -->|Office verifies attendance with recorded reason| VERIFIED
+    REVIEW -->|Office rejects with reason| REJECTED
+    VERIFIED -->|Authorised correction with reason| REJECTED
   end
+
+  VERIFIED -->|Eligible and no award recorded| CREDIT["Credit 3 points once"]
+  REJECTED -->|Earlier award exists and was not reversed| REV["Reverse the earlier award once"]
 ```
 
-Before the sync deadline, a booking without a received claim remains unresolved. An offline scan can appear as **Pending sync** on the student’s device while the server is still waiting for it.
+Before the sync deadline, a booking without a received claim remains unresolved. **Pending sync** and **Sync deadline passed** describe the device queue and do not change the server outcome. An office decision takes precedence over automatic finalisation while a claim is under review. The attendance result and any points ledger entry are saved together so a retry cannot add a second award.
 
 **DG-07 Entity-relationship diagram (R1–R5)**
  
@@ -366,6 +420,9 @@ erDiagram
     string userId FK
     string bookingId FK
     string status "awaiting_sync, under_review, incomplete, verified, rejected"
+    string reviewReason
+    string reviewedBy "office account ID, if reviewed"
+    datetime reviewedAt
     string rejectReason
   }
   ATTENDANCE_STAGE {

@@ -6,7 +6,7 @@ Main entry screens use the campus branding. Secondary screens use a compact app 
 
 ### 5.1. Student entry and interests — R6
 
-Students choose Student or Club Committee and sign in with their university account. The sign-in flow includes password recovery and a route back after a network error. Students can select interests for event recommendations.
+Students choose Student or Club Committee before signing in. The prototype uses approved test accounts. Production sign-in depends on access to university single sign-on. Password recovery and network recovery stay signed out. Students can select interests for event recommendations.
 
 [<img src="images/wireframes/student-role-selection.png" alt="Choose a role" width="250" />](images/wireframes/student-role-selection.png)
 
@@ -163,7 +163,7 @@ Students view their account and update interests, notification preferences and p
 
 ### 5.8. Committee entry and access — R6
 
-Committee sign-in checks the account’s assigned role and society. The screens cover sign-in errors and unauthorised committee access.
+Committee sign-in checks the account’s assigned role and society. The prototype uses approved test accounts. The screens cover sign-in errors and unauthorised committee access.
 
 <img width="1936" height="1089" alt="COMMITTEE · Entry" src="https://github.com/user-attachments/assets/453d9c01-b26a-4c9c-bc9b-c4d30dc15b02" />
 
@@ -175,7 +175,7 @@ The dashboard shows event and submission status, the next public event, and shor
 
 ### 5.10. Event submissions — R1
 
-Submissions groups drafts, pending reviews, decisions and approved events. Committee members can update returned submissions, withdraw a pending submission, and cancel an approved event. The flow shows progress, retry and confirmed outcomes.
+Submissions groups drafts, pending reviews, decisions and approved events. Withdrawing a pending submission returns the same event to an editable draft. A final rejection shows the reason and closes the submission. Committee members can update submissions marked Changes requested and cancel an approved event. The flow shows progress, retry and confirmed outcomes.
 
 [<img src="images/wireframes/committee-submissions.png" alt="Submissions" width="250" />](images/wireframes/committee-submissions.png)
 
@@ -198,7 +198,9 @@ Submissions groups drafts, pending reviews, decisions and approved events. Commi
 |---|---|
 | **Changes requested**<br>[<img src="images/wireframes/committee-changes-requested.png" alt="Changes requested" width="220" />](images/wireframes/committee-changes-requested.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6355) | **Pending review**<br>[<img src="images/wireframes/committee-pending-review.png" alt="Pending review" width="220" />](images/wireframes/committee-pending-review.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6434) |
 | **Confirm withdrawal**<br>[<img src="images/wireframes/committee-withdraw.png" alt="Confirm withdrawal" width="220" />](images/wireframes/committee-withdraw.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1276) | **Withdrawing**<br>[<img src="images/wireframes/committee-withdrawing.png" alt="Withdrawing" width="220" />](images/wireframes/committee-withdrawing.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1333) |
-| **Withdrawn**<br>[<img src="images/wireframes/committee-withdrawn.png" alt="Withdrawn" width="220" />](images/wireframes/committee-withdrawn.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1386) | **Withdrawal retry**<br>[<img src="images/wireframes/committee-withdraw-retry.png" alt="Withdrawal retry" width="220" />](images/wireframes/committee-withdraw-retry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1443) |
+| **Returned to draft**<br>[<img src="images/wireframes/committee-withdrawn.png" alt="Returned to draft" width="220" />](images/wireframes/committee-withdrawn.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1386) | **Withdrawal retry**<br>[<img src="images/wireframes/committee-withdraw-retry.png" alt="Withdrawal retry" width="220" />](images/wireframes/committee-withdraw-retry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1443) |
+
+| **Rejected submission**<br>[<img src="images/wireframes/committee-rejected-decision.png" alt="Final rejection with the reason shown" width="220" />](images/wireframes/committee-rejected-decision.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=174-96) |  |
 
 </details>
 
@@ -250,11 +252,11 @@ The Committee displays the rotating arrival or checkpoint QR with the short-live
 
 ### 5.13. Bookings and attendance — R2, R3, R4, R5
 
-The Committee views bookings, live attendance, claims awaiting sync, and the final attendance summary. Missing uploads stay provisional through the sync window. Uploaded claims under review remain unresolved until a decision, and No-show applies only when no claim arrives by the deadline.
+Before check-in opens, the bookings list shows reservations as Booked. The Committee can then view live attendance, claims awaiting sync, and the final summary. Missing uploads stay provisional through the sync window. Uploaded claims under review remain unresolved until a decision. No-show applies only when no claim arrives by the deadline.
 
 [<img src="images/wireframes/committee-bookings-list.png" alt="Event bookings" width="250" />](images/wireframes/committee-bookings-list.png)
 
-**Event bookings** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-8117)
+**Event bookings** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=174-2)
 
 <details>
 <summary>Attendance lists and summaries</summary>

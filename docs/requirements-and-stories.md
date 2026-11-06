@@ -58,6 +58,17 @@ The screen references in the story tables point to [Section 5: UI design and wir
 | **US-17 · R6** | Student · Must-have | I want my records kept private. Backend checks prevent access to another student's bookings, points and attendance; **Profile** supports interests, notifications and sign-out. | Profile / Privacy & settings |
 | **US-18 · R6** | Club Committee · Must-have | I want access limited to my own society. Backend checks prevent editing other clubs' events or approving submissions. **Account** shows verified access and confirms sign-out. | Account |
 
+**Supplementary acceptance criteria for staged attendance (US-08–US-15)**
+
+These criteria extend the submitted stories for implementation. Check-in is either arrival only or arrival plus one later checkpoint.
+
+| Ref | Acceptance criteria |
+|---|---|
+| **R3** | Show the required stages before booking. Validate the signed-in account, booking, event, stage and code window. Each stage uses its own code, and an arrival code cannot satisfy a checkpoint. Manual entry requires an online connection. |
+| **R4** | Save each captured offline QR independently with a request ID. Pending arrival sync does not block the checkpoint scanner when it opens. The queue survives app restart and retries the same request ID. Preserve the raw token until a definitive server decision is stored locally. Student **Pending sync** is local, while Committee **Awaiting sync** describes an outcome still waiting for server evidence. |
+| **R3, R4** | Keep missing stages provisional until the sync deadline. At the deadline, one verified stage with the other required stage missing becomes **Incomplete attendance**, and no claim received by the server becomes **No-show**. A received claim under review stays unresolved. If the organiser never opens a required checkpoint, a verified arrival goes to office review for an authorised decision. |
+| **R5** | Award 3 points once for an eligible event after all required stages are verified or an authorised office decision verifies attendance. Pending, incomplete and rejected outcomes earn zero. An authorised correction reverses an existing award once and recalculates progress. |
+
 ### Role permissions
 
 | Action | Student | Club Committee | Admin (backend only) |

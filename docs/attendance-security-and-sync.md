@@ -6,7 +6,7 @@ Committee **Scan** requests a QR and a six-digit backup code from the backend. B
 
 For events that require a checkpoint, students scan on arrival and again during a window the organiser opens and announces in the final third of the event. Booking review explains both scans before students confirm. The backend issues separate codes for arrival and checkpoint. The wireframes show a five-minute checkpoint as an example. The event eligibility rule and window duration still need team agreement.
 
-The server checks the account, its booking, the approved event, the expected stage and the active code window. Online submissions use server receipt time. Manual entry requires internet, applies to the active stage and is rate-limited by account and session. The backend stores one evidence record per required stage and one attendance outcome per student and event. It awards 3 points once and updates the streak only after all required stages are verified and the event is eligible. Retrying the same request returns its recorded result. A separate duplicate attempt cannot overwrite a verified result.
+The server checks the account, its booking, the approved event, the expected stage and the active code window. Online submissions use server receipt time. Manual entry requires internet, applies to the active stage and is rate-limited by account and session. The backend stores one evidence record per required stage and one attendance outcome per student and event. A student can retry with a fresh, valid code while the stage is open. The error affects the attempt and preserves any previously verified evidence. Retrying the same request returns its recorded result. A separate duplicate attempt cannot overwrite a verified result. Once all stages pass or the office verifies attendance through an authorised decision, award 3 points and update the streak only for an eligible event. Record the outcome and award together to prevent a second award.
 
 | Attempt | Defence | Remaining weakness |
 |---|---|---|
@@ -34,8 +34,8 @@ sequenceDiagram
       F->>DB: Verify attendance and award 3 points once if eligible
     end
     F-->>S: Return stage and attendance status
-  else Rejected
-    F-->>S: Return reason
+  else Invalid code, expired code or rejected claim
+    F-->>S: Return reason and preserve verified evidence
   end
 ```
 
@@ -43,7 +43,9 @@ sequenceDiagram
 
 With a cached booking, the student app can capture the arrival or checkpoint QR offline. Room saves the full token, account and event IDs, stage, request ID and optional device capture time. The student sees **Pending sync**. WorkManager submits the record on reconnection. The server checks the token tag, the stage’s code window and the upload deadline using server receipt time. Device capture time is diagnostic. The office can review flagged claims before the server finalises attendance. The token confirms when the server issued the code. Live code relay and shared access to an unlocked phone remain possible.
 
-Use a configurable sync grace period after check-in closes. The wireframes use 24 hours as an example. While uploads are still accepted, the committee sees received stages and **Awaiting sync** for outstanding claims. After the deadline, a verified arrival with a missing required checkpoint becomes **Incomplete attendance**. Use **No-show** when the server received no claim. **Under review** stays unresolved until the office decides. For a late or rejected upload, show the reason and provide the organiser contact for review. Preserve previously verified or rejected claims with their recorded outcomes and reasons. An authorised reversal removes any points already awarded and recalculates progress and streaks.
+Use a configurable sync grace period after check-in closes. The wireframes use 24 hours as an example. While uploads are accepted, the committee shows received stages and **Awaiting sync** for outstanding evidence. At the deadline, either verified stage with the other required stage missing becomes **Incomplete attendance**. Use **No-show** when the server received no claim by the deadline. A received claim **Under review** stays unresolved until the office decides. When the organiser never opened a required checkpoint, send verified arrivals to office review for an authorised decision. The office records its decision and reason before attendance is verified or rejected.
+
+Save a definitive server response locally before clearing the raw token. After a timeout or lost acknowledgement, retry or query with the same request ID. If the server confirms the deadline passed without accepting the claim, mark the queue item **Sync deadline passed**, clear the expired token and retain the request ID for reconciliation. This local queue outcome preserves recorded server decisions. Show a late or rejected upload’s reason and provide the organiser contact for review. An authorised correction reverses an existing award once and recalculates progress and streaks.
 
 **DG-09 Offline sync sequence (R4, R5)**
 
@@ -58,11 +60,11 @@ sequenceDiagram
   W->>R: Read queue after reconnecting
   W->>F: Upload saved claim
   F->>F: Verify token, booking, session, stage, deadline and duplicates
-  alt Server receives the claim
-    F-->>W: Return result or flag the claim for review
-    W->>R: Save server status and clear raw QR token
-  else Connection fails
-    W->>R: Keep claim queued for retry
+  alt Definitive response received
+    F-->>W: Return stored result, review status or confirmed expiry
+    W->>R: Persist the response and clear the raw token
+  else Connection fails or response is uncertain
+    W->>R: Keep the token and request ID for retry or reconciliation
   end
 ```
 
