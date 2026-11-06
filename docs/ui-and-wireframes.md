@@ -2,7 +2,7 @@
 
 The wireframes cover Student and Club Committee journeys. The s-CPD office reviews event submissions in the backend. [Open the Figma file](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=0-1).
 
-Main entry screens use the campus branding. Secondary screens use a compact app bar. The screenshots use sample events and accounts.
+Main entry screens use the campus branding. Secondary screens use a compact app bar. The screenshots use sample events and accounts and document static interface states for implementation.
 
 ### 5.1. Student entry and interests — R6
 
@@ -79,7 +79,7 @@ Students view their bookings and see whether arrival or checkpoint scanning is a
 
 ### 5.5. Attendance and check-in — R3, R4
 
-Events with a checkpoint require an arrival scan and a checkpoint scan. Students scan the rotating QR or enter the stage’s backup code online. An offline QR scan remains Pending sync until upload. The app distinguishes saved scans, upload or retry, server review and incomplete attendance.
+Events with a checkpoint require an arrival scan and a later checkpoint scan. Students scan the rotating QR or enter the active stage’s backup code online. Each offline scan remains **Pending sync** on the device until the app stores a definitive server response. The interface distinguishes saved scans, retries, office review and incomplete attendance.
 
 [<img src="images/checkpoint/student-arrival-scanner.png" alt="Scan arrival QR" width="250" />](images/checkpoint/student-arrival-scanner.png)
 
@@ -129,7 +129,7 @@ Events with a checkpoint require an arrival scan and a checkpoint scan. Students
 
 ### 5.6. Points and progress — R5, Feature 2
 
-An eligible event earns 3 points once after all required scans are verified. Progress shows verified attendance, points, interest stamps and the weekly streak. Pending scans do not earn credit, and corrections can remove previously credited points.
+Verified attendance at an eligible event earns 3 points once. Verification requires all stages to pass or an authorised office decision. Progress shows verified attendance, points, interest stamps and the weekly streak. Pending scans earn zero, and an authorised correction can reverse an earlier award.
 
 [<img src="images/checkpoint/student-attendance-verified.png" alt="Attendance verified — +3 pts" width="250" />](images/checkpoint/student-attendance-verified.png)
 
@@ -163,9 +163,11 @@ Students view their account and update interests, notification preferences and p
 
 ### 5.8. Committee entry and access — R6
 
-Committee sign-in checks the account’s assigned role and society. The prototype uses approved test accounts. The screens cover sign-in errors and unauthorised committee access.
+Committee members begin at the [shared role picker](#51-student-entry-and-interests--r6). Sign-in checks the account’s assigned role and society. The prototype uses approved test accounts.
 
-<img width="1936" height="1089" alt="COMMITTEE · Entry" src="https://github.com/user-attachments/assets/453d9c01-b26a-4c9c-bc9b-c4d30dc15b02" />
+| Committee sign-in | Sign-in error | Access not authorised |
+|---|---|---|
+| [<img src="images/wireframes/committee-sign-in.png" alt="Committee sign-in" width="190" />](images/wireframes/committee-sign-in.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-5695) | [<img src="images/wireframes/committee-sign-in-error.png" alt="Committee sign-in error" width="190" />](images/wireframes/committee-sign-in-error.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-5771) | [<img src="images/wireframes/committee-access-not-authorised.png" alt="Committee access not authorised" width="190" />](images/wireframes/committee-access-not-authorised.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-5852) |
 
 ### 5.9. Committee dashboard — R1, R3, R6
 
@@ -252,7 +254,7 @@ The Committee displays the rotating arrival or checkpoint QR with the short-live
 
 ### 5.13. Bookings and attendance — R2, R3, R4, R5
 
-Before check-in opens, the bookings list shows reservations as Booked. The Committee can then view live attendance, claims awaiting sync, and the final summary. Missing uploads stay provisional through the sync window. Uploaded claims under review remain unresolved until a decision. No-show applies only when no claim arrives by the deadline.
+Before check-in opens, the bookings list shows reservations as **Booked**. The Committee can then view live attendance, claims awaiting sync and attendance outcomes. Missing uploads remain provisional through the sync window. At the deadline, either verified stage with the other required stage missing becomes **Incomplete attendance**. **No-show** applies when the server receives no claim. If an organiser never opens the required checkpoint, students with verified arrival go to office review. **Under review** remains unresolved until an authorised decision.
 
 [<img src="images/wireframes/committee-bookings-list.png" alt="Event bookings" width="250" />](images/wireframes/committee-bookings-list.png)
 
