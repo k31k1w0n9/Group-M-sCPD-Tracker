@@ -21,3 +21,7 @@ s-CPD is a native Android app for University of Nottingham Malaysia students and
 ## Proposed attendance change
 
 The proposed flow uses an arrival scan and one QR checkpoint later in longer events. The [checkpoint proposal](docs/attendance-security-and-sync.md#proposed-late-event-checkpoint) records the design and decisions for review.
+
+## Latest UI update
+
+[View the arrival and checkpoint screens](docs/ui-and-wireframes.md#proposed-checkpoint-wireframes) — 24 Student and Committee states with screenshots and short descriptions, including offline scans, manual code entry and attendance outcomes. Tap interactions remain unwired.
