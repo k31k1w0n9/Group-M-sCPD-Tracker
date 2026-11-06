@@ -86,7 +86,7 @@ flowchart LR
  
 ### Screen flows
  
-Screen names below are the Figma frame names.
+The flows use the Figma screen names where applicable. An event’s attendance requirement determines whether students need an arrival scan only or both an arrival scan and a later checkpoint. The booking review explains the requirement before confirmation.
  
 **DG-03 Student screen flow (R2–R6)**
  
@@ -119,21 +119,29 @@ flowchart TD
   CB -->|Keep booking| ME
   BC --> ME
  
-  ME -->|Scan event QR| SQ["Scan event QR"]
-  SQ -->|first valid scan| AV["Attendance verified"]
-  SQ -->|already verified| AC["Already checked in"]
-  SQ -->|offline after capture| PS["Attendance pending sync"]
-  SQ -->|expired code| QE["Event QR expired"]
-  SQ -->|other event| WE["Wrong event"]
-  SQ -->|offline, no scan| NI["No connection"]
-  SQ --> MC["Enter code manually"]
-  MC -->|offline; no record saved| NI
-  QE --> SQ
-  WE --> SQ
-  MC --> IC["Manual entry → Invalid code"]
-  MC --> CE["Manual entry → Code expired"]
-  MC --> MV["Manual entry → Attendance verified"]
-  PS --> ME
+  ME -->|Open attendance| PH{"Attendance stage for this booking"}
+  PF -->|Open attendance| PH
+  PH -->|Arrival open| SQ["Scan arrival QR"]
+  PH -->|Checkpoint open| CQ["Scan checkpoint QR"]
+  PH -->|Checkpoint not open| CW["Wait for checkpoint"]
+  PH -->|Already verified| AC["Already checked in"]
+  CW -->|Checkpoint opens| CQ
+  SQ -->|Online QR accepted| V{"Which required stages are verified?"}
+  CQ -->|Online QR accepted| V
+  SQ & CQ -->|Offline QR captured| PS["Attendance pending sync"]
+  SQ & CQ -->|Expired code| QE["Event QR expired"]
+  SQ & CQ -->|Other event| WE["Wrong event"]
+  SQ & CQ -->|Offline, no scan| NI["No connection"]
+  SQ & CQ --> MC["Enter stage code manually"]
+  MC -->|Offline, no record saved| NI
+  MC --> IC["Invalid code"]
+  MC --> CE["Code expired"]
+  MC -->|Online code accepted| V
+  PS -->|Accepted after sync| V
+  QE & WE --> PH
+  V -->|All required stages| AV["Attendance verified"]
+  V -->|Checkpoint still required| CW
+  V -->|Another saved scan awaits upload| PS
  
   PG --> AH["Attendance history"]
   PG --> FS["Your first stamp"]
@@ -186,12 +194,16 @@ flowchart TD
   AE -->|Start check-in| ST["Start check-in"]
   SC -->|Active| ST
   SC -->|Upcoming, not yet open| NO["Scan - Check in not yet open"]
-  ST -->|View live attendees| AL
-  AL -->|Back to active check-in| ST
-  ST -->|offline| PA["Check-in paused"]
-  ST -->|End check-in| EC["Confirm end → Check-in closed"]
+  ST -->|View live attendees| LA["Live attendee list"]
+  LA -->|Back to active scan| SC
+  ST -->|Open required checkpoint| CP["Checkpoint open"]
+  CP -->|View live attendees| LA
+  ST & CP -->|Offline| PA["Check-in paused"]
+  ST -->|End check-in| EC["Confirm end check-in"]
+  CP -->|Close checkpoint| EC
   EC --> CC["Check-in closed"]
-  CC -->|View attendance summary| AS
+  CC -->|Uploads still accepted| SY["Awaiting sync"]
+  SY -->|View results as decisions are recorded| AS
   CC -->|Back to Events| EV
  
   DASH --> CACC["Committee account"]
@@ -205,8 +217,8 @@ flowchart TD
 |---|---|---|
 | Event review | Draft, Pending review, Approved, Changes requested, Rejected | Draft is not a review status. Admin reviews submissions in the backend: **Approved** locks event details; **Changes requested** allows edits and resubmission; **Rejected** is final and cannot be booked. |
 | Booking / participation | Booked, Cancelled, No-show | **Booked** reserves a place. **Cancelled** releases it. Assign **No-show** after the sync deadline if the server has received no attendance claim. A received claim still under review stays unresolved. |
-| Attendance record | Pending sync, Verified, Rejected | **Pending sync** means a QR scan is saved on the student’s phone and awaiting a server result. The committee can see a claim only after the server receives it. The server can flag a received claim for review before returning **Verified** or **Rejected**. |
-| Points | +3 per eligible Verified attendance; 0 otherwise | Award points once, only after server verification. Bookings, **Pending sync**, **Rejected** and **No-show** earn no points. If verified attendance is later invalidated, reverse the 3 points and recalculate progress. |
+| Attendance record | Pending sync, Awaiting sync, Under review, Incomplete attendance, Verified, Rejected | **Pending sync** describes a scan saved on the student’s device. The committee sees server-received claims and uses **Awaiting sync** while it can still receive missing claims. **Under review** means a received claim is awaiting an office decision. A verified arrival with a missing required checkpoint becomes **Incomplete attendance** after the deadline. **Verified** requires all stages. **Rejected** includes the reason. |
+| Points | +3 per eligible Verified attendance, 0 otherwise | Award points once after the server verifies all required stages. If verified attendance is later invalidated, reverse the 3 points and recalculate progress. |
  
 ### Data model
  
@@ -258,17 +270,21 @@ flowchart LR
     NONE["No attendance record"]
     PENDING["Pending sync"]
     REVIEW["Under review"]
+    STAGE["Stage verified"]
     VERIFIED["Verified"]
+    INCOMPLETE["Incomplete attendance"]
     REJECTED["Rejected"]
     NONE -->|Offline QR scan captured| PENDING
-    NONE -->|Online QR or backup code accepted; 3 points if eligible| VERIFIED
+    NONE -->|Online QR or backup code accepted| STAGE
     NONE -->|Server rejects attempt| REJECTED
-    PENDING -->|Sync accepted; 3 points if eligible| VERIFIED
+    PENDING -->|Sync accepted| STAGE
     PENDING -->|Suspicious claim received| REVIEW
-    REVIEW -->|Accepted; 3 points if eligible| VERIFIED
+    REVIEW -->|Claim accepted| STAGE
     REVIEW -->|Review rejects claim| REJECTED
     PENDING -->|Sync rejected or upload window expires| REJECTED
-    VERIFIED -->|Later invalidated; reverse 3 points| REJECTED
+    STAGE -->|All required stages verified, award 3 points if eligible| VERIFIED
+    STAGE -->|Verified arrival but required checkpoint missing after deadline| INCOMPLETE
+    VERIFIED -->|Later invalidated, reverse 3 points| REJECTED
   end
 ```
 
@@ -276,7 +292,7 @@ Before the sync deadline, a booking without a received claim remains unresolved.
 
 **DG-07 Entity-relationship diagram (R1–R5)**
  
-Each queued scan has a client request ID for retries. The server keeps one attendance record per student and event, linked to the booking, and a ledger for each points award or reversal. Streaks are recalculated from verified attendance by event week. Interest stamps and milestones are derived from attendance, event tags and points. Recommendations use saved interests and verified attendance history. Booking capacity and schedule clashes are checked in the same transaction.
+Each queued scan has a client request ID for retries. The server keeps one attendance outcome per student and event, linked to the booking, and one evidence record per required stage. A ledger records each points award or reversal. Streaks use verified attendance by event week. Interest stamps and milestones are derived from attendance, event tags and points. Recommendations use saved interests and verified attendance history. Booking capacity and schedule clashes are checked in the same transaction.
  
 ```mermaid
 erDiagram
@@ -313,8 +329,11 @@ erDiagram
     string reviewComment "admin feedback"
     string eventState "booking_open, full, check_in_open, check_in_closed, cancelled"
     string checkInSessionId
+    string attendanceMode "arrival_only, arrival_and_checkpoint"
     datetime checkInOpenedAt
     datetime checkInClosedAt
+    datetime checkpointOpenedAt
+    datetime checkpointClosedAt
     datetime syncDeadline
     bool featured "shown in Home Featured section"
     string posterUrl
@@ -346,6 +365,12 @@ erDiagram
     string eventId FK
     string userId FK
     string bookingId FK
+    string status "awaiting_sync, under_review, incomplete, verified, rejected"
+    string rejectReason
+  }
+  ATTENDANCE_STAGE {
+    string attendanceId PK, FK
+    string stage PK "arrival, checkpoint"
     string entryMethod "qr, backup_code"
     string clientRequestId
     datetime clientCapturedAt
@@ -376,6 +401,7 @@ erDiagram
     string userId
     string eventId
     string capturedQrToken
+    string stage "arrival, checkpoint"
     datetime clientCapturedAt
     string localStatus
   }
@@ -387,6 +413,7 @@ erDiagram
   BOOKING ||--o| ATTENDANCE_RECORD : "leads to"
   EVENT ||--o{ ATTENDANCE_RECORD : has
   USER ||--o{ ATTENDANCE_RECORD : submits
+  ATTENDANCE_RECORD ||--o{ ATTENDANCE_STAGE : "holds stage evidence"
   ATTENDANCE_RECORD ||--o{ POINTS_LEDGER : has award or reversal entries
   USER ||--o{ POINTS_LEDGER : owns
   USER ||--o| STREAK : has

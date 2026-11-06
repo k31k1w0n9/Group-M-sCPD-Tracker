@@ -1,206 +1,285 @@
 # 5. UI design and wireframes
 
-The wireframes cover Student and Club Committee. The s-CPD office reviews submissions in the backend. [Open the Figma file](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=0-1).
+The wireframes cover Student and Club Committee journeys. The s-CPD office reviews event submissions in the backend. [Open the Figma file](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=0-1).
 
-The [revised checkpoint screens](#proposed-checkpoint-wireframes) document the latest longer-event attendance flow. The earlier images retain the baseline booking, account and attendance journeys.
+Main entry screens use the campus branding. Secondary screens use a compact app bar. The screenshots use sample events and accounts.
 
-Main tabs use the campus photo and branding in the expanded header. The header collapses to a compact dark blue app bar on scroll. Secondary screens start with the compact header.
+### 5.1. Student entry and interests — R6
 
-### Student entry and interests — R6
+Students choose Student or Club Committee and sign in with their university account. The sign-in flow includes password recovery and a route back after a network error. Students can select interests for event recommendations.
 
-Student - entry and interests
-<img width="1936" height="1133" alt="STUDENT · Entry" src="https://github.com/user-attachments/assets/5089640b-e6f5-4c04-b6f0-de759e6683ff" />
+[<img src="images/wireframes/student-role-selection.png" alt="Choose a role" width="250" />](images/wireframes/student-role-selection.png)
 
-Users choose Student or Club Committee before sign-in. The backend checks the signed-in account’s permissions. Students can select interests for recommendations.
+**Choose a role** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-101)
 
-### Event discovery — R2, Feature 1
+<details>
+<summary>Sign-in and account recovery</summary>
 
-Student - explore events
+| Screen | Screen |
+|---|---|
+| **Student sign-in**<br>[<img src="images/wireframes/student-sign-in.png" alt="Student sign-in" width="220" />](images/wireframes/student-sign-in.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-193) | **Sign-in error**<br>[<img src="images/wireframes/student-sign-in-error.png" alt="Sign-in error" width="220" />](images/wireframes/student-sign-in-error.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-269) |
+| **Password recovery**<br>[<img src="images/wireframes/student-password-recovery.png" alt="Password recovery" width="220" />](images/wireframes/student-password-recovery.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-711) | **Sign-in network error**<br>[<img src="images/wireframes/student-network-recovery.png" alt="Sign-in network error" width="220" />](images/wireframes/student-network-recovery.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-768) |
+| **Choose interests**<br>[<img src="images/wireframes/student-interests.png" alt="Choose interests" width="220" />](images/wireframes/student-interests.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-350) |   |
+
+</details>
+
+### 5.2. Event discovery — R2, Feature 1
+
+Home and Explore show featured and recommended events, search and filters. Empty and offline states explain what the student can do next.
+
 <img width="2952" height="2433" alt="STUDENT · Explore" src="https://github.com/user-attachments/assets/a851cde4-a013-4d5e-beda-ffb61c8c5ab6" />
 
-Students browse featured and recommended events, search and filter the listings, and see helpful empty-result or offline states.
+### 5.3. Event details and booking — R2
 
-### Event details and booking — R2
+Event details show availability and the attendance requirements before booking. The booking flow handles full events, schedule clashes, an in-progress request, and a failed or confirmed result.
 
-Student - booking flow
-<img width="3460" height="1764" alt="STUDENT · Booking" src="https://github.com/user-attachments/assets/e3332479-1304-4c51-b495-c442de9b0d16" />
+[<img src="images/checkpoint/student-event-details.png" alt="Event details and attendance requirements" width="250" />](images/checkpoint/student-event-details.png)
 
-Featured and Recommended cards on **Home** and search or filtered results in **Explore** open the same event details and booking flow. Recommended cards explain the match.
+**Event details and attendance requirements** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-2)
 
-Event details show availability and relevant information. The flow covers full events, timetable clashes, booking review and confirmation.
+<details>
+<summary>Booking and availability</summary>
 
-### My Events and cancellations — R2
+| Screen | Screen |
+|---|---|
+| **Event full**<br>[<img src="images/wireframes/student-event-full.png" alt="Event full" width="220" />](images/wireframes/student-event-full.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-1460) | **Schedule clash**<br>[<img src="images/wireframes/student-schedule-clash.png" alt="Schedule clash" width="220" />](images/wireframes/student-schedule-clash.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-1568) |
+| **Review booking**<br>[<img src="images/wireframes/student-booking-review.png" alt="Review booking" width="220" />](images/wireframes/student-booking-review.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-1398) | **Booking in progress**<br>[<img src="images/wireframes/student-booking-in-progress.png" alt="Booking in progress" width="220" />](images/wireframes/student-booking-in-progress.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-478) |
+| **Booking failed**<br>[<img src="images/wireframes/student-booking-failed.png" alt="Booking failed" width="220" />](images/wireframes/student-booking-failed.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-536) | **Booking confirmed**<br>[<img src="images/wireframes/student-booking-confirmed.png" alt="Booking confirmed" width="220" />](images/wireframes/student-booking-confirmed.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-2052) |
 
-Student - My Events
-<img width="1936" height="1896" alt="STUDENT · My Events" src="https://github.com/user-attachments/assets/fbc3e433-122a-4b5b-90da-b67a8d63858f" />
+</details>
 
-Students view upcoming and past bookings, open booking details, and cancel a booking. The confirmation and cancelled states show the outcome.
+### 5.4. My Events and cancellations — R2, R3, R4
 
-### Attendance and check-in — R3, R4
+Students view their bookings and see whether arrival or checkpoint scanning is available. A queued arrival scan stays pending without removing the checkpoint action when it opens. Booking cancellation and organiser cancellation have distinct outcomes.
 
-Student - attendance and check-in
-<img width="7524" height="1941" alt="STUDENT · Attendance" src="https://github.com/user-attachments/assets/57184104-4fa9-4309-b11d-b7edc2f2533b" />
+[<img src="images/checkpoint/student-my-events-arrival-required.png" alt="My Events — arrival required" width="250" />](images/checkpoint/student-my-events-arrival-required.png)
 
-Students scan the committee’s rotating QR or enter the active backup code online. A captured QR can show **Pending sync** offline. Invalid and expired codes have separate error states.
+**My Events — arrival required** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-125)
 
-### Points and progress — R5, Feature 2
+<details>
+<summary>Upcoming events and checkpoint access</summary>
 
-Student - progress and attendance history
-<img width="1936" height="1628" alt="STUDENT · Progress" src="https://github.com/user-attachments/assets/dda466bc-6d65-4241-b677-984224fc7cd8" />
+| Screen | Screen |
+|---|---|
+| **Waiting for checkpoint — arrival verified**<br>[<img src="images/checkpoint/student-waiting-arrival-verified.png" alt="Waiting for checkpoint — arrival verified" width="220" />](images/checkpoint/student-waiting-arrival-verified.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-456) | **Waiting for checkpoint — arrival pending sync**<br>[<img src="images/checkpoint/student-waiting-arrival-pending.png" alt="Waiting for checkpoint — arrival pending sync" width="220" />](images/checkpoint/student-waiting-arrival-pending.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-605) |
+| **Checkpoint open — arrival verified**<br>[<img src="images/checkpoint/student-checkpoint-open-arrival-verified.png" alt="Checkpoint open — arrival verified" width="220" />](images/checkpoint/student-checkpoint-open-arrival-verified.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-441) | **Checkpoint open — arrival pending sync**<br>[<img src="images/checkpoint/student-checkpoint-open-arrival-pending.png" alt="Checkpoint open — arrival pending sync" width="220" />](images/checkpoint/student-checkpoint-open-arrival-pending.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-35) |
 
-Students view verified points, attendance history, interest stamps and their weekly streak. Pending records do not earn points or streak credit; invalid attendance can have its points removed.
+</details>
 
-### Profile and settings — R6
+<details>
+<summary>Cancelling a booking</summary>
 
-Student - profile and account settings
-<img width="3460" height="1406" alt="STUDENT · Account" src="https://github.com/user-attachments/assets/a74ee55b-092f-4e6c-8eff-cfa1fc43b9f1" />
+| Screen | Screen |
+|---|---|
+| **Confirm booking cancellation**<br>[<img src="images/wireframes/student-cancel-booking-confirm.png" alt="Confirm booking cancellation" width="220" />](images/wireframes/student-cancel-booking-confirm.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-2429) | **Cancellation in progress**<br>[<img src="images/wireframes/student-cancellation-in-progress.png" alt="Cancellation in progress" width="220" />](images/wireframes/student-cancellation-in-progress.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-825) |
+| **Cancellation failed**<br>[<img src="images/wireframes/student-cancel-failed.png" alt="Cancellation failed" width="220" />](images/wireframes/student-cancel-failed.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-595) | **Booking cancelled**<br>[<img src="images/wireframes/student-booking-cancelled.png" alt="Booking cancelled" width="220" />](images/wireframes/student-booking-cancelled.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-2364) |
+| **Event cancelled by organiser**<br>[<img src="images/wireframes/student-event-cancelled.png" alt="Event cancelled by organiser" width="220" />](images/wireframes/student-event-cancelled.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-882) |   |
 
-Students view their account, edit interests and notification preferences, and sign out. Use **University account verified** for university sign-in and **Account verified** for the prototype.
+</details>
 
-### Committee entry and access — R6
+### 5.5. Attendance and check-in — R3, R4
 
-Committee - entry and sign-in
+Events with a checkpoint require an arrival scan and a checkpoint scan. Students scan the rotating QR or enter the stage’s backup code online. An offline QR scan remains Pending sync until upload. The app distinguishes saved scans, upload or retry, server review and incomplete attendance.
+
+[<img src="images/checkpoint/student-arrival-scanner.png" alt="Scan arrival QR" width="250" />](images/checkpoint/student-arrival-scanner.png)
+
+**Scan arrival QR** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-326)
+
+<details>
+<summary>Arrival and checkpoint scanning</summary>
+
+| Screen | Screen |
+|---|---|
+| **Arrival saved — verified**<br>[<img src="images/checkpoint/student-arrival-verified.png" alt="Arrival saved — verified" width="220" />](images/checkpoint/student-arrival-verified.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-2) | **Arrival saved — pending sync**<br>[<img src="images/checkpoint/student-arrival-pending-sync.png" alt="Arrival saved — pending sync" width="220" />](images/checkpoint/student-arrival-pending-sync.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-389) |
+| **Scan checkpoint QR**<br>[<img src="images/checkpoint/student-checkpoint-scanner-arrival-verified.png" alt="Scan checkpoint QR" width="220" />](images/checkpoint/student-checkpoint-scanner-arrival-verified.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-642) | **Scan checkpoint — arrival pending sync**<br>[<img src="images/checkpoint/student-checkpoint-scanner-arrival-pending.png" alt="Scan checkpoint — arrival pending sync" width="220" />](images/checkpoint/student-checkpoint-scanner-arrival-pending.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-185) |
+
+</details>
+
+<details>
+<summary>Camera access and QR errors</summary>
+
+| Screen | Screen |
+|---|---|
+| **Camera permission required**<br>[<img src="images/wireframes/student-camera-required.png" alt="Camera permission required" width="220" />](images/wireframes/student-camera-required.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-3) | **Camera permission denied**<br>[<img src="images/wireframes/student-camera-denied.png" alt="Camera permission denied" width="220" />](images/wireframes/student-camera-denied.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-56) |
+| **QR unreadable**<br>[<img src="images/wireframes/student-qr-unreadable.png" alt="QR unreadable" width="220" />](images/wireframes/student-qr-unreadable.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-109) | **QR expired**<br>[<img src="images/wireframes/student-qr-expired.png" alt="QR expired" width="220" />](images/wireframes/student-qr-expired.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-169) |
+
+</details>
+
+<details>
+<summary>Manual codes and connection recovery</summary>
+
+| Screen | Screen |
+|---|---|
+| **Enter arrival code online**<br>[<img src="images/checkpoint/student-arrival-code.png" alt="Enter arrival code online" width="220" />](images/checkpoint/student-arrival-code.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-283) | **Enter checkpoint code online**<br>[<img src="images/wireframes/student-checkpoint-code-entry.png" alt="Enter checkpoint code online" width="220" />](images/wireframes/student-checkpoint-code-entry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=149-63) |
+| **Arrival code — connection lost**<br>[<img src="images/wireframes/student-arrival-code-connection-lost.png" alt="Arrival code — connection lost" width="220" />](images/wireframes/student-arrival-code-connection-lost.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=149-126) | **Checkpoint code — connection lost**<br>[<img src="images/checkpoint/student-checkpoint-code.png" alt="Checkpoint code — connection lost" width="220" />](images/checkpoint/student-checkpoint-code.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-861) |
+| **Checkpoint code — offline**<br>[<img src="images/wireframes/student-checkpoint-code-offline.png" alt="Checkpoint code — offline" width="220" />](images/wireframes/student-checkpoint-code-offline.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=149-189) |   |
+
+</details>
+
+<details>
+<summary>Offline sync and attendance outcomes</summary>
+
+| Screen | Screen |
+|---|---|
+| **Checkpoint saved — pending sync**<br>[<img src="images/checkpoint/student-checkpoint-pending-sync.png" alt="Checkpoint saved — pending sync" width="220" />](images/checkpoint/student-checkpoint-pending-sync.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-705) | **Both scans saved — pending sync**<br>[<img src="images/checkpoint/student-both-scans-pending-sync.png" alt="Both scans saved — pending sync" width="220" />](images/checkpoint/student-both-scans-pending-sync.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-250) |
+| **Sync in progress**<br>[<img src="images/wireframes/student-sync-in-progress.png" alt="Sync in progress" width="220" />](images/wireframes/student-sync-in-progress.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-263) | **Uploaded — under review**<br>[<img src="images/wireframes/student-under-review.png" alt="Uploaded — under review" width="220" />](images/wireframes/student-under-review.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-293) |
+| **Retry failed sync**<br>[<img src="images/wireframes/student-sync-retry.png" alt="Retry failed sync" width="220" />](images/wireframes/student-sync-retry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-325) | **Incomplete attendance**<br>[<img src="images/checkpoint/student-incomplete-attendance.png" alt="Incomplete attendance" width="220" />](images/checkpoint/student-incomplete-attendance.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-809) |
+
+</details>
+
+### 5.6. Points and progress — R5, Feature 2
+
+An eligible event earns 3 points once after all required scans are verified. Progress shows verified attendance, points, interest stamps and the weekly streak. Pending scans do not earn credit, and corrections can remove previously credited points.
+
+[<img src="images/checkpoint/student-attendance-verified.png" alt="Attendance verified — +3 pts" width="250" />](images/checkpoint/student-attendance-verified.png)
+
+**Attendance verified — +3 pts** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-757)
+
+<details>
+<summary>Progress and verified attendance</summary>
+
+| Screen | Screen |
+|---|---|
+| **Your progress**<br>[<img src="images/wireframes/student-progress.png" alt="Your progress" width="220" />](images/wireframes/student-progress.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-4257) | **Points correction**<br>[<img src="images/wireframes/student-points-correction.png" alt="Points correction" width="220" />](images/wireframes/student-points-correction.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-3635) |
+
+</details>
+
+### 5.7. Profile and settings — R6
+
+Students view their account and update interests, notification preferences and privacy settings. The Profile attendance entry opens the relevant event stage.
+
+[<img src="images/wireframes/student-profile.png" alt="Student profile" width="250" />](images/wireframes/student-profile.png)
+
+**Student profile** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-4650)
+
+<details>
+<summary>Account and preferences</summary>
+
+| Screen | Screen |
+|---|---|
+| **Privacy and settings**<br>[<img src="images/wireframes/student-settings.png" alt="Privacy and settings" width="220" />](images/wireframes/student-settings.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-5002) |   |
+
+</details>
+
+### 5.8. Committee entry and access — R6
+
+Committee sign-in checks the account’s assigned role and society. The screens cover sign-in errors and unauthorised committee access.
+
 <img width="1936" height="1089" alt="COMMITTEE · Entry" src="https://github.com/user-attachments/assets/453d9c01-b26a-4c9c-bc9b-c4d30dc15b02" />
 
-Committee sign-in checks the account’s assigned role and society. The wireframes show both sign-in errors and unauthorised committee access.
+### 5.9. Committee dashboard — R1, R3, R6
 
-### Committee dashboard — R1, R3, R6
+The dashboard shows event and submission status, the next public event, and shortcuts to creating an event and managing check-in.
 
-Committee - dashboard
 <img width="920" height="1931" alt="COMMITTEE · Dashboard" src="https://github.com/user-attachments/assets/53a18d9b-592f-4d95-baae-ad7c783e1fee" />
 
-The dashboard summarises event and submission statuses, links to event creation and check-in, and shows the next public event. The Account button provides access to the committee profile.
+### 5.10. Event submissions — R1
 
-### Event submissions — R1
+Submissions groups drafts, pending reviews, decisions and approved events. Committee members can update returned submissions, withdraw a pending submission, and cancel an approved event. The flow shows progress, retry and confirmed outcomes.
 
-Committee event submissions
-<img width="2952" height="1862" alt="COMMITTEE · Submissions" src="https://github.com/user-attachments/assets/27eb2d00-39f8-48e9-84d8-c9816f1f05af" />
+[<img src="images/wireframes/committee-submissions.png" alt="Submissions" width="250" />](images/wireframes/committee-submissions.png)
 
-Committee members create drafts and submit events for review. In **Submissions**, they can see **Pending review**, **Changes requested**, or a final **Rejected** decision and its reason. They can edit and resubmit events marked **Changes requested**. Approved details are locked, but the event can be cancelled.
-
-### Committee Events — R1, R2, R3
-
-Committee - Events
-<img width="1428" height="1711" alt="COMMITTEE · Committee Events" src="https://github.com/user-attachments/assets/c42f9d64-c1c3-42a9-988b-c38518721569" />
-
-The Upcoming tab shows events and links to their booking lists. The Past tab links to attendance summaries. An empty state lets the committee create an event.
-
-### Check-in — R3, R4, R5
-
-Committee - check-in
-<img width="4476" height="1580" alt="COMMITTEE · Check-in" src="https://github.com/user-attachments/assets/7e67621e-a690-4107-9ffd-318be6f34ad2" />
-
-The committee displays a rotating event QR and its short-lived backup code. Check-in can be paused when offline; a stale code cannot be used. Ending check-in closes the session, while saved scans still need server verification.
-
-### Bookings and attendance — R2, R3, R4, R5
-
-Committee - bookings and attendance
-<img width="2444" height="1400" alt="COMMITTEE · Attendees" src="https://github.com/user-attachments/assets/8ec9d0c6-5f36-41e7-856a-3eae5653a0a9" />
-
-**Events > Upcoming** opens bookings. **Scan** opens the live QR and attendee list. **Events > Past** and the closed Scan flow lead to the attendance summary.
-
-The summary distinguishes verified and rejected claims from bookings awaiting sync. Show **No-show** only after the sync deadline when the server has received no claim.
-
-### Committee account — R6
-
-Committee - account and sign-out
-<img width="920" height="1062" alt="COMMITTEE · Account" src="https://github.com/user-attachments/assets/483af387-fca3-4742-97cb-cbfb77e126b2" />
-
-Committee members can view their verified club access and sign out with a confirmation step.
-
-## Proposed checkpoint wireframes
-
-The revised 412 px designs below contain **17 Student and 7 Committee states** for the proposed arrival-and-checkpoint flow. For longer events, these replace the earlier single-scan attendance outcomes shown above.
-
-The five-minute checkpoint window and next-day sync deadline are example settings from the [checkpoint proposal](attendance-security-and-sync.md#proposed-late-event-checkpoint). **Pending sync** describes a scan saved on the student's device; the committee uses **No claim yet** until the server receives it. Eligible attendance earns 3 points once after both required scans are verified, and a streak extends at most once per week.
-
-These are static design references. Controls labelled **Demo** illustrate server responses or time passing; tap interactions are not yet wired in Figma.
+**Submissions** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1040)
 
 <details>
-<summary>Student — Event details and My Events (2 screens)</summary>
+<summary>Create and submit an event</summary>
 
-| Screen | Description |
+| Screen | Screen |
 |---|---|
-| **Event details — two required scans**<br>[<img src="images/checkpoint/student-event-details.png" alt="Event details — two required scans" width="240" />](images/checkpoint/student-event-details.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-2) | Explains the arrival and checkpoint requirement before booking, including the sync deadline; the exact checkpoint time appears only when it opens. |
-| **My Events — arrival required**<br>[<img src="images/checkpoint/student-my-events-arrival-required.png" alt="My Events — arrival required" width="240" />](images/checkpoint/student-my-events-arrival-required.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-125) | The booked event opens the arrival scanner and explains that both QR scans can be saved offline, while manual codes require internet. |
+| **Create event**<br>[<img src="images/wireframes/committee-create-event.png" alt="Create event" width="220" />](images/wireframes/committee-create-event.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6529) | **Submitting**<br>[<img src="images/wireframes/committee-submitting.png" alt="Submitting" width="220" />](images/wireframes/committee-submitting.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1117) |
+| **Submission retry**<br>[<img src="images/wireframes/committee-submit-retry.png" alt="Submission retry" width="220" />](images/wireframes/committee-submit-retry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1170) | **Submission success**<br>[<img src="images/wireframes/committee-submit-success.png" alt="Submission success" width="220" />](images/wireframes/committee-submit-success.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1227) |
 
 </details>
 
 <details>
-<summary>Student — Arrival scan and result (3 screens)</summary>
+<summary>Review and withdrawal</summary>
 
-| Screen | Description |
+| Screen | Screen |
 |---|---|
-| **Scan arrival QR**<br>[<img src="images/checkpoint/student-arrival-scanner.png" alt="Scan arrival QR" width="240" />](images/checkpoint/student-arrival-scanner.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-326) | Captures the first scan and offers online manual entry, with separate examples for online verification and offline saving. |
-| **Arrival saved — Verified**<br>[<img src="images/checkpoint/student-arrival-verified.png" alt="Arrival saved — Verified" width="240" />](images/checkpoint/student-arrival-verified.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-2) | The server has verified arrival, but the student still needs the checkpoint before attendance earns credit. |
-| **Arrival saved — Pending sync**<br>[<img src="images/checkpoint/student-arrival-pending-sync.png" alt="Arrival saved — Pending sync" width="240" />](images/checkpoint/student-arrival-pending-sync.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-389) | The arrival QR is saved on the student's device for later upload, with no attendance credit yet. |
+| **Changes requested**<br>[<img src="images/wireframes/committee-changes-requested.png" alt="Changes requested" width="220" />](images/wireframes/committee-changes-requested.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6355) | **Pending review**<br>[<img src="images/wireframes/committee-pending-review.png" alt="Pending review" width="220" />](images/wireframes/committee-pending-review.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6434) |
+| **Confirm withdrawal**<br>[<img src="images/wireframes/committee-withdraw.png" alt="Confirm withdrawal" width="220" />](images/wireframes/committee-withdraw.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1276) | **Withdrawing**<br>[<img src="images/wireframes/committee-withdrawing.png" alt="Withdrawing" width="220" />](images/wireframes/committee-withdrawing.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1333) |
+| **Withdrawn**<br>[<img src="images/wireframes/committee-withdrawn.png" alt="Withdrawn" width="220" />](images/wireframes/committee-withdrawn.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1386) | **Withdrawal retry**<br>[<img src="images/wireframes/committee-withdraw-retry.png" alt="Withdrawal retry" width="220" />](images/wireframes/committee-withdraw-retry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1443) |
 
 </details>
 
 <details>
-<summary>Student — Waiting for the checkpoint (2 screens)</summary>
+<summary>Approved event cancellation</summary>
 
-| Screen | Description |
+| Screen | Screen |
 |---|---|
-| **My Events — arrival Verified**<br>[<img src="images/checkpoint/student-waiting-arrival-verified.png" alt="My Events — arrival Verified" width="240" />](images/checkpoint/student-waiting-arrival-verified.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-456) | Returning to My Events preserves the verified arrival while showing that the checkpoint has not opened. |
-| **My Events — arrival Pending sync**<br>[<img src="images/checkpoint/student-waiting-arrival-pending.png" alt="My Events — arrival Pending sync" width="240" />](images/checkpoint/student-waiting-arrival-pending.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-605) | Returning to My Events preserves the offline arrival status without revealing the checkpoint's exact time. |
+| **Approved event**<br>[<img src="images/wireframes/committee-event-approved.png" alt="Approved event" width="220" />](images/wireframes/committee-event-approved.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6231) | **Confirm event cancellation**<br>[<img src="images/wireframes/committee-cancel-confirm.png" alt="Confirm event cancellation" width="220" />](images/wireframes/committee-cancel-confirm.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6643) |
+| **Cancelling event**<br>[<img src="images/wireframes/committee-cancelling-event.png" alt="Cancelling event" width="220" />](images/wireframes/committee-cancelling-event.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=149-523) | **Cancellation confirmed**<br>[<img src="images/wireframes/committee-cancel-success.png" alt="Cancellation confirmed" width="220" />](images/wireframes/committee-cancel-success.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1500) |
+| **Cancellation retry**<br>[<img src="images/wireframes/committee-cancel-retry.png" alt="Cancellation retry" width="220" />](images/wireframes/committee-cancel-retry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1557) |   |
 
 </details>
 
-<details>
-<summary>Student — Checkpoint open and scanner (4 screens)</summary>
+### 5.11. Committee Events — R1, R2, R3
 
-| Screen | Description |
+Upcoming events link to bookings. Past events link to attendance summaries.
+
+[<img src="images/wireframes/committee-upcoming-events.png" alt="Upcoming events" width="250" />](images/wireframes/committee-upcoming-events.png)
+
+**Upcoming events** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6943)
+
+<details>
+<summary>Upcoming and past events</summary>
+
+| Screen | Screen |
 |---|---|
-| **Checkpoint open — arrival Verified**<br>[<img src="images/checkpoint/student-checkpoint-open-arrival-verified.png" alt="Checkpoint open — arrival Verified" width="240" />](images/checkpoint/student-checkpoint-open-arrival-verified.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-441) | Shows the announced window and countdown, with a route to scan the checkpoint QR. |
-| **Checkpoint open — arrival Pending sync**<br>[<img src="images/checkpoint/student-checkpoint-open-arrival-pending.png" alt="Checkpoint open — arrival Pending sync" width="240" />](images/checkpoint/student-checkpoint-open-arrival-pending.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-35) | A saved arrival awaiting sync does not block the student from scanning the open checkpoint. |
-| **Scan checkpoint QR — arrival Verified**<br>[<img src="images/checkpoint/student-checkpoint-scanner-arrival-verified.png" alt="Scan checkpoint QR — arrival Verified" width="240" />](images/checkpoint/student-checkpoint-scanner-arrival-verified.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-642) | Captures the checkpoint while preserving the verified arrival and showing the remaining scan window. |
-| **Scan checkpoint QR — arrival Pending sync**<br>[<img src="images/checkpoint/student-checkpoint-scanner-arrival-pending.png" alt="Scan checkpoint QR — arrival Pending sync" width="240" />](images/checkpoint/student-checkpoint-scanner-arrival-pending.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-185) | Captures the checkpoint while preserving the pending arrival; each scan keeps its own verification status. |
+| **Past events**<br>[<img src="images/wireframes/committee-past-events.png" alt="Past events" width="220" />](images/wireframes/committee-past-events.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6823) |   |
 
 </details>
 
-<details>
-<summary>Student — Manual code entry (2 screens)</summary>
+### 5.12. Check-in — R3, R4, R5
 
-| Screen | Description |
+The Committee displays the rotating arrival or checkpoint QR with the short-lived backup code. The checkpoint view shows the countdown and an explicit close confirmation. An offline Committee device pauses code refresh until reconnection. Students can still upload previously saved scans during the sync window.
+
+[<img src="images/checkpoint/committee-arrival-qr.png" alt="Active arrival QR" width="250" />](images/checkpoint/committee-arrival-qr.png)
+
+**Active arrival QR** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-925)
+
+<details>
+<summary>QR display and checkpoint closure</summary>
+
+| Screen | Screen |
 |---|---|
-| **Enter arrival code — online only**<br>[<img src="images/checkpoint/student-arrival-code.png" alt="Enter arrival code — online only" width="240" />](images/checkpoint/student-arrival-code.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-283) | The current six-digit arrival code replaces the camera scan and requires server verification; it cannot be queued offline. |
-| **Enter checkpoint code — online only**<br>[<img src="images/checkpoint/student-checkpoint-code.png" alt="Enter checkpoint code — online only" width="240" />](images/checkpoint/student-checkpoint-code.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-861) | The current checkpoint code needs internet; any saved arrival is uploaded first, and attendance credit requires both stages to pass server verification. |
+| **Checkpoint open**<br>[<img src="images/checkpoint/committee-checkpoint-qr.png" alt="Checkpoint open" width="220" />](images/checkpoint/committee-checkpoint-qr.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-1064) | **Offline — checkpoint QR paused**<br>[<img src="images/checkpoint/committee-checkpoint-offline.png" alt="Offline — checkpoint QR paused" width="220" />](images/checkpoint/committee-checkpoint-offline.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-1203) |
+| **Confirm checkpoint closure**<br>[<img src="images/wireframes/committee-close-checkpoint.png" alt="Confirm checkpoint closure" width="220" />](images/wireframes/committee-close-checkpoint.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1618) | **Checkpoint closed**<br>[<img src="images/wireframes/committee-checkpoint-closed.png" alt="Checkpoint closed" width="220" />](images/wireframes/committee-checkpoint-closed.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1665) |
 
 </details>
 
-<details>
-<summary>Student — Pending scans and final outcomes (4 screens)</summary>
+### 5.13. Bookings and attendance — R2, R3, R4, R5
 
-| Screen | Description |
+The Committee views bookings, live attendance, claims awaiting sync, and the final attendance summary. Missing uploads stay provisional through the sync window. Uploaded claims under review remain unresolved until a decision, and No-show applies only when no claim arrives by the deadline.
+
+[<img src="images/wireframes/committee-bookings-list.png" alt="Event bookings" width="250" />](images/wireframes/committee-bookings-list.png)
+
+**Event bookings** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-8117)
+
+<details>
+<summary>Attendance lists and summaries</summary>
+
+| Screen | Screen |
 |---|---|
-| **Checkpoint saved — Pending sync**<br>[<img src="images/checkpoint/student-checkpoint-pending-sync.png" alt="Checkpoint saved — Pending sync" width="240" />](images/checkpoint/student-checkpoint-pending-sync.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-705) | Arrival is verified, while the checkpoint QR waits on the device for upload and server verification. |
-| **Both QR scans saved — Pending sync**<br>[<img src="images/checkpoint/student-both-scans-pending-sync.png" alt="Both QR scans saved — Pending sync" width="240" />](images/checkpoint/student-both-scans-pending-sync.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-250) | Both scans are stored separately on the device and must reach the server before the sync deadline. |
-| **Attendance verified — +3 pts**<br>[<img src="images/checkpoint/student-attendance-verified.png" alt="Attendance verified — +3 pts" width="240" />](images/checkpoint/student-attendance-verified.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-757) | Both required scans are server verified for an eligible event, earning 3 points once and contributing to the weekly streak. |
-| **Incomplete attendance**<br>[<img src="images/checkpoint/student-incomplete-attendance.png" alt="Incomplete attendance" width="240" />](images/checkpoint/student-incomplete-attendance.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-809) | Arrival was verified but no checkpoint reached the server by the deadline, so the event earns no points or streak credit. |
+| **Live attendee list**<br>[<img src="images/checkpoint/committee-live-attendees.png" alt="Live attendee list" width="220" />](images/checkpoint/committee-live-attendees.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-1283) | **Awaiting sync**<br>[<img src="images/checkpoint/committee-awaiting-sync.png" alt="Awaiting sync" width="220" />](images/checkpoint/committee-awaiting-sync.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-347) |
+| **Attendance summary**<br>[<img src="images/checkpoint/committee-final-summary.png" alt="Attendance summary" width="220" />](images/checkpoint/committee-final-summary.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-1365) | **Final attendee list**<br>[<img src="images/checkpoint/committee-final-attendees.png" alt="Final attendee list" width="220" />](images/checkpoint/committee-final-attendees.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-1440) |
 
 </details>
 
-<details>
-<summary>Committee — Arrival QR, checkpoint and offline pause (3 screens)</summary>
+### 5.14. Committee account — R6
 
-| Screen | Description |
-|---|---|
-| **Active arrival QR — Open checkpoint**<br>[<img src="images/checkpoint/committee-arrival-qr.png" alt="Active arrival QR — Open checkpoint" width="240" />](images/checkpoint/committee-arrival-qr.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-925) | The committee displays the rotating arrival QR and backup code, then opens and announces one checkpoint in the event's final third. |
-| **Checkpoint open**<br>[<img src="images/checkpoint/committee-checkpoint-qr.png" alt="Checkpoint open" width="240" />](images/checkpoint/committee-checkpoint-qr.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-1064) | Displays the checkpoint QR, online backup code and countdown, with access to the live attendee list and Close checkpoint. |
-| **Offline — checkpoint QR paused**<br>[<img src="images/checkpoint/committee-checkpoint-offline.png" alt="Offline — checkpoint QR paused" width="240" />](images/checkpoint/committee-checkpoint-offline.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-1203) | Hides unusable codes while the committee is offline; students' previously captured QR scans remain available for later sync. |
+Committee members can view their verified club access and confirm sign-out.
 
-</details>
+[<img src="images/wireframes/committee-account.png" alt="Committee account" width="250" />](images/wireframes/committee-account.png)
+
+**Committee account** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-8212)
 
 <details>
-<summary>Committee — Live attendance, sync grace period and final results (4 screens)</summary>
+<summary>Committee account and sign-out</summary>
 
-| Screen | Description |
+| Screen | Screen |
 |---|---|
-| **Live attendee list**<br>[<img src="images/checkpoint/committee-live-attendees.png" alt="Live attendee list" width="240" />](images/checkpoint/committee-live-attendees.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-1283) | Separates arrival, checkpoint and overall status using server-received claims; No claim yet does not mean the student has no scan saved locally. |
-| **Awaiting sync — checkpoint closed**<br>[<img src="images/checkpoint/committee-awaiting-sync.png" alt="Awaiting sync — checkpoint closed" width="240" />](images/checkpoint/committee-awaiting-sync.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-347) | Keeps received scan results visible and allows uploads until the sync deadline, leaving missing claims unresolved. |
-| **Past attendance summary**<br>[<img src="images/checkpoint/committee-final-summary.png" alt="Past attendance summary" width="240" />](images/checkpoint/committee-final-summary.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-1365) | After the sync deadline, summarises Verified, Incomplete attendance, Rejected and No-show outcomes without awarding credit to incomplete or rejected attendance. |
-| **Final attendee list**<br>[<img src="images/checkpoint/committee-final-attendees.png" alt="Final attendee list" width="240" />](images/checkpoint/committee-final-attendees.png)<br>[Open in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-1440) | Shows each student's arrival, checkpoint and final outcome, retaining rejection reasons and distinguishing a missing checkpoint from no claim received. |
+| **Sign-out confirmation**<br>[<img src="images/wireframes/committee-sign-out.png" alt="Sign-out confirmation" width="220" />](images/wireframes/committee-sign-out.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-8267) |   |
 
 </details>
 
