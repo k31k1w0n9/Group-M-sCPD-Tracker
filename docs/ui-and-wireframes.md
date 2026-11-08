@@ -2,7 +2,7 @@
 
 The wireframes cover Student and Club Committee journeys. The s-CPD office reviews event submissions in the backend. [Open the Figma file](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=0-1).
 
-Main entry screens use the campus branding. Secondary screens use a compact app bar. The screenshots use sample events and accounts and document static interface states for implementation.
+Main landing screens use an expanded campus header that collapses into a compact dark-blue app bar on scroll. Secondary screens use the compact bar. Screenshots show sample accounts and static interface states. Canvas annotations are excluded from the phone exports.
 
 ### 5.1. Student entry and interests — R6
 
@@ -27,7 +27,19 @@ Students choose Student or Club Committee before signing in. The prototype uses 
 
 Home and Explore show featured and recommended events, search and filters. Empty and offline states explain what the student can do next.
 
-<img width="2952" height="2433" alt="STUDENT · Explore" src="https://github.com/user-attachments/assets/a851cde4-a013-4d5e-beda-ffb61c8c5ab6" />
+| Home | Explore |
+|---|---|
+| **Home**<br>[<img src="images/wireframes/student-home.png" alt="Home" width="220" />](images/wireframes/student-home.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-1045) | **Explore**<br>[<img src="images/wireframes/student-explore.png" alt="Explore" width="220" />](images/wireframes/student-explore.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-839) |
+
+<details>
+<summary>Loading, search and offline states</summary>
+
+| Screen | Screen |
+|---|---|
+| **Home loading**<br>[<img src="images/wireframes/student-home-loading.png" alt="Home loading" width="220" />](images/wireframes/student-home-loading.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-1292) | **Explore loading**<br>[<img src="images/wireframes/student-explore-loading.png" alt="Explore loading" width="220" />](images/wireframes/student-explore-loading.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-1228) |
+| **No search results**<br>[<img src="images/wireframes/student-search-empty.png" alt="No search results" width="220" />](images/wireframes/student-search-empty.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-692) | **Explore offline**<br>[<img src="images/wireframes/student-explore-offline.png" alt="Explore offline" width="220" />](images/wireframes/student-explore-offline.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-760) |
+
+</details>
 
 ### 5.3. Event details and booking — R2
 
@@ -173,7 +185,9 @@ Committee members begin at the [shared role picker](#51-student-entry-and-intere
 
 The dashboard shows event and submission status, the next public event, and shortcuts to creating an event and managing check-in.
 
-<img width="920" height="1931" alt="COMMITTEE · Dashboard" src="https://github.com/user-attachments/assets/53a18d9b-592f-4d95-baae-ad7c783e1fee" />
+| Dashboard | Loading |
+|---|---|
+| **Committee dashboard**<br>[<img src="images/wireframes/committee-dashboard.png" alt="Committee dashboard" width="220" />](images/wireframes/committee-dashboard.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-5994) | **Dashboard loading**<br>[<img src="images/wireframes/committee-dashboard-loading.png" alt="Dashboard loading" width="220" />](images/wireframes/committee-dashboard-loading.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-5936) |
 
 ### 5.10. Event submissions — R1
 
