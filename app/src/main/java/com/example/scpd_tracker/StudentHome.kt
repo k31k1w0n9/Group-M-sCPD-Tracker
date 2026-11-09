@@ -55,13 +55,13 @@ import com.example.scpd_tracker.ui.theme.ScpdTheme
 import kotlinx.coroutines.launch
 
 /** How an event poster is drawn. Every poster's text comes from the event itself, never hard-coded. */
-private sealed interface PosterArt {
+internal sealed interface PosterArt {
     data class Photo(@DrawableRes val image: Int) : PosterArt
     data object Teal : PosterArt
     data object Gold : PosterArt
 }
 
-private data class CampusEvent(
+internal data class CampusEvent(
     val id: String,
     val title: String,
     val club: String,
@@ -91,7 +91,7 @@ private data class CampusEvent(
 // shortcut: approved local sample events, replace this feed with the repository when the backend is connected.
 // The samples deliberately differ in title length, club, poster style and capacity so layouts are tested
 // against realistic data rather than three identical cards.
-private val HomeEvents = listOf(
+internal val HomeEvents = listOf(
     CampusEvent(
         id = "build-with-ai", title = "Build with AI", club = "Computer Science Society",
         date = "Wed 18 Nov 2026", time = "14:00–16:00", venue = "F1A02",
@@ -112,7 +112,7 @@ private val HomeEvents = listOf(
     ),
 )
 
-private enum class HomeTab(val label: String) { Home("Home"), Explore("Explore"), Profile("Profile") }
+private enum class HomeTab(val label: String) { Home("Home"), Explore("Explore"), MyEvents("My Events"), Profile("Profile") }
 
 @Composable
 internal fun StudentHome(
@@ -130,6 +130,7 @@ internal fun StudentHome(
     var selectedEventId by rememberSaveable { mutableStateOf<String?>(null) }
     // shortcut: bookings are kept in memory for the prototype; the booking repository replaces this.
     var bookedIds by rememberSaveable { mutableStateOf(listOf<String>()) }
+    var cancelledIds by rememberSaveable { mutableStateOf(listOf<String>()) }
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val focus = LocalFocusManager.current
@@ -149,7 +150,7 @@ internal fun StudentHome(
     }
     val keyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     BackHandler(selectedEvent != null) { selectedEventId = null }
-    BackHandler(selectedEvent == null && (browsing || tab == HomeTab.Profile || query.isNotEmpty()) && !keyboardVisible) {
+    BackHandler(selectedEvent == null && (browsing || tab == HomeTab.MyEvents || tab == HomeTab.Profile || query.isNotEmpty()) && !keyboardVisible) {
         query = ""
         tab = HomeTab.Home
         shortcut = "For you"
@@ -172,6 +173,10 @@ internal fun StudentHome(
         },
         onProfile = {
             tab = HomeTab.Profile
+            selectedEventId = null
+        },
+        onMyEvents = {
+            tab = HomeTab.MyEvents
             selectedEventId = null
         },
     )
@@ -204,6 +209,21 @@ internal fun StudentHome(
                             onBook = { bookedIds = bookedIds + selectedEvent.id },
                         )
                         tab == HomeTab.Profile -> ProfileScreen(interests, onEditInterests, onSignOut)
+                        tab == HomeTab.MyEvents -> MyEventsScreen(
+                            bookedEvents = HomeEvents.filter { it.id in bookedIds },
+                            cancelledEvents = HomeEvents.filter { it.id in cancelledIds },
+                            onCancelBooking = { id ->
+                                bookedIds = bookedIds - id
+                                cancelledIds = (cancelledIds + id).distinct()
+                            },
+                            onBrowse = {
+                                tab = HomeTab.Explore
+                                shortcut = "All interests"
+                            },
+                            onEditInterests = onEditInterests,
+                            onShowNotice = { message -> scope.launch { snackbar.showSnackbar(message) } },
+                            wide = wide,
+                        )
                         else -> {
                             LazyColumn(
                                 state = listState,
@@ -537,7 +557,7 @@ private fun tagIcon(tag: String): ImageVector = when (tag) {
 }
 
 @Composable
-private fun EventTags(tags: List<String>) {
+internal fun EventTags(tags: List<String>) {
     val colors = MaterialTheme.colorScheme
     Row(horizontalArrangement = Arrangement.spacedBy(ScpdTheme.spacing.space2)) {
         tags.forEachIndexed { index, tag ->
@@ -631,7 +651,7 @@ private val MaxPosterHeight = 240.dp
  * bar were decoration only and are removed.
  */
 @Composable
-private fun EventPoster(event: CampusEvent, featured: Boolean) {
+internal fun EventPoster(event: CampusEvent, featured: Boolean) {
     val spacing = ScpdTheme.spacing
     val colors = MaterialTheme.colorScheme
     val extra = ScpdTheme.colors
@@ -711,11 +731,11 @@ private fun EventPoster(event: CampusEvent, featured: Boolean) {
 
 private data class NavDestination(val label: String, val icon: ImageVector, val action: (() -> Unit)?)
 
-// My Events and Progress are not built yet, so they have no action and are shown disabled.
-private fun homeDestinations(onHome: () -> Unit, onExplore: () -> Unit, onProfile: () -> Unit) = listOf(
+// Progress is still planned. My Events now uses the same local booking state as Event details.
+private fun homeDestinations(onHome: () -> Unit, onExplore: () -> Unit, onProfile: () -> Unit, onMyEvents: () -> Unit) = listOf(
     NavDestination("Home", Icons.Rounded.Home, onHome),
     NavDestination("Explore", Icons.Rounded.Explore, onExplore),
-    NavDestination("My Events", Icons.Rounded.ConfirmationNumber, null),
+    NavDestination("My Events", Icons.Rounded.ConfirmationNumber, onMyEvents),
     NavDestination("Progress", Icons.Rounded.Insights, null),
     NavDestination("Profile", Icons.Rounded.AccountCircle, onProfile),
 )
