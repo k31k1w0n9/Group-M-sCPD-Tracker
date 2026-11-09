@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Only the colours the window needs before Compose draws. All UI colour lives in ui/theme/Color.kt. -->
+    <color name="scpd_background">#FFF3F4F5</color>
+    <color name="scpd_navy">#FF10263B</color>
+</resources>
