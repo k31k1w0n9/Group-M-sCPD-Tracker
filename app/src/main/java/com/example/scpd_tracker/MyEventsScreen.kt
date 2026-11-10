@@ -48,6 +48,7 @@ internal data class BookingAttendanceUi(
 
 private enum class BookingPage { List, Details, Sending, Failed, Cancelled, OrganiserCancelled }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MyEventsScreen(
     bookedEvents: List<CampusEvent>,
