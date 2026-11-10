@@ -213,8 +213,12 @@ internal fun StudentHome(
                             bookedEvents = HomeEvents.filter { it.id in bookedIds },
                             cancelledEvents = HomeEvents.filter { it.id in cancelledIds },
                             onCancelBooking = { id ->
-                                bookedIds = bookedIds - id
-                                cancelledIds = (cancelledIds + id).distinct()
+                                val exists = id in bookedIds
+                                if (exists) {
+                                    bookedIds = bookedIds - id
+                                    cancelledIds = (cancelledIds + id).distinct()
+                                }
+                                exists
                             },
                             onBrowse = {
                                 tab = HomeTab.Explore
