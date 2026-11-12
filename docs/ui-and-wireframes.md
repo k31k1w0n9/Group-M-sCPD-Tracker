@@ -237,14 +237,14 @@ Upcoming events link to bookings. Past events link to attendance summaries.
 
 [<img src="images/wireframes/committee-upcoming-events.png" alt="Upcoming events" width="250" />](images/wireframes/committee-upcoming-events.png)
 
-**Upcoming events** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6943)
+**Upcoming events** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-11601)
 
 <details>
 <summary>Upcoming and past events</summary>
 
 | Screen | Screen |
 |---|---|
-| **Past events**<br>[<img src="images/wireframes/committee-past-events.png" alt="Past events" width="220" />](images/wireframes/committee-past-events.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6823) |   |
+| **Past events**<br>[<img src="images/wireframes/committee-past-events.png" alt="Past events" width="220" />](images/wireframes/committee-past-events.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-11481) |   |
 
 </details>
 
