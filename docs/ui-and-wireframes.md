@@ -1,6 +1,6 @@
 # 5. UI design and wireframes
 
-The wireframes cover Student and Club Committee journeys. The s-CPD office reviews event submissions in the backend. [Open the Figma file](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=0-1).
+The wireframes cover Student and Club Committee journeys. The s-CPD office reviews event submissions in the backend. [Open Refined v2 in Figma](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=313-2).
 
 Main landing screens use an expanded campus header that collapses into a compact dark-blue app bar on scroll. Secondary screens use the compact bar. Screenshots show sample accounts and static interface states. Canvas annotations are excluded from the phone exports.
 
@@ -10,16 +10,16 @@ Students choose Student or Club Committee before signing in. The prototype uses 
 
 [<img src="images/wireframes/student-role-selection.png" alt="Choose a role" width="250" />](images/wireframes/student-role-selection.png)
 
-**Choose a role** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-101)
+**Choose a role** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-1959)
 
 <details>
 <summary>Sign-in and account recovery</summary>
 
 | Screen | Screen |
 |---|---|
-| **Student sign-in**<br>[<img src="images/wireframes/student-sign-in.png" alt="Student sign-in" width="220" />](images/wireframes/student-sign-in.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-193) | **Sign-in error**<br>[<img src="images/wireframes/student-sign-in-error.png" alt="Sign-in error" width="220" />](images/wireframes/student-sign-in-error.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-269) |
-| **Password recovery**<br>[<img src="images/wireframes/student-password-recovery.png" alt="Password recovery" width="220" />](images/wireframes/student-password-recovery.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-711) | **Sign-in network error**<br>[<img src="images/wireframes/student-network-recovery.png" alt="Sign-in network error" width="220" />](images/wireframes/student-network-recovery.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-768) |
-| **Choose interests**<br>[<img src="images/wireframes/student-interests.png" alt="Choose interests" width="220" />](images/wireframes/student-interests.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-350) |   |
+| **Student sign-in**<br>[<img src="images/wireframes/student-sign-in.png" alt="Student sign-in" width="220" />](images/wireframes/student-sign-in.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-2051) | **Sign-in error**<br>[<img src="images/wireframes/student-sign-in-error.png" alt="Sign-in error" width="220" />](images/wireframes/student-sign-in-error.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-2127) |
+| **Password recovery**<br>[<img src="images/wireframes/student-password-recovery.png" alt="Password recovery" width="220" />](images/wireframes/student-password-recovery.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-8505) | **Sign-in network error**<br>[<img src="images/wireframes/student-network-recovery.png" alt="Sign-in network error" width="220" />](images/wireframes/student-network-recovery.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-8563) |
+| **Choose interests**<br>[<img src="images/wireframes/student-interests.png" alt="Choose interests" width="220" />](images/wireframes/student-interests.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-2208) |   |
 
 </details>
 
@@ -29,15 +29,15 @@ Home and Explore show featured and recommended events, search and filters. Empty
 
 | Home | Explore |
 |---|---|
-| **Home**<br>[<img src="images/wireframes/student-home.png" alt="Home" width="220" />](images/wireframes/student-home.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-1045) | **Explore**<br>[<img src="images/wireframes/student-explore.png" alt="Explore" width="220" />](images/wireframes/student-explore.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-839) |
+| **Home**<br>[<img src="images/wireframes/student-home.png" alt="Home" width="220" />](images/wireframes/student-home.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-2998) | **Explore**<br>[<img src="images/wireframes/student-explore.png" alt="Explore" width="220" />](images/wireframes/student-explore.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-2792) |
 
 <details>
 <summary>Loading, search and offline states</summary>
 
 | Screen | Screen |
 |---|---|
-| **Home loading**<br>[<img src="images/wireframes/student-home-loading.png" alt="Home loading" width="220" />](images/wireframes/student-home-loading.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-1292) | **Explore loading**<br>[<img src="images/wireframes/student-explore-loading.png" alt="Explore loading" width="220" />](images/wireframes/student-explore-loading.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-1228) |
-| **No search results**<br>[<img src="images/wireframes/student-search-empty.png" alt="No search results" width="220" />](images/wireframes/student-search-empty.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-692) | **Explore offline**<br>[<img src="images/wireframes/student-explore-offline.png" alt="Explore offline" width="220" />](images/wireframes/student-explore-offline.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-760) |
+| **Home loading**<br>[<img src="images/wireframes/student-home-loading.png" alt="Home loading" width="220" />](images/wireframes/student-home-loading.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-3245) | **Explore loading**<br>[<img src="images/wireframes/student-explore-loading.png" alt="Explore loading" width="220" />](images/wireframes/student-explore-loading.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-3181) |
+| **No search results**<br>[<img src="images/wireframes/student-search-empty.png" alt="No search results" width="220" />](images/wireframes/student-search-empty.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-2645) | **Explore offline**<br>[<img src="images/wireframes/student-explore-offline.png" alt="Explore offline" width="220" />](images/wireframes/student-explore-offline.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-2713) |
 
 </details>
 
@@ -47,16 +47,16 @@ Event details show availability and the attendance requirements before booking. 
 
 [<img src="images/checkpoint/student-event-details.png" alt="Event details and attendance requirements" width="250" />](images/checkpoint/student-event-details.png)
 
-**Event details and attendance requirements** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-2)
+**Event details and attendance requirements** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-6491)
 
 <details>
 <summary>Booking and availability</summary>
 
 | Screen | Screen |
 |---|---|
-| **Event full**<br>[<img src="images/wireframes/student-event-full.png" alt="Event full" width="220" />](images/wireframes/student-event-full.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-1460) | **Schedule clash**<br>[<img src="images/wireframes/student-schedule-clash.png" alt="Schedule clash" width="220" />](images/wireframes/student-schedule-clash.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-1568) |
-| **Review booking**<br>[<img src="images/wireframes/student-booking-review.png" alt="Review booking" width="220" />](images/wireframes/student-booking-review.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-1398) | **Booking in progress**<br>[<img src="images/wireframes/student-booking-in-progress.png" alt="Booking in progress" width="220" />](images/wireframes/student-booking-in-progress.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-478) |
-| **Booking failed**<br>[<img src="images/wireframes/student-booking-failed.png" alt="Booking failed" width="220" />](images/wireframes/student-booking-failed.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-536) | **Booking confirmed**<br>[<img src="images/wireframes/student-booking-confirmed.png" alt="Booking confirmed" width="220" />](images/wireframes/student-booking-confirmed.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-2052) |
+| **Event full**<br>[<img src="images/wireframes/student-event-full.png" alt="Event full" width="220" />](images/wireframes/student-event-full.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=327-173) | **Schedule clash**<br>[<img src="images/wireframes/student-schedule-clash.png" alt="Schedule clash" width="220" />](images/wireframes/student-schedule-clash.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=327-281) |
+| **Review booking**<br>[<img src="images/wireframes/student-booking-review.png" alt="Review booking" width="220" />](images/wireframes/student-booking-review.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-3351) | **Booking in progress**<br>[<img src="images/wireframes/student-booking-in-progress.png" alt="Booking in progress" width="220" />](images/wireframes/student-booking-in-progress.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-8260) |
+| **Booking failed**<br>[<img src="images/wireframes/student-booking-failed.png" alt="Booking failed" width="220" />](images/wireframes/student-booking-failed.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-8318) | **Booking confirmed**<br>[<img src="images/wireframes/student-booking-confirmed.png" alt="Booking confirmed" width="220" />](images/wireframes/student-booking-confirmed.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-3877) |
 
 </details>
 
@@ -66,15 +66,15 @@ Students view their bookings and see whether arrival or checkpoint scanning is a
 
 [<img src="images/checkpoint/student-my-events-arrival-required.png" alt="My Events — arrival required" width="250" />](images/checkpoint/student-my-events-arrival-required.png)
 
-**My Events — arrival required** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-125)
+**My Events — arrival required** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-6634)
 
 <details>
 <summary>Upcoming events and checkpoint access</summary>
 
 | Screen | Screen |
 |---|---|
-| **Waiting for checkpoint — arrival verified**<br>[<img src="images/checkpoint/student-waiting-arrival-verified.png" alt="Waiting for checkpoint — arrival verified" width="220" />](images/checkpoint/student-waiting-arrival-verified.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-456) | **Waiting for checkpoint — arrival pending sync**<br>[<img src="images/checkpoint/student-waiting-arrival-pending.png" alt="Waiting for checkpoint — arrival pending sync" width="220" />](images/checkpoint/student-waiting-arrival-pending.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-605) |
-| **Checkpoint open — arrival verified**<br>[<img src="images/checkpoint/student-checkpoint-open-arrival-verified.png" alt="Checkpoint open — arrival verified" width="220" />](images/checkpoint/student-checkpoint-open-arrival-verified.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-441) | **Checkpoint open — arrival pending sync**<br>[<img src="images/checkpoint/student-checkpoint-open-arrival-pending.png" alt="Checkpoint open — arrival pending sync" width="220" />](images/checkpoint/student-checkpoint-open-arrival-pending.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-35) |
+| **Waiting for checkpoint — arrival verified**<br>[<img src="images/checkpoint/student-waiting-arrival-verified.png" alt="Waiting for checkpoint — arrival verified" width="220" />](images/checkpoint/student-waiting-arrival-verified.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-7649) | **Waiting for checkpoint — arrival pending sync**<br>[<img src="images/checkpoint/student-waiting-arrival-pending.png" alt="Waiting for checkpoint — arrival pending sync" width="220" />](images/checkpoint/student-waiting-arrival-pending.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-7794) |
+| **Checkpoint open — arrival verified**<br>[<img src="images/checkpoint/student-checkpoint-open-arrival-verified.png" alt="Checkpoint open — arrival verified" width="220" />](images/checkpoint/student-checkpoint-open-arrival-verified.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-6884) | **Checkpoint open — arrival pending sync**<br>[<img src="images/checkpoint/student-checkpoint-open-arrival-pending.png" alt="Checkpoint open — arrival pending sync" width="220" />](images/checkpoint/student-checkpoint-open-arrival-pending.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-7334) |
 
 </details>
 
@@ -83,9 +83,9 @@ Students view their bookings and see whether arrival or checkpoint scanning is a
 
 | Screen | Screen |
 |---|---|
-| **Confirm booking cancellation**<br>[<img src="images/wireframes/student-cancel-booking-confirm.png" alt="Confirm booking cancellation" width="220" />](images/wireframes/student-cancel-booking-confirm.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-2429) | **Cancellation in progress**<br>[<img src="images/wireframes/student-cancellation-in-progress.png" alt="Cancellation in progress" width="220" />](images/wireframes/student-cancellation-in-progress.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-825) |
-| **Cancellation failed**<br>[<img src="images/wireframes/student-cancel-failed.png" alt="Cancellation failed" width="220" />](images/wireframes/student-cancel-failed.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-595) | **Booking cancelled**<br>[<img src="images/wireframes/student-booking-cancelled.png" alt="Booking cancelled" width="220" />](images/wireframes/student-booking-cancelled.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-2364) |
-| **Event cancelled by organiser**<br>[<img src="images/wireframes/student-event-cancelled.png" alt="Event cancelled by organiser" width="220" />](images/wireframes/student-event-cancelled.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-882) |   |
+| **Confirm booking cancellation**<br>[<img src="images/wireframes/student-cancel-booking-confirm.png" alt="Confirm booking cancellation" width="220" />](images/wireframes/student-cancel-booking-confirm.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=327-395) | **Cancellation in progress**<br>[<img src="images/wireframes/student-cancellation-in-progress.png" alt="Cancellation in progress" width="220" />](images/wireframes/student-cancellation-in-progress.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-8621) |
+| **Cancellation failed**<br>[<img src="images/wireframes/student-cancel-failed.png" alt="Cancellation failed" width="220" />](images/wireframes/student-cancel-failed.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-8377) | **Booking cancelled**<br>[<img src="images/wireframes/student-booking-cancelled.png" alt="Booking cancelled" width="220" />](images/wireframes/student-booking-cancelled.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-4111) |
+| **Event cancelled by organiser**<br>[<img src="images/wireframes/student-event-cancelled.png" alt="Event cancelled by organiser" width="220" />](images/wireframes/student-event-cancelled.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-8678) |   |
 
 </details>
 
@@ -95,15 +95,15 @@ Events with a checkpoint require an arrival scan and a later checkpoint scan. St
 
 [<img src="images/checkpoint/student-arrival-scanner.png" alt="Scan arrival QR" width="250" />](images/checkpoint/student-arrival-scanner.png)
 
-**Scan arrival QR** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-326)
+**Scan arrival QR** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-6782)
 
 <details>
 <summary>Arrival and checkpoint scanning</summary>
 
 | Screen | Screen |
 |---|---|
-| **Arrival saved — verified**<br>[<img src="images/checkpoint/student-arrival-verified.png" alt="Arrival saved — verified" width="220" />](images/checkpoint/student-arrival-verified.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-2) | **Arrival saved — pending sync**<br>[<img src="images/checkpoint/student-arrival-pending-sync.png" alt="Arrival saved — pending sync" width="220" />](images/checkpoint/student-arrival-pending-sync.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-389) |
-| **Scan checkpoint QR**<br>[<img src="images/checkpoint/student-checkpoint-scanner-arrival-verified.png" alt="Scan checkpoint QR" width="220" />](images/checkpoint/student-checkpoint-scanner-arrival-verified.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-642) | **Scan checkpoint — arrival pending sync**<br>[<img src="images/checkpoint/student-checkpoint-scanner-arrival-pending.png" alt="Scan checkpoint — arrival pending sync" width="220" />](images/checkpoint/student-checkpoint-scanner-arrival-pending.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-185) |
+| **Arrival saved — verified**<br>[<img src="images/checkpoint/student-arrival-verified.png" alt="Arrival saved — verified" width="220" />](images/checkpoint/student-arrival-verified.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-7295) | **Arrival saved — pending sync**<br>[<img src="images/checkpoint/student-arrival-pending-sync.png" alt="Arrival saved — pending sync" width="220" />](images/checkpoint/student-arrival-pending-sync.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-6844) |
+| **Scan checkpoint QR**<br>[<img src="images/checkpoint/student-checkpoint-scanner-arrival-verified.png" alt="Scan checkpoint QR" width="220" />](images/checkpoint/student-checkpoint-scanner-arrival-verified.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-7033) | **Scan checkpoint — arrival pending sync**<br>[<img src="images/checkpoint/student-checkpoint-scanner-arrival-pending.png" alt="Scan checkpoint — arrival pending sync" width="220" />](images/checkpoint/student-checkpoint-scanner-arrival-pending.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-7484) |
 
 </details>
 
@@ -112,8 +112,8 @@ Events with a checkpoint require an arrival scan and a later checkpoint scan. St
 
 | Screen | Screen |
 |---|---|
-| **Camera permission required**<br>[<img src="images/wireframes/student-camera-required.png" alt="Camera permission required" width="220" />](images/wireframes/student-camera-required.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-3) | **Camera permission denied**<br>[<img src="images/wireframes/student-camera-denied.png" alt="Camera permission denied" width="220" />](images/wireframes/student-camera-denied.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-56) |
-| **QR unreadable**<br>[<img src="images/wireframes/student-qr-unreadable.png" alt="QR unreadable" width="220" />](images/wireframes/student-qr-unreadable.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-109) | **QR expired**<br>[<img src="images/wireframes/student-qr-expired.png" alt="QR expired" width="220" />](images/wireframes/student-qr-expired.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-169) |
+| **Camera permission required**<br>[<img src="images/wireframes/student-camera-required.png" alt="Camera permission required" width="220" />](images/wireframes/student-camera-required.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-7939) | **Camera permission denied**<br>[<img src="images/wireframes/student-camera-denied.png" alt="Camera permission denied" width="220" />](images/wireframes/student-camera-denied.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-7992) |
+| **QR unreadable**<br>[<img src="images/wireframes/student-qr-unreadable.png" alt="QR unreadable" width="220" />](images/wireframes/student-qr-unreadable.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-8045) | **QR expired**<br>[<img src="images/wireframes/student-qr-expired.png" alt="QR expired" width="220" />](images/wireframes/student-qr-expired.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-8105) |
 
 </details>
 
@@ -122,9 +122,9 @@ Events with a checkpoint require an arrival scan and a later checkpoint scan. St
 
 | Screen | Screen |
 |---|---|
-| **Enter arrival code online**<br>[<img src="images/checkpoint/student-arrival-code.png" alt="Enter arrival code online" width="220" />](images/checkpoint/student-arrival-code.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-283) | **Enter checkpoint code online**<br>[<img src="images/wireframes/student-checkpoint-code-entry.png" alt="Enter checkpoint code online" width="220" />](images/wireframes/student-checkpoint-code-entry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=149-63) |
-| **Arrival code — connection lost**<br>[<img src="images/wireframes/student-arrival-code-connection-lost.png" alt="Arrival code — connection lost" width="220" />](images/wireframes/student-arrival-code-connection-lost.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=149-126) | **Checkpoint code — connection lost**<br>[<img src="images/checkpoint/student-checkpoint-code.png" alt="Checkpoint code — connection lost" width="220" />](images/checkpoint/student-checkpoint-code.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-861) |
-| **Checkpoint code — offline**<br>[<img src="images/wireframes/student-checkpoint-code-offline.png" alt="Checkpoint code — offline" width="220" />](images/wireframes/student-checkpoint-code-offline.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=149-189) |   |
+| **Enter arrival code online**<br>[<img src="images/checkpoint/student-arrival-code.png" alt="Enter arrival code online" width="220" />](images/checkpoint/student-arrival-code.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-7585) | **Enter checkpoint code online**<br>[<img src="images/wireframes/student-checkpoint-code-entry.png" alt="Enter checkpoint code online" width="220" />](images/wireframes/student-checkpoint-code-entry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-8737) |
+| **Arrival code — connection lost**<br>[<img src="images/wireframes/student-arrival-code-connection-lost.png" alt="Arrival code — connection lost" width="220" />](images/wireframes/student-arrival-code-connection-lost.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-8800) | **Checkpoint code — connection lost**<br>[<img src="images/checkpoint/student-checkpoint-code.png" alt="Checkpoint code — connection lost" width="220" />](images/checkpoint/student-checkpoint-code.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-7230) |
+| **Checkpoint code — offline**<br>[<img src="images/wireframes/student-checkpoint-code-offline.png" alt="Checkpoint code — offline" width="220" />](images/wireframes/student-checkpoint-code-offline.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-8863) |   |
 
 </details>
 
@@ -133,9 +133,9 @@ Events with a checkpoint require an arrival scan and a later checkpoint scan. St
 
 | Screen | Screen |
 |---|---|
-| **Checkpoint saved — pending sync**<br>[<img src="images/checkpoint/student-checkpoint-pending-sync.png" alt="Checkpoint saved — pending sync" width="220" />](images/checkpoint/student-checkpoint-pending-sync.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-705) | **Both scans saved — pending sync**<br>[<img src="images/checkpoint/student-both-scans-pending-sync.png" alt="Both scans saved — pending sync" width="220" />](images/checkpoint/student-both-scans-pending-sync.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-250) |
-| **Sync in progress**<br>[<img src="images/wireframes/student-sync-in-progress.png" alt="Sync in progress" width="220" />](images/wireframes/student-sync-in-progress.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-263) | **Uploaded — under review**<br>[<img src="images/wireframes/student-under-review.png" alt="Uploaded — under review" width="220" />](images/wireframes/student-under-review.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-293) |
-| **Retry failed sync**<br>[<img src="images/wireframes/student-sync-retry.png" alt="Retry failed sync" width="220" />](images/wireframes/student-sync-retry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-325) | **Incomplete attendance**<br>[<img src="images/checkpoint/student-incomplete-attendance.png" alt="Incomplete attendance" width="220" />](images/checkpoint/student-incomplete-attendance.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-809) |
+| **Checkpoint saved — pending sync**<br>[<img src="images/checkpoint/student-checkpoint-pending-sync.png" alt="Checkpoint saved — pending sync" width="220" />](images/checkpoint/student-checkpoint-pending-sync.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-7095) | **Both scans saved — pending sync**<br>[<img src="images/checkpoint/student-both-scans-pending-sync.png" alt="Both scans saved — pending sync" width="220" />](images/checkpoint/student-both-scans-pending-sync.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-7546) |
+| **Sync in progress**<br>[<img src="images/wireframes/student-sync-in-progress.png" alt="Sync in progress" width="220" />](images/wireframes/student-sync-in-progress.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-8165) | **Uploaded — under review**<br>[<img src="images/wireframes/student-under-review.png" alt="Uploaded — under review" width="220" />](images/wireframes/student-under-review.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-8195) |
+| **Retry failed sync**<br>[<img src="images/wireframes/student-sync-retry.png" alt="Retry failed sync" width="220" />](images/wireframes/student-sync-retry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-8227) | **Incomplete attendance**<br>[<img src="images/checkpoint/student-incomplete-attendance.png" alt="Incomplete attendance" width="220" />](images/checkpoint/student-incomplete-attendance.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-7194) |
 
 </details>
 
@@ -145,31 +145,33 @@ Verified attendance at an eligible event earns 3 points once. Verification requi
 
 [<img src="images/checkpoint/student-attendance-verified.png" alt="Attendance verified — +3 pts" width="250" />](images/checkpoint/student-attendance-verified.png)
 
-**Attendance verified — +3 pts** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-757)
+**Attendance verified — +3 pts** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-7133)
 
 <details>
 <summary>Progress and verified attendance</summary>
 
 | Screen | Screen |
 |---|---|
-| **Your progress**<br>[<img src="images/wireframes/student-progress.png" alt="Your progress" width="220" />](images/wireframes/student-progress.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-4257) | **Points correction**<br>[<img src="images/wireframes/student-points-correction.png" alt="Points correction" width="220" />](images/wireframes/student-points-correction.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-3635) |
+| **Your progress**<br>[<img src="images/wireframes/student-progress.png" alt="Your progress" width="220" />](images/wireframes/student-progress.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-5044) | **Points correction**<br>[<img src="images/wireframes/student-points-correction.png" alt="Points correction" width="220" />](images/wireframes/student-points-correction.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-4526) |
 
 </details>
 
 ### 5.7. Profile and settings — R6
 
-Students view their account and update interests, notification preferences and privacy settings. The Profile attendance entry opens the relevant event stage.
+Profile shows verified points, account verification and the weekly streak, with a link to attendance history. When the checkpoint opens, the live event card shows the arrival status and closing time and offers **Scan checkpoint**. Students can also open Privacy & settings, Notifications, Interests and Account from Profile.
 
 [<img src="images/wireframes/student-profile.png" alt="Student profile" width="250" />](images/wireframes/student-profile.png)
 
-**Student profile** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-4650)
+**Student profile** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-5541)
 
 <details>
 <summary>Account and preferences</summary>
 
 | Screen | Screen |
 |---|---|
-| **Privacy and settings**<br>[<img src="images/wireframes/student-settings.png" alt="Privacy and settings" width="220" />](images/wireframes/student-settings.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-5002) |   |
+| **Privacy and settings**<br>[<img src="images/wireframes/student-settings.png" alt="Privacy and settings" width="220" />](images/wireframes/student-settings.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-5893) | **Notification preferences**<br>[<img src="images/wireframes/student-notifications.png" alt="Notification preferences" width="220" />](images/wireframes/student-notifications.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-5705) |
+| **Edit interests**<br>[<img src="images/wireframes/student-edit-interests.png" alt="Edit interests" width="220" />](images/wireframes/student-edit-interests.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-5964) | **Account details**<br>[<img src="images/wireframes/student-account.png" alt="Account details" width="220" />](images/wireframes/student-account.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-6340) |
+| **Account sign-out confirmation**<br>[<img src="images/wireframes/student-account-sign-out.png" alt="Account sign-out confirmation" width="220" />](images/wireframes/student-account-sign-out.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=327-883) | **Settings sign-out confirmation**<br>[<img src="images/wireframes/student-settings-sign-out.png" alt="Settings sign-out confirmation" width="220" />](images/wireframes/student-settings-sign-out.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=327-1127) |
 
 </details>
 
@@ -179,7 +181,7 @@ Committee members begin at the [shared role picker](#51-student-entry-and-intere
 
 | Committee sign-in | Sign-in error | Access not authorised |
 |---|---|---|
-| [<img src="images/wireframes/committee-sign-in.png" alt="Committee sign-in" width="190" />](images/wireframes/committee-sign-in.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-5695) | [<img src="images/wireframes/committee-sign-in-error.png" alt="Committee sign-in error" width="190" />](images/wireframes/committee-sign-in-error.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-5771) | [<img src="images/wireframes/committee-access-not-authorised.png" alt="Committee access not authorised" width="190" />](images/wireframes/committee-access-not-authorised.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-5852) |
+| [<img src="images/wireframes/committee-sign-in.png" alt="Committee sign-in" width="190" />](images/wireframes/committee-sign-in.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-10269) | [<img src="images/wireframes/committee-sign-in-error.png" alt="Committee sign-in error" width="190" />](images/wireframes/committee-sign-in-error.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-10344) | [<img src="images/wireframes/committee-access-not-authorised.png" alt="Committee access not authorised" width="190" />](images/wireframes/committee-access-not-authorised.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-10424) |
 
 ### 5.9. Committee dashboard — R1, R3, R6
 
@@ -187,7 +189,7 @@ The dashboard shows event and submission status, the next public event, and shor
 
 | Dashboard | Loading |
 |---|---|
-| **Committee dashboard**<br>[<img src="images/wireframes/committee-dashboard.png" alt="Committee dashboard" width="220" />](images/wireframes/committee-dashboard.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-5994) | **Dashboard loading**<br>[<img src="images/wireframes/committee-dashboard-loading.png" alt="Dashboard loading" width="220" />](images/wireframes/committee-dashboard-loading.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-5936) |
+| **Committee dashboard**<br>[<img src="images/wireframes/committee-dashboard.png" alt="Committee dashboard" width="220" />](images/wireframes/committee-dashboard.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-10657) | **Dashboard loading**<br>[<img src="images/wireframes/committee-dashboard-loading.png" alt="Dashboard loading" width="220" />](images/wireframes/committee-dashboard-loading.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-10599) |
 
 ### 5.10. Event submissions — R1
 
@@ -195,15 +197,15 @@ Submissions groups drafts, pending reviews, decisions and approved events. Withd
 
 [<img src="images/wireframes/committee-submissions.png" alt="Submissions" width="250" />](images/wireframes/committee-submissions.png)
 
-**Submissions** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1040)
+**Submissions** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-13344)
 
 <details>
 <summary>Create and submit an event</summary>
 
 | Screen | Screen |
 |---|---|
-| **Create event**<br>[<img src="images/wireframes/committee-create-event.png" alt="Create event" width="220" />](images/wireframes/committee-create-event.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6529) | **Submitting**<br>[<img src="images/wireframes/committee-submitting.png" alt="Submitting" width="220" />](images/wireframes/committee-submitting.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1117) |
-| **Submission retry**<br>[<img src="images/wireframes/committee-submit-retry.png" alt="Submission retry" width="220" />](images/wireframes/committee-submit-retry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1170) | **Submission success**<br>[<img src="images/wireframes/committee-submit-success.png" alt="Submission success" width="220" />](images/wireframes/committee-submit-success.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1227) |
+| **Create event**<br>[<img src="images/wireframes/committee-create-event.png" alt="Create event" width="220" />](images/wireframes/committee-create-event.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-11125) | **Submitting**<br>[<img src="images/wireframes/committee-submitting.png" alt="Submitting" width="220" />](images/wireframes/committee-submitting.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-13421) |
+| **Submission retry**<br>[<img src="images/wireframes/committee-submit-retry.png" alt="Submission retry" width="220" />](images/wireframes/committee-submit-retry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-13473) | **Submission success**<br>[<img src="images/wireframes/committee-submit-success.png" alt="Submission success" width="220" />](images/wireframes/committee-submit-success.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-13529) |
 
 </details>
 
@@ -212,11 +214,11 @@ Submissions groups drafts, pending reviews, decisions and approved events. Withd
 
 | Screen | Screen |
 |---|---|
-| **Changes requested**<br>[<img src="images/wireframes/committee-changes-requested.png" alt="Changes requested" width="220" />](images/wireframes/committee-changes-requested.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6355) | **Pending review**<br>[<img src="images/wireframes/committee-pending-review.png" alt="Pending review" width="220" />](images/wireframes/committee-pending-review.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6434) |
-| **Confirm withdrawal**<br>[<img src="images/wireframes/committee-withdraw.png" alt="Confirm withdrawal" width="220" />](images/wireframes/committee-withdraw.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1276) | **Withdrawing**<br>[<img src="images/wireframes/committee-withdrawing.png" alt="Withdrawing" width="220" />](images/wireframes/committee-withdrawing.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1333) |
-| **Returned to draft**<br>[<img src="images/wireframes/committee-withdrawn.png" alt="Returned to draft" width="220" />](images/wireframes/committee-withdrawn.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1386) | **Withdrawal retry**<br>[<img src="images/wireframes/committee-withdraw-retry.png" alt="Withdrawal retry" width="220" />](images/wireframes/committee-withdraw-retry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1443) |
+| **Changes requested**<br>[<img src="images/wireframes/committee-changes-requested.png" alt="Changes requested" width="220" />](images/wireframes/committee-changes-requested.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-10953) | **Pending review**<br>[<img src="images/wireframes/committee-pending-review.png" alt="Pending review" width="220" />](images/wireframes/committee-pending-review.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-11031) |
+| **Confirm withdrawal**<br>[<img src="images/wireframes/committee-withdraw.png" alt="Confirm withdrawal" width="220" />](images/wireframes/committee-withdraw.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-13577) | **Withdrawing**<br>[<img src="images/wireframes/committee-withdrawing.png" alt="Withdrawing" width="220" />](images/wireframes/committee-withdrawing.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-13633) |
+| **Returned to draft**<br>[<img src="images/wireframes/committee-withdrawn.png" alt="Returned to draft" width="220" />](images/wireframes/committee-withdrawn.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-13685) | **Withdrawal retry**<br>[<img src="images/wireframes/committee-withdraw-retry.png" alt="Withdrawal retry" width="220" />](images/wireframes/committee-withdraw-retry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-13741) |
 
-| **Rejected submission**<br>[<img src="images/wireframes/committee-rejected-decision.png" alt="Final rejection with the reason shown" width="220" />](images/wireframes/committee-rejected-decision.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=174-96) |  |
+| **Rejected submission**<br>[<img src="images/wireframes/committee-rejected-decision.png" alt="Final rejection with the reason shown" width="220" />](images/wireframes/committee-rejected-decision.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-14089) |  |
 
 </details>
 
@@ -225,9 +227,9 @@ Submissions groups drafts, pending reviews, decisions and approved events. Withd
 
 | Screen | Screen |
 |---|---|
-| **Approved event**<br>[<img src="images/wireframes/committee-event-approved.png" alt="Approved event" width="220" />](images/wireframes/committee-event-approved.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6231) | **Confirm event cancellation**<br>[<img src="images/wireframes/committee-cancel-confirm.png" alt="Confirm event cancellation" width="220" />](images/wireframes/committee-cancel-confirm.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6643) |
-| **Cancelling event**<br>[<img src="images/wireframes/committee-cancelling-event.png" alt="Cancelling event" width="220" />](images/wireframes/committee-cancelling-event.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=149-523) | **Cancellation confirmed**<br>[<img src="images/wireframes/committee-cancel-success.png" alt="Cancellation confirmed" width="220" />](images/wireframes/committee-cancel-success.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1500) |
-| **Cancellation retry**<br>[<img src="images/wireframes/committee-cancel-retry.png" alt="Cancellation retry" width="220" />](images/wireframes/committee-cancel-retry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1557) |   |
+| **Approved event**<br>[<img src="images/wireframes/committee-event-approved.png" alt="Approved event" width="220" />](images/wireframes/committee-event-approved.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=327-579) | **Confirm event cancellation**<br>[<img src="images/wireframes/committee-cancel-confirm.png" alt="Confirm event cancellation" width="220" />](images/wireframes/committee-cancel-confirm.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=327-703) |
+| **Cancelling event**<br>[<img src="images/wireframes/committee-cancelling-event.png" alt="Cancelling event" width="220" />](images/wireframes/committee-cancelling-event.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-13935) | **Cancellation confirmed**<br>[<img src="images/wireframes/committee-cancel-success.png" alt="Cancellation confirmed" width="220" />](images/wireframes/committee-cancel-success.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-13797) |
+| **Cancellation retry**<br>[<img src="images/wireframes/committee-cancel-retry.png" alt="Cancellation retry" width="220" />](images/wireframes/committee-cancel-retry.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-13853) |   |
 
 </details>
 
@@ -237,14 +239,14 @@ Upcoming events link to bookings. Past events link to attendance summaries.
 
 [<img src="images/wireframes/committee-upcoming-events.png" alt="Upcoming events" width="250" />](images/wireframes/committee-upcoming-events.png)
 
-**Upcoming events** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6943)
+**Upcoming events** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-11601)
 
 <details>
 <summary>Upcoming and past events</summary>
 
 | Screen | Screen |
 |---|---|
-| **Past events**<br>[<img src="images/wireframes/committee-past-events.png" alt="Past events" width="220" />](images/wireframes/committee-past-events.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-6823) |   |
+| **Past events**<br>[<img src="images/wireframes/committee-past-events.png" alt="Past events" width="220" />](images/wireframes/committee-past-events.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-11481) |   |
 
 </details>
 
@@ -254,15 +256,15 @@ The Committee displays the rotating arrival or checkpoint QR with the short-live
 
 [<img src="images/checkpoint/committee-arrival-qr.png" alt="Active arrival QR" width="250" />](images/checkpoint/committee-arrival-qr.png)
 
-**Active arrival QR** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-925)
+**Active arrival QR** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-12586)
 
 <details>
 <summary>QR display and checkpoint closure</summary>
 
 | Screen | Screen |
 |---|---|
-| **Checkpoint open**<br>[<img src="images/checkpoint/committee-checkpoint-qr.png" alt="Checkpoint open" width="220" />](images/checkpoint/committee-checkpoint-qr.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-1064) | **Offline — checkpoint QR paused**<br>[<img src="images/checkpoint/committee-checkpoint-offline.png" alt="Offline — checkpoint QR paused" width="220" />](images/checkpoint/committee-checkpoint-offline.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-1203) |
-| **Confirm checkpoint closure**<br>[<img src="images/wireframes/committee-close-checkpoint.png" alt="Confirm checkpoint closure" width="220" />](images/wireframes/committee-close-checkpoint.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1618) | **Checkpoint closed**<br>[<img src="images/wireframes/committee-checkpoint-closed.png" alt="Checkpoint closed" width="220" />](images/wireframes/committee-checkpoint-closed.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=147-1665) |
+| **Checkpoint open**<br>[<img src="images/checkpoint/committee-checkpoint-qr.png" alt="Checkpoint open" width="220" />](images/checkpoint/committee-checkpoint-qr.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-12668) | **Offline — checkpoint QR paused**<br>[<img src="images/checkpoint/committee-checkpoint-offline.png" alt="Offline — checkpoint QR paused" width="220" />](images/checkpoint/committee-checkpoint-offline.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-12748) |
+| **Confirm checkpoint closure**<br>[<img src="images/wireframes/committee-close-checkpoint.png" alt="Confirm checkpoint closure" width="220" />](images/wireframes/committee-close-checkpoint.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=327-1033) | **Checkpoint closed**<br>[<img src="images/wireframes/committee-checkpoint-closed.png" alt="Checkpoint closed" width="220" />](images/wireframes/committee-checkpoint-closed.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=327-1079) |
 
 </details>
 
@@ -272,15 +274,15 @@ Before check-in opens, the bookings list shows reservations as **Booked**. The C
 
 [<img src="images/wireframes/committee-bookings-list.png" alt="Event bookings" width="250" />](images/wireframes/committee-bookings-list.png)
 
-**Event bookings** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=174-2)
+**Event bookings** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-13995)
 
 <details>
 <summary>Attendance lists and summaries</summary>
 
 | Screen | Screen |
 |---|---|
-| **Live attendee list**<br>[<img src="images/checkpoint/committee-live-attendees.png" alt="Live attendee list" width="220" />](images/checkpoint/committee-live-attendees.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-1283) | **Awaiting sync**<br>[<img src="images/checkpoint/committee-awaiting-sync.png" alt="Awaiting sync" width="220" />](images/checkpoint/committee-awaiting-sync.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=115-347) |
-| **Attendance summary**<br>[<img src="images/checkpoint/committee-final-summary.png" alt="Attendance summary" width="220" />](images/checkpoint/committee-final-summary.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-1365) | **Final attendee list**<br>[<img src="images/checkpoint/committee-final-attendees.png" alt="Final attendee list" width="220" />](images/checkpoint/committee-final-attendees.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=110-1440) |
+| **Live attendee list**<br>[<img src="images/checkpoint/committee-live-attendees.png" alt="Live attendee list" width="220" />](images/checkpoint/committee-live-attendees.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-12809) | **Awaiting sync**<br>[<img src="images/checkpoint/committee-awaiting-sync.png" alt="Awaiting sync" width="220" />](images/checkpoint/committee-awaiting-sync.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-13135) |
+| **Attendance summary**<br>[<img src="images/checkpoint/committee-final-summary.png" alt="Attendance summary" width="220" />](images/checkpoint/committee-final-summary.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-12917) | **Final attendee list**<br>[<img src="images/checkpoint/committee-final-attendees.png" alt="Final attendee list" width="220" />](images/checkpoint/committee-final-attendees.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-13025) |
 
 </details>
 
@@ -290,14 +292,14 @@ Committee members can view their verified club access and confirm sign-out.
 
 [<img src="images/wireframes/committee-account.png" alt="Committee account" width="250" />](images/wireframes/committee-account.png)
 
-**Committee account** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-8212)
+**Committee account** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-12463)
 
 <details>
 <summary>Committee account and sign-out</summary>
 
 | Screen | Screen |
 |---|---|
-| **Sign-out confirmation**<br>[<img src="images/wireframes/committee-sign-out.png" alt="Sign-out confirmation" width="220" />](images/wireframes/committee-sign-out.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=82-8267) |   |
+| **Sign-out confirmation**<br>[<img src="images/wireframes/committee-sign-out.png" alt="Sign-out confirmation" width="220" />](images/wireframes/committee-sign-out.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=327-965) |   |
 
 </details>
 
