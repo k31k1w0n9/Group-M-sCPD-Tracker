@@ -238,7 +238,8 @@ private fun MyEventsListView(
     val urgent = bookedEvents.firstOrNull {
         (attendanceByEvent[it.id] ?: BookingAttendanceUi()).checkpoint == CheckpointUiStatus.Open
     }
-    Column(Modifier.fillMaxSize().background(colors.background)) {
+    val background = if (bookedEvents.isEmpty() && !showPast) Color(0xFFEDF4F8) else colors.background
+    Column(Modifier.fillMaxSize().background(background)) {
         MyEventsHeader("My Events", wide)
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
             ReadableWidth {
@@ -377,7 +378,6 @@ private fun EmptyBookings(onBrowse: () -> Unit, onEditInterests: () -> Unit) {
                     textAlign = TextAlign.Center,
                 )
                 PrimaryAction("Browse recommended events", onClick = onBrowse)
-                Spacer(Modifier.height(spacing.space2))
             }
         }
         Surface(color = colors.surfaceContainerLowest, shape = MaterialTheme.shapes.large) {
@@ -390,7 +390,7 @@ private fun EmptyBookings(onBrowse: () -> Unit, onEditInterests: () -> Unit) {
                     "Explore other interests whenever you feel like it.",
                     style = MaterialTheme.typography.bodyLarge,
                 )
-                TextButton(onClick = onEditInterests) {
+                TextButton(onClick = onEditInterests, contentPadding = PaddingValues(0.dp)) {
                     Text("Manage interests", style = MaterialTheme.typography.labelLarge)
                     Icon(Icons.Rounded.NorthEast, contentDescription = null)
                 }
