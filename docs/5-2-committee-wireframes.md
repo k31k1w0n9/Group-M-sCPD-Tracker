@@ -67,14 +67,14 @@ Upcoming events link to their bookings, and past events link to their attendance
 
 [<img src="images/committee/upcoming-events.png" alt="Upcoming events" width="250" />](images/committee/upcoming-events.png)
 
-**Upcoming events** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=269-9646)
+**Upcoming events** · [Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-11601)
 
 <details>
 <summary>Past and empty events</summary>
 
 | Screen | Screen |
 |---|---|
-| **Past events**<br>[<img src="images/committee/past-events.png" alt="Past events" width="220" />](images/committee/past-events.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=269-9526) | **Committee Events empty**<br>[<img src="images/committee/events-empty.png" alt="Committee Events empty" width="220" />](images/committee/events-empty.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=269-9426) |
+| **Past events**<br>[<img src="images/committee/past-events.png" alt="Past events" width="220" />](images/committee/past-events.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-11481) | **Committee Events empty**<br>[<img src="images/committee/events-empty.png" alt="Committee Events empty" width="220" />](images/committee/events-empty.png)<br>[Figma frame](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=269-9426) |
 
 </details>
 
