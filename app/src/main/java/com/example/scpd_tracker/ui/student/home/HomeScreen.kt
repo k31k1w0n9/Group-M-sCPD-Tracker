@@ -75,7 +75,7 @@ internal fun HomeScreen(
                         Modifier.padding(horizontal = spacing.gutter, vertical = spacing.space4),
                         verticalArrangement = Arrangement.spacedBy(spacing.space4),
                     ) {
-                        state.happeningNow?.let { HappeningNowCard(it) { onCheckIn(it.id) } }
+                        if (!state.browsing) state.happeningNow?.let { HappeningNowCard(it) { onCheckIn(it.id) } }
                         if (!state.browsing) ProgressStrip(state.points, state.streakWeeks, onProgress)
                         Row(
                             Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),

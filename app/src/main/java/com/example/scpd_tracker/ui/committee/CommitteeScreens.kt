@@ -312,13 +312,14 @@ internal fun CommitteeCheckInScreen(
         if (state.isOffline) OfflineBanner(body = "No connection: codes paused. Students can't check in until you reconnect.")
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
             ReadableWidth {
-                Column(Modifier.padding(spacing.gutter), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(spacing.space3)) {
+                Column(Modifier.fillMaxWidth().padding(spacing.gutter), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(spacing.space3)) {
                     state.error?.let { StatusBanner("Couldn't update check-in", body = it, tone = BannerTone.Warning) }
                     when {
                         state.sessionOpen && state.code != null -> {
                             TagChip(if (state.stage == Stage.Checkpoint) "Checkpoint code" else "Arrival code", MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer)
+                            // At most ~260dp, so the code, the count and the actions all fit on a Pixel 2.
                             Surface(color = androidx.compose.ui.graphics.Color.White, shape = MaterialTheme.shapes.large) {
-                                QrImage(state.code.qrPayload, Modifier.padding(spacing.space4).fillMaxWidth(0.7f).aspectRatio(1f).testTag("live_qr"))
+                                QrImage(state.code.qrPayload, Modifier.padding(spacing.space3).widthIn(max = 260.dp).fillMaxWidth(0.75f).aspectRatio(1f).testTag("live_qr"))
                             }
                             Text(state.code.backupCode.chunked(3).joinToString(" "), style = MaterialTheme.typography.displaySmall, modifier = Modifier.testTag("backup_code_display"))
                             Text("New code in ${state.secondsLeft} s", style = MaterialTheme.typography.bodyMedium)
@@ -330,6 +331,7 @@ internal fun CommitteeCheckInScreen(
                     Text(state.countLabel, style = MaterialTheme.typography.titleLarge, modifier = Modifier.testTag("checked_in_count"))
                     if (event?.requiresCheckpoint == true) Text("${state.checkpointCount} at the checkpoint", style = MaterialTheme.typography.bodyMedium)
                     if (state.flaggedCount > 0) TagChip("${state.flaggedCount} flagged for review", MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer, Icons.Rounded.Flag)
+                    TextButton(onClick = onAttendees) { Text("View attendee list", style = MaterialTheme.typography.labelLarge) }
                 }
             }
         }
@@ -340,8 +342,8 @@ internal fun CommitteeCheckInScreen(
                     SecondaryAction("End check-in", onClick = onEnd)
                 }
                 !state.sessionClosed -> PrimaryAction("Start check-in", enabled = !state.busy && !state.isOffline, onClick = onOpen)
+                else -> SecondaryAction("View attendee list", onClick = onAttendees)
             }
-            SecondaryAction("Attendee list", onClick = onAttendees)
         }
     }
 }
