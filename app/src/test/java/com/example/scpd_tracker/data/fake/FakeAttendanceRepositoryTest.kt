@@ -1,0 +1,178 @@
+package com.example.scpd_tracker.data.fake
+
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import com.example.scpd_tracker.data.system.DataStoreDeviceId
+import com.example.scpd_tracker.domain.Policy
+import com.example.scpd_tracker.model.AttendanceClaim
+import com.example.scpd_tracker.model.ClaimResult
+import com.example.scpd_tracker.model.Stage
+import com.example.scpd_tracker.model.StageStatus
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Rule
+import org.junit.Test
+import org.junit.rules.TemporaryFolder
+import java.time.Duration
+
+class FakeAttendanceRepositoryTest {
+    @get:Rule val folder = TemporaryFolder()
+
+    private val event = FakeData.LIVE_EVENT
+    private fun window(app: TestApp) = app.clock.now().epochSecond / Policy.CODE_ROTATION.seconds
+
+    private fun qrClaim(app: TestApp, requestId: String, device: String = "phone-A", stage: Stage = Stage.Arrival) =
+        AttendanceClaim(requestId, event, stage, app.backend.qrToken(event, stage, window(app)), device, app.clock.now(), viaBackupCode = false)
+
+    private fun codeClaim(app: TestApp, requestId: String, code: String) =
+        AttendanceClaim(requestId, event, Stage.Arrival, code, "phone-A", app.clock.now(), viaBackupCode = true)
+
+    private suspend fun arrival(app: TestApp) = app.attendance.myAttendance().first().first { it.eventId == event }.arrival
+
+    @Test
+    fun scanOnline_verified() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        assertEquals(ClaimResult.Verified, app.attendance.submitClaim(qrClaim(app, "r1")))
+        assertEquals(StageStatus.VERIFIED, arrival(app))
+    }
+
+    @Test
+    fun claim_offline_returnsPendingSync_thenSyncVerifies() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        app.network.set(false)
+        advanceTimeBy(5_000); runCurrent()
+        assertEquals(ClaimResult.PendingSync, app.attendance.submitClaim(qrClaim(app, "r-off")))
+        assertEquals(1, app.attendance.pendingCount().first())
+        assertEquals(StageStatus.PENDING_SYNC, arrival(app))
+        app.network.set(true) // reconnecting triggers the upload by itself
+        advanceTimeBy(5_000); runCurrent()
+        assertEquals(0, app.attendance.pendingCount().first())
+        assertEquals(StageStatus.VERIFIED, arrival(app))
+    }
+
+    @Test
+    fun offlineScan_uploadedAfterDeadline_rejectedWithReason() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        app.network.set(false)
+        advanceTimeBy(5_000); runCurrent()
+        app.attendance.submitClaim(qrClaim(app, "r-late"))
+        app.backend.endCheckIn(event)
+        app.clock.advance(Duration.ofHours(3)) // past the 2-hour upload window
+        app.network.set(true)
+        advanceTimeBy(5_000); runCurrent()
+        val record = app.attendance.myAttendance().first().first { it.eventId == event }
+        assertEquals(StageStatus.REJECTED, record.arrival)
+        assertTrue(record.rejectReason!!.contains("2 hours"))
+    }
+
+    @Test
+    fun claim_sameRequestIdTwice_countsOnce() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        val claim = qrClaim(app, "r-dup")
+        assertEquals(ClaimResult.Verified, app.attendance.submitClaim(claim))
+        assertEquals(ClaimResult.Verified, app.attendance.submitClaim(claim))
+        assertEquals(StageStatus.VERIFIED, arrival(app))
+    }
+
+    @Test
+    fun alteredToken_rejected() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        val claim = qrClaim(app, "r-alt").let { it.copy(token = it.token.replace(event, "build-with-ai")) }
+        val result = app.attendance.submitClaim(claim)
+        assertTrue(result is ClaimResult.Rejected && result.reason.contains("altered"))
+    }
+
+    @Test
+    fun expiredLiveToken_rejected() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        val claim = qrClaim(app, "r-old")
+        app.clock.advance(Duration.ofMinutes(2))
+        val result = app.attendance.submitClaim(claim)
+        assertTrue(result is ClaimResult.Rejected && result.reason.contains("expired"))
+    }
+
+    @Test
+    fun correctBackupCode_verified() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        val code = app.backend.backupCode(event, Stage.Arrival, window(app))
+        assertEquals(ClaimResult.Verified, app.attendance.submitClaim(codeClaim(app, "r-code", code)))
+    }
+
+    @Test
+    fun claim_wrongBackupCodeFiveTimes_returnsRateLimited() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        val results = (1..5).map { app.attendance.submitClaim(codeClaim(app, "r-w$it", "000000")) }
+        assertTrue(results.take(4).all { it is ClaimResult.Rejected })
+        assertEquals(ClaimResult.RateLimited, results.last())
+        // Even the right code is refused for the rest of the session.
+        val right = app.backend.backupCode(event, Stage.Arrival, window(app))
+        assertEquals(ClaimResult.RateLimited, app.attendance.submitClaim(codeClaim(app, "r-right", right)))
+    }
+
+    @Test
+    fun backupCodeOffline_refused() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        app.network.set(false)
+        advanceTimeBy(5_000); runCurrent()
+        val result = app.attendance.submitClaim(codeClaim(app, "r-code-off", "123456"))
+        assertTrue(result is ClaimResult.Rejected && result.reason.contains("need internet"))
+        assertEquals(0, app.attendance.pendingCount().first())
+    }
+
+    @Test
+    fun claim_sameDeviceDifferentAccountsSameEvent_flagged() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        assertEquals(ClaimResult.Verified, app.attendance.submitClaim(qrClaim(app, "r-a", device = "shared-phone")))
+        app.auth.signOut()
+        app.signInStudent2()
+        val result = app.attendance.submitClaim(qrClaim(app, "r-b", device = "shared-phone"))
+        assertEquals(
+            ClaimResult.Rejected("Flagged for review: this phone has already checked in another account at this event."),
+            result,
+        )
+        val rows = app.attendance.liveAttendees(event).first()
+        assertEquals("Same phone used by another account", rows.first { it.userId == "u-daniel" }.flagged)
+    }
+
+    @Test
+    fun checkpointCode_beforeCheckpointOpens_notIssued() = runTest {
+        val app = TestApp(backgroundScope)
+        assertEquals(null, app.backend.currentCode(event, Stage.Checkpoint))
+        app.backend.openCheckpoint(event)
+        assertTrue(app.backend.currentCode(event, Stage.Checkpoint) != null)
+    }
+
+    @Test
+    fun bothStagesVerified_awardsThreePointsOnce() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        val before = app.progress.ledger().first().sumOf { it.points }
+        app.attendance.submitClaim(qrClaim(app, "r-arr"))
+        app.backend.openCheckpoint(event)
+        app.attendance.submitClaim(qrClaim(app, "r-cp", stage = Stage.Checkpoint))
+        app.attendance.submitClaim(qrClaim(app, "r-cp2", stage = Stage.Checkpoint))
+        assertEquals(before + 3, app.progress.ledger().first().sumOf { it.points })
+    }
+
+    @Test
+    fun deviceId_isStableAcrossCalls() = runTest {
+        val store = PreferenceDataStoreFactory.create(scope = backgroundScope) { java.io.File(folder.root, "device.preferences_pb") }
+        val source = DataStoreDeviceId(store)
+        val first = source.get()
+        assertEquals(first, source.get())
+        assertEquals(36, first.length)
+    }
+}
