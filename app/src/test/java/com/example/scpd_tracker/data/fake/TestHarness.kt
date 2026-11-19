@@ -30,6 +30,10 @@ class TestApp(scope: CoroutineScope, online: Boolean = true) {
     val bookings = FakeBookingRepository(backend, auth, network)
     val attendance = FakeAttendanceRepository(backend, auth, network, clock, scope)
     val progress = FakeProgressRepository(backend, auth)
+    var deviceName = "phone-A"
+    val deviceId = object : com.example.scpd_tracker.data.DeviceIdSource {
+        override suspend fun get() = deviceName
+    }
 
     suspend fun signInStudent1() = auth.signIn(FakeData.STUDENT_1, FakeData.PASSWORD, AccountRole.Student)
     suspend fun signInStudent2() = auth.signIn(FakeData.STUDENT_2, FakeData.PASSWORD, AccountRole.Student)

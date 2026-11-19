@@ -1,4 +1,4 @@
-package com.example.scpd_tracker
+package com.example.scpd_tracker.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -25,6 +25,7 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.scpd_tracker.R
 import com.example.scpd_tracker.ui.theme.PillShape
 import com.example.scpd_tracker.ui.theme.ScpdTheme
 

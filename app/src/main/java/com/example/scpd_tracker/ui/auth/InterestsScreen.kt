@@ -1,5 +1,9 @@
-package com.example.scpd_tracker
+package com.example.scpd_tracker.ui.auth
 
+import com.example.scpd_tracker.R
+import com.example.scpd_tracker.model.AccountRole
+import com.example.scpd_tracker.model.SignInResult
+import com.example.scpd_tracker.ui.components.*
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

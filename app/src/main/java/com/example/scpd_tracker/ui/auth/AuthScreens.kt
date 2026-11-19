@@ -1,5 +1,9 @@
-package com.example.scpd_tracker
+package com.example.scpd_tracker.ui.auth
 
+import com.example.scpd_tracker.R
+import com.example.scpd_tracker.model.AccountRole
+import com.example.scpd_tracker.model.SignInResult
+import com.example.scpd_tracker.ui.components.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
@@ -101,7 +105,8 @@ internal fun SignIn(
     role: AccountRole,
     email: String,
     password: String,
-    error: DemoSignInResult?,
+    error: SignInResult?,
+    isSubmitting: Boolean,
     onEmail: (String) -> Unit,
     onPassword: (String) -> Unit,
     onSignIn: () -> Unit,
@@ -147,14 +152,15 @@ internal fun SignIn(
         TextButton(onClick = onPasswordHelp, contentPadding = PaddingValues(horizontal = ScpdTheme.spacing.space2)) {
             Text("Forgot password?", style = type.titleSmall)
         }
-        if (error != null) {
-            SignInNotice(student = student, roleNotAllowed = error == DemoSignInResult.RoleNotAllowed)
+        if (error != null && error !is SignInResult.Success) {
+            SignInNotice(student = student, error = error)
         }
-        if (error == DemoSignInResult.RoleNotAllowed && !student) {
+        if (error == SignInResult.RoleNotAllowed && !student) {
             PrimaryAction("Continue as Student", onClick = onContinueAsStudent)
             SecondaryAction("Return to Sign in", onClick = onReturnToSignIn)
         } else {
-            PrimaryAction("Sign in") {
+            // Disabled while the request is in flight, so a double tap can't send two sign-ins.
+            PrimaryAction(if (isSubmitting) "Signing in…" else "Sign in", enabled = !isSubmitting) {
                 focus.clearFocus()
                 onSignIn()
             }
@@ -164,8 +170,12 @@ internal fun SignIn(
 
 /** Sign-in problems are an inline banner above the form actions, never a dialog. One title, one short line. */
 @Composable
-private fun SignInNotice(student: Boolean, roleNotAllowed: Boolean) {
+private fun SignInNotice(student: Boolean, error: SignInResult) {
+    val roleNotAllowed = error == SignInResult.RoleNotAllowed
     when {
+        error == SignInResult.Offline -> StatusBanner(
+            "No connection", body = "Signing in needs internet. Reconnect and try again.", tone = BannerTone.Warning,
+        )
         roleNotAllowed && student -> StatusBanner(
             "This is a committee account", body = "Change your role to continue.", tone = BannerTone.Warning,
         )
@@ -335,10 +345,3 @@ internal fun PasswordHelp(onBack: () -> Unit) {
     }
 }
 
-@Composable
-internal fun CommitteeLanding(onSignOut: () -> Unit) {
-    EntryCanvas(expanded = false) {
-        Text("Committee Dashboard", Modifier.semantics { heading() }, style = MaterialTheme.typography.headlineSmall)
-        SecondaryAction("Sign out", onClick = onSignOut)
-    }
-}

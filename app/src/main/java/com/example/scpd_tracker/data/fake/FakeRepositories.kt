@@ -160,6 +160,15 @@ class FakeAttendanceRepository(
         scope.launch {
             network.isOnline.filter { it }.collect { syncPending() }
         }
+        // Saved scans belong to the account. Signing out clears them from the phone (the sign-out screen warns first).
+        scope.launch {
+            var previous: String? = null
+            auth.currentUser.collect { user ->
+                val left = previous
+                if (left != null && user?.uid != left) device.update { s -> s.copy(queue = s.queue.filterNot { it.userId == left }) }
+                previous = user?.uid
+            }
+        }
     }
 
     override fun myAttendance(): Flow<List<AttendanceRecord>> =
