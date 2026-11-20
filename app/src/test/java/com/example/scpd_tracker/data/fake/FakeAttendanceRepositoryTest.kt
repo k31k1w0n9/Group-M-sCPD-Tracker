@@ -71,6 +71,31 @@ class FakeAttendanceRepositoryTest {
         assertTrue(record.rejectReason!!.contains("2 hours"))
     }
 
+    /** Lecturer's Part 1 question: a phone's clock can be changed, so the server must never trust it. */
+    @Test
+    fun phoneClockIgnored_lateUploadStillRejected() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        app.backend.endCheckIn(event)
+        val closedAt = app.clock.now()
+        app.clock.advance(Duration.ofHours(3)) // the upload really arrives 3 hours after check-in closed
+        // The phone claims it captured the scan while check-in was still open, and sends the live-at-the-time code.
+        val token = app.backend.qrToken(event, Stage.Arrival, closedAt.epochSecond / Policy.CODE_ROTATION.seconds)
+        val claim = AttendanceClaim("r-clock", event, Stage.Arrival, token, "phone-A", capturedAt = closedAt.minusSeconds(60), viaBackupCode = false)
+        val result = app.backend.verifyClaim("u-aisha", claim, uploadedLater = true)
+        assertTrue(result is ClaimResult.Rejected && result.reason.contains("2 hours"))
+    }
+
+    @Test
+    fun reversal_isRecordedOnce() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        val before = app.progress.ledger().first().sumOf { it.points }
+        app.backend.reverseAward("u-aisha", "volunteer-day", "Office review: record found invalid.")
+        app.backend.reverseAward("u-aisha", "volunteer-day", "Office review: record found invalid.")
+        assertEquals(before - 3, app.progress.ledger().first().sumOf { it.points })
+    }
+
     @Test
     fun claim_sameRequestIdTwice_countsOnce() = runTest {
         val app = TestApp(backgroundScope)

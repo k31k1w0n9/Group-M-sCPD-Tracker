@@ -214,6 +214,20 @@ class StudentViewModelsTest {
         assertEquals(9, vm.state.value.total)
     }
 
+    /** Lecturer's Part 1 question: what "corrections recalculate the streak" means, as a worked example. */
+    @Test
+    fun reversal_recalculatesStreak() = runTest {
+        val app = signedIn()
+        val vm = ProgressViewModel(app.attendance, app.progress, app.events, app.auth, app.clock)
+        keepCollecting(vm.state); advanceUntilIdle()
+        assertEquals(3, vm.state.value.streakWeeks) // verified in weeks -1, -2 and -3
+        // The office finds the week -2 record invalid: that week no longer counts, so the streak stops at week -1.
+        app.backend.reverseAward("u-aisha", "volunteer-day", "Office review: record found invalid.")
+        advanceUntilIdle()
+        assertEquals(1, vm.state.value.streakWeeks)
+        assertEquals(6, vm.state.value.total)
+    }
+
     @Test
     fun pendingClaims_shownAsNotYetCounted() = runTest {
         val app = signedIn()
