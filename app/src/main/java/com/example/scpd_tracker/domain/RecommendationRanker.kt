@@ -30,7 +30,7 @@ object RecommendationRanker {
         // A clash means the student could not attend, so it is not recommended at all.
         .filter { candidate -> myBookedEvents.none { BookingRules.overlaps(it, candidate) } }
         .map { score(it, interests, attendedTags, myBookedEvents.isNotEmpty(), now) }
-        .sortedWith(compareByDescending<Recommendation> { it.score }.thenBy { it.event.start })
+        .sortedWith(compareByDescending<Recommendation> { it.score }.thenBy { it.event.start }.thenBy { it.event.title })
         .toList()
 
     private fun score(event: Event, interests: List<String>, attendedTags: List<String>, hasBookings: Boolean, now: ZonedDateTime): Recommendation {

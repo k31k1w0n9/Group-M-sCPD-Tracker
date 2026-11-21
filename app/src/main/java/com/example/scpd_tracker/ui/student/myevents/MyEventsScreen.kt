@@ -236,7 +236,7 @@ internal fun BookingDetails(
                     EventTags(card.event.tags)
                     if (!waitlisted) AttendanceRequirement(card.event)
                     if (!card.canCancel && !waitlisted) {
-                        Text("Cancellations closed 2 hours before the start.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Cancellations closed 2 hours before the start. If you can't come, tell the organiser.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }

@@ -64,4 +64,24 @@ class RecommendationRankerTest {
         val past = testEvent(start = "2026-11-19T10:00", end = "2026-11-19T11:00")
         assertTrue(RecommendationRanker.rank(listOf(past), listOf("Tech"), emptyList(), emptyList(), now).isEmpty())
     }
+
+    /** The worked example in US-04 (docs/part2/7-user-stories-v2.md). */
+    @Test
+    fun workedExample_fromUserStories() {
+        val a = testEvent(id = "A", tags = listOf("Tech", "Career"), start = "2026-11-23T10:00", end = "2026-11-23T11:00")
+        val b = testEvent(id = "B", tags = listOf("Career"), start = "2026-11-30T10:00", end = "2026-11-30T11:00")
+        val c = testEvent(id = "C", tags = listOf("Tech"), booked = 40, start = "2026-11-22T10:00", end = "2026-11-22T11:00")
+        val d = testEvent(id = "D", tags = listOf("Sports"), start = "2026-11-21T10:00", end = "2026-11-21T11:00")
+        val ranked = RecommendationRanker.rank(listOf(d, c, b, a), listOf("Tech", "Career"), emptyList(), emptyList(), now)
+        assertEquals(listOf("A", "B", "C", "D"), ranked.map { it.event.id })
+        assertEquals(listOf(7, 3, 2, 1), ranked.map { it.score })
+    }
+
+    @Test
+    fun sameScoreAndStart_tieBrokenByTitle() {
+        val zebra = testEvent(id = "z", title = "Zebra talk")
+        val apple = testEvent(id = "a", title = "Apple talk")
+        val ranked = RecommendationRanker.rank(listOf(zebra, apple), listOf("Tech"), emptyList(), emptyList(), now)
+        assertEquals(listOf("a", "z"), ranked.map { it.event.id })
+    }
 }

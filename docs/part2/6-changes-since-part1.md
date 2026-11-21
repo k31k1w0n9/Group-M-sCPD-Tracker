@@ -2,7 +2,7 @@
 
 ## 6. Changes since Part 1
 
-Part 1 is unchanged in sections 2 to 5. This page lists what we changed while building the app, and why. Our answers to the Part 1 feedback from the lecturer and TA are at the top of [7. User stories v2](7-user-stories-v2.md#response-to-the-part-1-feedback). The user stories that come out of these changes are in [7. User stories v2](7-user-stories-v2.md), and the attacks they answer are in [8. Threat model](8-threat-model.md).
+Part 1 is unchanged in sections 2 to 5. This page lists what we changed while building the app, and why. Our answers to the Part 1 feedback from the lecturer and TA are at the top of [7. User stories v2](7-user-stories-v2.md#response-to-the-part-1-feedback). The user stories that come out of these changes are in [7. User stories v2](7-user-stories-v2.md), and the attacks they answer are in [8. Threat model](8-threat-model.md). The requirements review from our SQA team, and what we changed for each finding, is in [9. SQA review response](9-sqa-review-response.md).
 
 ### What the app runs on this week
 

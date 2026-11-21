@@ -11,7 +11,7 @@
 
 s-CPD is a native Android app for University of Nottingham Malaysia students and club committees. Students discover and book events, check in with a rotating QR code, and track verified attendance. Events that need a later checkpoint show the two-scan requirement before booking. Committees submit events and run check-in. The s-CPD office reviews submissions and corrects attendance in the backend. The app adds two original features: personalised event recommendations and weekly attendance streaks.
 
-The documentation is split into short pages so each one can be read on its own. Sections 2 to 5 are the Part 1 proposal. Sections 6 to 8 record what changed while we built the app.
+The documentation is split into short pages so each one can be read on its own. Sections 2 to 5 are the Part 1 proposal. Sections 6 to 9 record what changed while we built the app, including our response to the SQA requirements review.
 
 | Section | Page | What it covers |
 |:---:|---|---|
@@ -26,6 +26,7 @@ The documentation is split into short pages so each one can be read on its own. 
 | **6** | [Changes since Part 1](docs/part2/6-changes-since-part1.md) | Design, security and code changes made while building the app, and why |
 | **7** | [User stories v2](docs/part2/7-user-stories-v2.md) | Re-ranked stories, new stories and abuse stories, each linked to its test |
 | **8** | [Threat model](docs/part2/8-threat-model.md) | Twelve ways to cheat, the defence for each, its test and what remains weak |
+| **9** | [SQA review response](docs/part2/9-sqa-review-response.md) | Each finding from SQA Group 13's requirements review and how we fixed it |
 
 
 ## 2. Requirements analysis
@@ -48,9 +49,9 @@ The Kotlin app uses MVVM with repositories, Room for offline data and Firebase f
 The wireframes are exported from the [Figma file](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=0-1) and cover every state in the Student and Committee journeys. [Student wireframes](docs/5-1-student-wireframes.md) · [Committee wireframes](docs/5-2-committee-wireframes.md).
 
 
-## 6–8. Part 2 changes
+## 6–9. Part 2 changes
 
-The front end is complete for both roles. It runs on an in-memory backend that plays the server's part, so every journey can be tried today. The Firebase implementation replaces it behind the same repository interfaces. [Changes since Part 1](docs/part2/6-changes-since-part1.md) · [User stories v2](docs/part2/7-user-stories-v2.md) · [Threat model](docs/part2/8-threat-model.md).
+The front end is complete for both roles. It runs on an in-memory backend that plays the server's part, so every journey can be tried today. The Firebase implementation replaces it behind the same repository interfaces. [Changes since Part 1](docs/part2/6-changes-since-part1.md) · [User stories v2](docs/part2/7-user-stories-v2.md) · [Threat model](docs/part2/8-threat-model.md) · [SQA review response](docs/part2/9-sqa-review-response.md).
 
 
 ## Build and run

@@ -30,4 +30,4 @@ The emulator can't point a camera at another phone. We cover this in two ways:
 
 ---
 
-[← Previous: 7. User stories v2](7-user-stories-v2.md)
+[← Previous: 7. User stories v2](7-user-stories-v2.md) · [Next: 9. SQA review response →](9-sqa-review-response.md)
