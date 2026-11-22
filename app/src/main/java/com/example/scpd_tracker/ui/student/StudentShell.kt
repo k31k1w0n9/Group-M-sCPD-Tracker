@@ -43,6 +43,7 @@ import com.example.scpd_tracker.ui.student.profile.ProfileRoute
 import com.example.scpd_tracker.ui.student.profile.ProfileViewModel
 import com.example.scpd_tracker.ui.student.progress.AttendanceHistoryRoute
 import com.example.scpd_tracker.ui.student.progress.ProgressRoute
+import com.example.scpd_tracker.ui.student.settings.SettingsScreen
 import com.example.scpd_tracker.ui.theme.ScpdTheme
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -58,6 +59,7 @@ object StudentRoutes {
     const val CHECK_IN = "checkIn/{eventId}"
     const val HISTORY = "history"
     const val EDIT_INTERESTS = "editInterests"
+    const val SETTINGS = "settings"
 
     fun event(id: String) = "event/$id"
     fun checkIn(id: String) = "checkIn/$id"
@@ -147,8 +149,13 @@ private fun StudentNavHost(nav: NavHostController, onSignOut: () -> Unit) {
         composable(StudentRoutes.PROGRESS) { ProgressRoute(onHistory = { nav.navigate(StudentRoutes.HISTORY) }) }
         composable(StudentRoutes.HISTORY) { AttendanceHistoryRoute(onBack = { nav.popBackStack() }) }
         composable(StudentRoutes.PROFILE) {
-            ProfileRoute(onEditInterests = { nav.navigate(StudentRoutes.EDIT_INTERESTS) }, onSignOut = onSignOut)
+            ProfileRoute(
+                onEditInterests = { nav.navigate(StudentRoutes.EDIT_INTERESTS) },
+                onSignOut = onSignOut,
+                onOpenSettings = { nav.navigate(StudentRoutes.SETTINGS) },
+            )
         }
+        composable(StudentRoutes.SETTINGS) { SettingsScreen(onBack = { nav.popBackStack() }) }
         composable(StudentRoutes.EDIT_INTERESTS) {
             val vm = scpdViewModel { c, _ -> ProfileViewModel(c.auth, c.attendance) }
             val profile by vm.state.collectAsStateWithLifecycle()
