@@ -66,6 +66,11 @@ class AttendanceOutcomesTest {
     }
 
     @Test
+    fun pendingSyncLabelSaysAwaitingSync() {
+        assertEquals("Awaiting sync", PENDING_SYNC.label)
+    }
+
+    @Test
     fun milestoneIsTheNextTargetAbovePoints() {
         assertEquals(15, AttendanceStats.nextMilestone(0))
         assertEquals(30, AttendanceStats.nextMilestone(15))

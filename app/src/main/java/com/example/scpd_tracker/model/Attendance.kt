@@ -16,7 +16,7 @@ enum class StageStatus(val label: String) {
 /** Overall attendance outcome for an event, following the Part 1 design. */
 enum class AttendanceOutcome(val label: String) {
     IN_PROGRESS("In progress"),
-    PENDING_SYNC("Pending sync"),
+    PENDING_SYNC("Awaiting sync"),
     VERIFIED("Verified"),
     INCOMPLETE("Incomplete attendance"),
     REJECTED("Rejected"),
