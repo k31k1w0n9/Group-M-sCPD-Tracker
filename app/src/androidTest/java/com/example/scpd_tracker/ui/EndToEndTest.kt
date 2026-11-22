@@ -49,8 +49,8 @@ class EndToEndTest {
     @Test
     fun committeeAccount_canUseStudentApp() {
         signIn(FakeData.COMMITTEE_TECH)
-        rule.waitUntil(5_000) { rule.onAllNodes(hasText("Happening now")).fetchSemanticsNodes().isNotEmpty() }
-        rule.onNodeWithText("My Events").assertIsDisplayed()
+        rule.waitUntil(5_000) { rule.onAllNodes(hasText("My Events")).fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithText("Explore").assertIsDisplayed()
     }
 
     @Test
