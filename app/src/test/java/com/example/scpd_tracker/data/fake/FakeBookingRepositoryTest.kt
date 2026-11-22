@@ -71,9 +71,9 @@ class FakeBookingRepositoryTest {
     }
 
     @Test
-    fun committeeAccount_cannotSignInAsStudent() = runTest {
+    fun committeeAccount_canSignInAsStudent() = runTest {
         val app = TestApp(backgroundScope)
         val result = app.auth.signIn(FakeData.COMMITTEE_TECH, FakeData.PASSWORD, AccountRole.Student)
-        assertEquals(com.example.scpd_tracker.model.SignInResult.RoleNotAllowed, result)
+        assertTrue(result is com.example.scpd_tracker.model.SignInResult.Success)
     }
 }

@@ -40,6 +40,10 @@ import com.example.scpd_tracker.ui.student.home.HomeScreen
 import com.example.scpd_tracker.ui.student.home.HomeViewModel
 import com.example.scpd_tracker.ui.student.myevents.MyEventsRoute
 import com.example.scpd_tracker.ui.student.profile.ProfileRoute
+import com.example.scpd_tracker.ui.student.notifications.NotificationsRoute
+import com.example.scpd_tracker.data.system.NotificationNavigation
+import android.net.Uri
+import androidx.compose.runtime.LaunchedEffect
 import com.example.scpd_tracker.ui.student.profile.ProfileViewModel
 import com.example.scpd_tracker.ui.student.progress.AttendanceHistoryRoute
 import com.example.scpd_tracker.ui.student.progress.ProgressRoute
@@ -58,6 +62,10 @@ object StudentRoutes {
     const val CHECK_IN = "checkIn/{eventId}"
     const val HISTORY = "history"
     const val EDIT_INTERESTS = "editInterests"
+    const val NOTIFICATIONS = "notifications"
+    const val NOTIFICATION_EVENT = "notificationEvent/{eventId}"
+
+    fun notificationEvent(id: String) = "notificationEvent/${Uri.encode(id)}"
 
     fun event(id: String) = "event/$id"
     fun checkIn(id: String) = "checkIn/$id"
@@ -88,9 +96,19 @@ fun StudentShell(onSignOut: () -> Unit) {
     val nav = rememberNavController()
     val entry by nav.currentBackStackEntryAsState()
     val route = entry?.destination?.route
-    val tab = Tabs.firstOrNull { it.route == route }
+    val tab = Tabs.firstOrNull { it.route == route } ?: when (route) {
+        StudentRoutes.NOTIFICATIONS -> Tabs.first { it.route == StudentRoutes.PROFILE }
+        StudentRoutes.NOTIFICATION_EVENT -> Tabs.first { it.route == StudentRoutes.MY_EVENTS }
+        else -> null
+    }
     val snackbar = remember { SnackbarHostState() }
     val keyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    val targetEvent by NotificationNavigation.targetEventId.collectAsStateWithLifecycle()
+    LaunchedEffect(targetEvent) {
+        val id = targetEvent ?: return@LaunchedEffect
+        nav.navigate(StudentRoutes.notificationEvent(id)) { launchSingleTop = true }
+        NotificationNavigation.targetEventId.value = null
+    }
 
     CompositionLocalProvider(LocalSnackbar provides snackbar) {
         BoxWithConstraints(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
@@ -147,7 +165,23 @@ private fun StudentNavHost(nav: NavHostController, onSignOut: () -> Unit) {
         composable(StudentRoutes.PROGRESS) { ProgressRoute(onHistory = { nav.navigate(StudentRoutes.HISTORY) }) }
         composable(StudentRoutes.HISTORY) { AttendanceHistoryRoute(onBack = { nav.popBackStack() }) }
         composable(StudentRoutes.PROFILE) {
-            ProfileRoute(onEditInterests = { nav.navigate(StudentRoutes.EDIT_INTERESTS) }, onSignOut = onSignOut)
+            ProfileRoute(
+                onEditInterests = { nav.navigate(StudentRoutes.EDIT_INTERESTS) },
+                onNotifications = { nav.navigate(StudentRoutes.NOTIFICATIONS) },
+                onSignOut = onSignOut,
+            )
+        }
+        composable(StudentRoutes.NOTIFICATIONS) {
+            NotificationsRoute(onBack = { nav.popBackStack() })
+        }
+        composable(StudentRoutes.NOTIFICATION_EVENT, arguments = listOf(navArgument("eventId") { type = NavType.StringType })) {
+            MyEventsRoute(
+                onBrowse = { nav.openTab(StudentRoutes.EXPLORE) },
+                onEditInterests = { nav.navigate(StudentRoutes.EDIT_INTERESTS) },
+                onCheckIn = { nav.navigate(StudentRoutes.checkIn(it)) },
+                onHistory = { nav.navigate(StudentRoutes.HISTORY) },
+                initialEventId = nav.currentBackStackEntry?.arguments?.getString("eventId"),
+            )
         }
         composable(StudentRoutes.EDIT_INTERESTS) {
             val vm = scpdViewModel { c, _ -> ProfileViewModel(c.auth, c.attendance) }

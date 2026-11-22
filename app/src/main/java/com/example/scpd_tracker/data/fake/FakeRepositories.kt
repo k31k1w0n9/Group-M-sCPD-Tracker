@@ -67,7 +67,7 @@ class FakeAuthRepository(private val backend: FakeBackend, private val network: 
     override suspend fun saveInterests(interests: List<String>) {
         val uid = signedInUid.value ?: return
         backend.saveInterests(uid, interests)
-        user.value = backend.user(uid)
+        user.value = backend.user(uid)?.copy(role = user.value?.role ?: AccountRole.Student)
     }
 
     /** The uid every other repository scopes its reads to. Throws if nobody is signed in. */
@@ -77,6 +77,7 @@ class FakeAuthRepository(private val backend: FakeBackend, private val network: 
 
 class FakeEventRepository(
     private val backend: FakeBackend,
+    private val auth: FakeAuthRepository,
     private val network: NetworkMonitor,
 ) : EventRepository {
     override fun studentEvents(): Flow<List<Event>> =
@@ -85,7 +86,11 @@ class FakeEventRepository(
     override fun event(id: String): Flow<Event?> = backend.events.map { it[id] }.distinctUntilChanged()
 
     override fun clubEvents(clubId: String): Flow<List<Event>> =
-        backend.events.map { all -> all.values.filter { it.clubId == clubId }.sortedBy { it.start } }
+        combine(backend.events, auth.currentUser) { all, user ->
+            if (user?.role == AccountRole.Committee && clubId in user.clubIds) {
+                all.values.filter { it.clubId == clubId }.sortedBy { it.start }
+            } else emptyList()
+        }
 
     private suspend fun <T> online(block: suspend () -> Result<T>): Result<T> {
         delay(FAKE_LATENCY_MS)
@@ -93,10 +98,29 @@ class FakeEventRepository(
         return block()
     }
 
-    override suspend fun saveDraft(clubId: String, form: EventForm, eventId: String?) = online { backend.saveDraft(clubId, form, eventId) }
-    override suspend fun submitForReview(eventId: String) = online { backend.submitForReview(eventId) }
-    override suspend fun withdraw(eventId: String) = online { backend.withdraw(eventId) }
-    override suspend fun cancelEvent(eventId: String, reason: String) = online { backend.cancelEvent(eventId, reason) }
+    private fun canManage(clubId: String): Boolean = auth.currentUser.value?.let {
+        it.role == AccountRole.Committee && clubId in it.clubIds
+    } ?: false
+
+    private fun canManageEvent(id: String): Boolean =
+        backend.events.value[id]?.clubId?.let(::canManage) ?: false
+
+    private fun <T> denied(): Result<T> = Result.failure(SecurityException("No access to this club."))
+
+    override suspend fun saveDraft(clubId: String, form: EventForm, eventId: String?): Result<String> {
+        if (!canManage(clubId)) return denied()
+        if (eventId != null && !canManageEvent(eventId)) return denied()
+        return online { backend.saveDraft(clubId, form, eventId) }
+    }
+
+    override suspend fun submitForReview(eventId: String): Result<Unit> =
+        if (canManageEvent(eventId)) online { backend.submitForReview(eventId) } else denied()
+
+    override suspend fun withdraw(eventId: String): Result<Unit> =
+        if (canManageEvent(eventId)) online { backend.withdraw(eventId) } else denied()
+
+    override suspend fun cancelEvent(eventId: String, reason: String): Result<Unit> =
+        if (canManageEvent(eventId)) online { backend.cancelEvent(eventId, reason) } else denied()
 }
 
 class OfflineException : Exception("No connection. Try again when you're back online.")
@@ -238,9 +262,21 @@ class FakeAttendanceRepository(
         return block()
     }
 
-    override suspend fun openCheckIn(eventId: String) = online { backend.openCheckIn(eventId) }
-    override suspend fun openCheckpoint(eventId: String) = online { backend.openCheckpoint(eventId) }
-    override suspend fun endCheckIn(eventId: String) = online { backend.endCheckIn(eventId) }
+    private fun canManageCheckIn(eventId: String): Boolean = auth.currentUser.value?.let { user ->
+        val clubId = backend.events.value[eventId]?.clubId
+        user.role == AccountRole.Committee && clubId != null && clubId in user.clubIds
+    } ?: false
+
+    private fun deniedCheckIn(): Result<Unit> = Result.failure(SecurityException("No access to this club."))
+
+    override suspend fun openCheckIn(eventId: String) =
+        if (canManageCheckIn(eventId)) online { backend.openCheckIn(eventId) } else deniedCheckIn()
+
+    override suspend fun openCheckpoint(eventId: String) =
+        if (canManageCheckIn(eventId)) online { backend.openCheckpoint(eventId) } else deniedCheckIn()
+
+    override suspend fun endCheckIn(eventId: String) =
+        if (canManageCheckIn(eventId)) online { backend.endCheckIn(eventId) } else deniedCheckIn()
 
     override suspend fun currentCode(eventId: String, stage: Stage): CheckInCode? =
         if (network.isOnline.value) backend.currentCode(eventId, stage) else null

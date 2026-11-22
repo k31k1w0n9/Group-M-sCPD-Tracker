@@ -17,6 +17,8 @@ import com.example.scpd_tracker.data.fake.FakeProgressRepository
 import com.example.scpd_tracker.data.system.AdjustableClock
 import com.example.scpd_tracker.data.system.DataStoreDeviceId
 import com.example.scpd_tracker.data.system.SwitchableNetworkMonitor
+import com.example.scpd_tracker.data.system.NotificationSettingsStore
+import com.example.scpd_tracker.data.system.EventNotificationMonitor
 import com.example.scpd_tracker.data.system.connectivityFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -40,8 +42,10 @@ class AppContainer(context: Context) {
 
     private val fakeAuth = FakeAuthRepository(backend, network)
     val auth: AuthRepository = fakeAuth
-    val events: EventRepository = FakeEventRepository(backend, network)
+    val events: EventRepository = FakeEventRepository(backend, fakeAuth, network)
     val bookings: BookingRepository = FakeBookingRepository(backend, fakeAuth, network)
     val attendance: AttendanceRepository = FakeAttendanceRepository(backend, fakeAuth, network, clock, appScope)
     val progress: ProgressRepository = FakeProgressRepository(backend, fakeAuth)
+    val notificationSettings = NotificationSettingsStore(context)
+    private val eventNotifications = EventNotificationMonitor(context, backend, auth, notificationSettings, clock, appScope)
 }

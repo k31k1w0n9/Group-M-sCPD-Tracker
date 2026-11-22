@@ -33,7 +33,7 @@ class AuthViewModelTest {
     }
 
     @Test
-    fun committeeAccountChoosingStudent_showsRoleNotAllowed() = runTest {
+    fun committeeAccountChoosingStudent_opensStudentApp() = runTest {
         val app = TestApp(backgroundScope)
         val vm = app.vm()
         vm.selectRole(AccountRole.Student)
@@ -41,8 +41,20 @@ class AuthViewModelTest {
         vm.onPassword(FakeData.PASSWORD)
         vm.signIn()
         advanceUntilIdle()
-        assertEquals(SignInResult.RoleNotAllowed, vm.state.value.error)
-        assertEquals(null, vm.currentUser.value)
+        assertEquals(null, vm.state.value.error)
+        assertEquals(AccountRole.Student, vm.currentUser.value?.role)
+        assertEquals(Routes.STUDENT, homeRouteFor(vm.currentUser.value))
+    }
+
+    @Test
+    fun committeeStudentLogin_keepsClubMembership() = runTest {
+        val app = TestApp(backgroundScope)
+        app.auth.signIn(FakeData.COMMITTEE_TECH, FakeData.PASSWORD, AccountRole.Student)
+        assertEquals(listOf("cs-society"), app.auth.currentUser.value?.clubIds)
+        assertEquals(Routes.STUDENT, homeRouteFor(app.auth.currentUser.value))
+        app.auth.saveInterests(listOf("Career"))
+        assertEquals(AccountRole.Student, app.auth.currentUser.value?.role)
+        assertEquals(listOf("cs-society"), app.auth.currentUser.value?.clubIds)
     }
 
     @Test

@@ -17,7 +17,12 @@ data class UserProfile(
     val interests: List<String> = emptyList(),
     /** False until the student has been through "Make it yours" once. */
     val hasChosenInterests: Boolean = false,
-)
+) {
+    fun canUse(requestedRole: AccountRole): Boolean = when (requestedRole) {
+        AccountRole.Student -> studentId != null
+        AccountRole.Committee -> clubIds.isNotEmpty()
+    }
+}
 
 sealed interface SignInResult {
     data class Success(val user: UserProfile) : SignInResult

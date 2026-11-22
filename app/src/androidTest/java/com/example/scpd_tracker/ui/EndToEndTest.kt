@@ -47,9 +47,10 @@ class EndToEndTest {
     }
 
     @Test
-    fun committeeAccount_cannotUseStudentApp() {
+    fun committeeAccount_canUseStudentApp() {
         signIn(FakeData.COMMITTEE_TECH)
-        rule.waitUntil(5_000) { rule.onAllNodes(hasText("This is a committee account")).fetchSemanticsNodes().isNotEmpty() }
+        rule.waitUntil(5_000) { rule.onAllNodes(hasText("Happening now")).fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithText("My Events").assertIsDisplayed()
     }
 
     @Test

@@ -15,6 +15,10 @@ import androidx.compose.material.icons.rounded.NorthEast
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,9 +46,25 @@ internal fun MyEventsRoute(
     onEditInterests: () -> Unit,
     onCheckIn: (String) -> Unit,
     onHistory: () -> Unit,
+    initialEventId: String? = null,
 ) {
     val vm = scpdViewModel { c, s -> MyEventsViewModel(c.events, c.bookings, c.attendance, c.network, c.clock, s) }
     val state by vm.state.collectAsStateWithLifecycle()
+    var handled by remember(initialEventId) { mutableStateOf(false) }
+    LaunchedEffect(initialEventId, state.upcoming, state.waitlisted, state.past) {
+        if (handled || initialEventId == null) return@LaunchedEffect
+        val match = (state.upcoming + state.waitlisted).firstOrNull { it.event.id == initialEventId }
+        when {
+            match != null -> {
+                vm.openBooking(match.booking.id)
+                handled = true
+            }
+            state.past.any { it.event.id == initialEventId } -> {
+                vm.selectTab(MyEventsTab.Past)
+                handled = true
+            }
+        }
+    }
     ShowMessages(vm.messages.messages)
     BackHandler(state.page != MyEventsPage.List) { vm.backToList() }
     when (state.page) {

@@ -161,8 +161,8 @@ object FakeData {
         val accounts = buildList {
             add(FakeBackend.Account(UserProfile("u-aisha", "Aisha Rahman", STUDENT_1, AccountRole.Student, "20612345", interests = listOf("Tech", "Career"), hasChosenInterests = true), PASSWORD))
             add(FakeBackend.Account(UserProfile("u-daniel", "Daniel Lim", STUDENT_2, AccountRole.Student, "20654321", interests = listOf("Sports", "Volunteering")), PASSWORD))
-            add(FakeBackend.Account(UserProfile("u-cs", "Computer Science Society", COMMITTEE_TECH, AccountRole.Committee, clubIds = listOf("cs-society")), PASSWORD))
-            add(FakeBackend.Account(UserProfile("u-arts", "Arts Club", COMMITTEE_ARTS, AccountRole.Committee, clubIds = listOf("arts-club")), PASSWORD))
+            add(FakeBackend.Account(UserProfile("u-cs", "Computer Science Society", COMMITTEE_TECH, AccountRole.Committee, studentId = "20692001", clubIds = listOf("cs-society"), interests = listOf("Tech", "Career"), hasChosenInterests = true), PASSWORD))
+            add(FakeBackend.Account(UserProfile("u-arts", "Arts Club", COMMITTEE_ARTS, AccountRole.Committee, studentId = "20692002", clubIds = listOf("arts-club"), interests = listOf("Arts"), hasChosenInterests = true), PASSWORD))
             classmates.forEachIndexed { i, name ->
                 add(FakeBackend.Account(UserProfile("u-c$i", name, "c$i@scpd.example", AccountRole.Student, "2060${1000 + i}"), "not-used"))
             }

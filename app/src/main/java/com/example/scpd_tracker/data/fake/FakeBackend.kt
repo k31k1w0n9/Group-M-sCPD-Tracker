@@ -81,8 +81,8 @@ class FakeBackend(private val clock: AppClock, seed: FakeSeed = FakeData.seed(cl
     fun signIn(email: String, password: String, requestedRole: AccountRole): SignInResult {
         val account = accounts.value.firstOrNull { it.profile.email.equals(email.trim(), ignoreCase = true) }
         if (account == null || account.password != password) return SignInResult.InvalidCredentials
-        if (account.profile.role != requestedRole) return SignInResult.RoleNotAllowed
-        return SignInResult.Success(account.profile)
+        if (!account.profile.canUse(requestedRole)) return SignInResult.RoleNotAllowed
+        return SignInResult.Success(account.profile.copy(role = requestedRole))
     }
 
     fun user(uid: String): UserProfile? = accounts.value.firstOrNull { it.profile.uid == uid }?.profile
@@ -355,6 +355,7 @@ class FakeBackend(private val clock: AppClock, seed: FakeSeed = FakeData.seed(cl
 
     /** Points are written once, together with the outcome, so a retried request can never add a second award (R5). */
     private fun awardIfComplete(uid: String, event: Event) {
+        if (user(uid)?.clubIds?.contains(event.clubId) == true) return
         val ev = evidence.value[key(uid, event.id)] ?: return
         val complete = ev.arrival == StageStatus.VERIFIED && (!event.requiresCheckpoint || ev.checkpoint == StageStatus.VERIFIED)
         val net = ledger.value.filter { it.userId == uid && it.entry.eventId == event.id }.sumOf { it.entry.points }
