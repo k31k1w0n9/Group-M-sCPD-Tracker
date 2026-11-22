@@ -85,30 +85,28 @@ This replaces DG-09 for the current app. The student's phone and the committee's
 
 **DG-09b Check-in and offline sync as built (R3, R4, R5)**
 
-The backend is the in-memory fake today and a Cloud Function once Firebase is connected.
-
 ```mermaid
 sequenceDiagram
   participant S as Student app
-  participant Q as Device queue
-  participant B as Backend
+  participant Q as On-device queue
+  participant B as Backend (fake today, Cloud Function next)
   participant C as Committee list
   S->>S: Confirm identity with fingerprint or screen lock
   alt Student is online
     S->>B: Submit claim with request ID, token and device ID
-    B->>B: Check account, booking, session, stage, signature, window and device
+    B->>B: Check account, booking, session, stage, signature, upload window and device
     B-->>S: Verified, or Rejected with a reason
-  else Student is offline
-    S->>Q: Save claim, QR scan only
-    S->>S: Show Pending sync
-    Note over C,B: Committee sees only what the server knows, so this stage shows Awaiting sync after check-in closes
+  else Student is offline (QR scan only, backup codes need internet)
+    S->>Q: Save claim
+    S->>S: Show Pending sync (Saved on phone)
+    Note over C,B: Committee list shows Awaiting sync
     Q->>B: Upload automatically when the network returns
     alt Accepted within 2 hours of check-in closing
       B-->>S: Verified
     else Uploaded too late or token invalid
-      B-->>S: Rejected with reason and 0 points
+      B-->>S: Rejected with reason, 0 points
     else Same phone used by another account
-      B-->>S: Under review with 0 points until the office decides
+      B-->>S: Under review, 0 points until the office decides
       B-->>C: Row marked Under review
     end
   end
