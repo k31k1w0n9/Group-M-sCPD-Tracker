@@ -17,6 +17,8 @@ enum class StageStatus(val label: String) {
 enum class AttendanceOutcome(val label: String) {
     IN_PROGRESS("In progress"),
     PENDING_SYNC("Awaiting sync"),
+    /** A late or suspicious record the s-CPD office is checking. No points until it is cleared. */
+    UNDER_REVIEW("Under review"),
     VERIFIED("Verified"),
     INCOMPLETE("Incomplete attendance"),
     REJECTED("Rejected"),
@@ -34,6 +36,8 @@ data class AttendanceRecord(
     val checkpoint: StageStatus = StageStatus.NOT_SCANNED,
     val tags: List<String> = emptyList(),
     val rejectReason: String? = null,
+    /** Set when the office flagged this record (for example the same phone used by two accounts). */
+    val reviewReason: String? = null,
 )
 
 /** A scan or backup code a student submits. [capturedAt] is only for diagnosis: the server never trusts it. */

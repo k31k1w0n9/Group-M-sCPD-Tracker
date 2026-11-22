@@ -396,7 +396,7 @@ class FakeBackend(private val clock: AppClock, seed: FakeSeed = FakeData.seed(cl
                     eventId = event.id, eventTitle = event.title, eventDate = event.start.toLocalDate(),
                     eventEnded = now.isAfter(event.end) || booking.status == BookingStatus.NoShow,
                     requiresCheckpoint = event.requiresCheckpoint, arrival = ev.arrival, checkpoint = ev.checkpoint,
-                    tags = event.tags, rejectReason = ev.rejectReason ?: ev.flagged,
+                    tags = event.tags, rejectReason = ev.rejectReason, reviewReason = ev.flagged,
                 )
             }
             .sortedByDescending { it.eventDate }
