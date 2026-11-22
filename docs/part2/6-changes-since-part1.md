@@ -40,6 +40,90 @@ These are summarised here. The full table is in [8. Threat model](8-threat-model
 
 The code now follows the layers from the MVVM lecture: `model/` (plain data), `domain/` (pure Kotlin rules), `data/` (repository interfaces, fakes and device sources) and `ui/` (screens and ViewModels per feature). Navigation Compose replaced the hand-written screen switch, with separate student and committee graphs chosen by the signed-in account's role.
 
+### Architecture as built
+
+The Part 1 diagram (DG-02 in [Architecture](../4-1-architecture.md)) shows the finished product with Room and Firebase. This diagram shows what the app is made of today, and which parts the Firebase work will replace. Dashed lines mark the parts still to come.
+
+**DG-02b Architecture as built (R4, R6)**
+
+```mermaid
+flowchart LR
+  subgraph Device["Android app (Kotlin, Jetpack Compose, MVVM)"]
+    UIS["Student screens: Home, Explore, My Events, Check-in, Progress, Profile, Settings"]
+    UIC["Committee screens: Dashboard, Events, Scan, Attendance"]
+    VM["ViewModels: one per screen, expose StateFlow state"]
+    Dom["domain: Policy, BookingRules, AttendanceOutcomes, StreakCalculator, RecommendationRanker"]
+    Repo["Repository interfaces: Auth, Event, Booking, Attendance, Progress"]
+    Queue[("On-device scan queue: in memory today, Room planned")]
+    Sys["Device sources: CameraX and ML Kit scanner, biometric prompt, DataStore device ID, network monitor"]
+    DI["AppContainer builds every repository"]
+    UIS --> VM
+    UIC --> VM
+    VM --> Dom
+    VM --> Repo
+    Repo <--> Queue
+    Repo --> Sys
+    DI -.creates.-> Repo
+  end
+  subgraph Today["Today: in-memory backend"]
+    Fake["FakeBackend: bookings and waitlist, signed rotating codes, claim checks, points ledger, review flags"]
+  end
+  subgraph Next["Next: Firebase"]
+    FB["Authentication, Firestore, Cloud Functions, Cloud Messaging, security rules"]
+  end
+  Office(["s-CPD office: Developer menu in debug builds, Firebase console later"])
+  Repo -->|"submit claim, book, cancel"| Fake
+  Repo -.->|"same interfaces, replaces the fake"| FB
+  Office --> Fake
+  Office -.-> FB
+  Queue -.->|"WorkManager upload, planned"| FB
+```
+
+### Check-in and offline sync as built
+
+This replaces DG-09 for the current app. The student's phone and the committee's list use different words on purpose: a scan still on a student's phone is **Pending sync**, and the committee sees **Awaiting sync** for any stage the server has not received yet.
+
+**DG-09b Check-in and offline sync as built (R3, R4, R5)**
+
+```mermaid
+sequenceDiagram
+  participant S as Student app
+  participant Q as On-device queue
+  participant B as Backend (fake today, Cloud Function next)
+  participant C as Committee list
+  S->>S: Confirm identity with fingerprint or screen lock
+  alt Student is online
+    S->>B: Submit claim with request ID, token and device ID
+    B->>B: Check account, booking, session, stage, signature, upload window and device
+    B-->>S: Verified, or Rejected with a reason
+  else Student is offline (QR scan only, backup codes need internet)
+    S->>Q: Save claim
+    S->>S: Show Pending sync (Saved on phone)
+    Note over C,B: Committee sees only what the server knows, so this stage shows Awaiting sync after check-in closes
+    Q->>B: Upload automatically when the network returns
+    alt Accepted within 2 hours of check-in closing
+      B-->>S: Verified
+    else Uploaded too late or token invalid
+      B-->>S: Rejected with reason, 0 points
+    else Same phone used by another account
+      B-->>S: Under review, 0 points until the office decides
+      B-->>C: Row marked Under review
+    end
+  end
+  opt Every required stage verified
+    B->>B: Award 3 points once
+  end
+```
+
+| Where it shows | Term | Meaning |
+|---|---|---|
+| Student's phone, one scan | Pending sync (Saved on phone) | Saved on the device, not yet uploaded |
+| Committee attendee list | Awaiting sync | The server has not received this stage yet, and it may still arrive while the upload window is open |
+| Student's history and committee list | Under review | The office is checking a flagged record. No points until it decides. |
+| Student's history | Rejected, Incomplete attendance, No-show, Verified | Final outcomes, as in the status terms in [Status terms and data model](../4-3-status-and-data-model.md) |
+
+Not built yet: saved scans do not survive an app restart, and the committee list does not yet turn Awaiting sync into No-show when the 2-hour window ends. Both come with the Firebase work.
+
 ---
 
 [Next: 7. User stories v2 →](7-user-stories-v2.md)
