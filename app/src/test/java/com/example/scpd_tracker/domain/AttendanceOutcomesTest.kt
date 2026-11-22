@@ -79,8 +79,9 @@ class AttendanceOutcomesTest {
     }
 
     @Test
-    fun pendingSyncLabelSaysAwaitingSync() {
-        assertEquals("Awaiting sync", PENDING_SYNC.label)
+    fun studentPhoneLabelStaysPendingSync() {
+        // The committee list says "Awaiting sync"; the two words are kept apart on purpose (SQA finding P1).
+        assertEquals("Pending sync", PENDING_SYNC.label)
     }
 
     @Test

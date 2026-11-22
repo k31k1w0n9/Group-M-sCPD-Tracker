@@ -308,7 +308,7 @@ class CommitteeCheckInViewModel(
 
 // ---- Bookings and attendance list ---------------------------------------------------------------
 
-enum class AttendeeFilter(val label: String) { All("All"), CheckedIn("Checked in"), Missing("Not yet"), Flagged("Flagged") }
+enum class AttendeeFilter(val label: String) { All("All"), CheckedIn("Checked in"), Missing("Not yet"), Flagged("Under review") }
 
 data class AttendeesUiState(
     val event: Event? = null,

@@ -16,7 +16,7 @@ enum class StageStatus(val label: String) {
 /** Overall attendance outcome for an event, following the Part 1 design. */
 enum class AttendanceOutcome(val label: String) {
     IN_PROGRESS("In progress"),
-    PENDING_SYNC("Awaiting sync"),
+    PENDING_SYNC("Pending sync"),
     /** A late or suspicious record the s-CPD office is checking. No points until it is cleared. */
     UNDER_REVIEW("Under review"),
     VERIFIED("Verified"),

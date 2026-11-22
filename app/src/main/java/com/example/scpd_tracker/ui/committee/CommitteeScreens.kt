@@ -330,7 +330,7 @@ internal fun CommitteeCheckInScreen(
                     }
                     Text(state.countLabel, style = MaterialTheme.typography.titleLarge, modifier = Modifier.testTag("checked_in_count"))
                     if (event?.requiresCheckpoint == true) Text("${state.checkpointCount} at the checkpoint", style = MaterialTheme.typography.bodyMedium)
-                    if (state.flaggedCount > 0) TagChip("${state.flaggedCount} flagged for review", MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer, Icons.Rounded.Flag)
+                    if (state.flaggedCount > 0) TagChip("${state.flaggedCount} under review", MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer, Icons.Rounded.Flag)
                     TextButton(onClick = onAttendees) { Text("View attendee list", style = MaterialTheme.typography.labelLarge) }
                 }
             }
@@ -354,6 +354,8 @@ internal fun CommitteeCheckInScreen(
 internal fun AttendeesScreen(state: AttendeesUiState, onFilter: (AttendeeFilter) -> Unit, onBack: () -> Unit) {
     val spacing = ScpdTheme.spacing
     val started = state.event?.let { it.state == EventState.CheckInOpen || it.state == EventState.CheckInClosed } == true
+    // Once check-in has closed, a missing stage may still arrive from a student's phone (SQA finding P1).
+    val closed = state.event?.state == EventState.CheckInClosed
     Column(Modifier.fillMaxSize()) {
         ShellTopBar(if (started) "Attendance" else "Bookings", onBack)
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
@@ -369,7 +371,7 @@ internal fun AttendeesScreen(state: AttendeesUiState, onFilter: (AttendeeFilter)
                         }
                     }
                     if (state.rows.isEmpty()) Text("Nobody here yet.", style = MaterialTheme.typography.bodyLarge)
-                    state.rows.forEach { AttendeeCard(it, started, state.event?.requiresCheckpoint == true) }
+                    state.rows.forEach { AttendeeCard(it, started, state.event?.requiresCheckpoint == true, closed) }
                 }
             }
         }
@@ -377,7 +379,7 @@ internal fun AttendeesScreen(state: AttendeesUiState, onFilter: (AttendeeFilter)
 }
 
 @Composable
-private fun AttendeeCard(row: AttendeeRow, started: Boolean, checkpoint: Boolean) {
+private fun AttendeeCard(row: AttendeeRow, started: Boolean, checkpoint: Boolean, closed: Boolean) {
     val spacing = ScpdTheme.spacing
     Surface(color = MaterialTheme.colorScheme.surfaceContainerLowest, shape = MaterialTheme.shapes.medium, modifier = Modifier.testTag("attendee_row")) {
         Column(Modifier.fillMaxWidth().padding(spacing.space3), verticalArrangement = Arrangement.spacedBy(spacing.space1)) {
@@ -385,13 +387,23 @@ private fun AttendeeCard(row: AttendeeRow, started: Boolean, checkpoint: Boolean
             Text(row.studentId, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (started) {
                 Row(horizontalArrangement = Arrangement.spacedBy(spacing.space2)) {
-                    StatusChip(row.arrival, "Arrival: ${row.arrival.label}")
-                    if (checkpoint) StatusChip(row.checkpoint, "Checkpoint: ${row.checkpoint.label}")
+                    StageChip(row.arrival, "Arrival", closed)
+                    if (checkpoint) StageChip(row.checkpoint, "Checkpoint", closed)
                 }
             } else {
                 TagChip("Booked", MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer, Icons.Rounded.CheckCircle)
             }
-            row.flagged?.let { TagChip("Flagged: $it", MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer, Icons.Rounded.Flag) }
+            row.flagged?.let { TagChip("Under review: $it", MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer, Icons.Rounded.Flag) }
         }
+    }
+}
+
+/** A stage chip. After check-in closes, a stage the server has not received shows as Awaiting sync, not Not scanned. */
+@Composable
+private fun StageChip(status: com.example.scpd_tracker.model.StageStatus, name: String, awaitingSync: Boolean) {
+    if (awaitingSync && status == com.example.scpd_tracker.model.StageStatus.NOT_SCANNED) {
+        TagChip("$name: Awaiting sync", MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.onTertiaryContainer, Icons.Rounded.HourglassTop)
+    } else {
+        StatusChip(status, "$name: ${status.label}")
     }
 }

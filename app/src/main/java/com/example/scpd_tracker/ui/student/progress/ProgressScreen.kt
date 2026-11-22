@@ -249,7 +249,7 @@ private fun outcomeStyle(record: AttendanceRecord): OutcomeStyle {
     val colors = MaterialTheme.colorScheme
     return when (record.outcome) {
         AttendanceOutcome.VERIFIED -> OutcomeStyle(colors.secondaryContainer, colors.onSecondaryContainer, Icons.Rounded.CheckCircle, null)
-        AttendanceOutcome.PENDING_SYNC -> OutcomeStyle(colors.tertiaryContainer, colors.onTertiaryContainer, Icons.Rounded.CloudUpload, "Awaiting sync: saved on this phone. Points follow after it uploads.")
+        AttendanceOutcome.PENDING_SYNC -> OutcomeStyle(colors.tertiaryContainer, colors.onTertiaryContainer, Icons.Rounded.CloudUpload, "Saved on this phone. Points follow after sync.")
         AttendanceOutcome.UNDER_REVIEW -> OutcomeStyle(colors.tertiaryContainer, colors.onTertiaryContainer, Icons.Rounded.WarningAmber, "The s-CPD office is checking this record. Points are held until it is cleared.")
         AttendanceOutcome.INCOMPLETE -> OutcomeStyle(colors.tertiaryContainer, colors.onTertiaryContainer, Icons.Rounded.WarningAmber, "Checkpoint scan missing, so no points.")
         AttendanceOutcome.REJECTED -> OutcomeStyle(colors.errorContainer, colors.onErrorContainer, Icons.Rounded.Block, record.rejectReason ?: "Scan rejected. Contact the organiser.")
