@@ -96,7 +96,7 @@ private fun ReviewChip(event: Event) {
 }
 
 @Composable
-private fun EventRow(event: Event, action: String, onClick: () -> Unit, onManage: (() -> Unit)? = null) {
+private fun EventRow(event: Event, action: String, onManage: (() -> Unit)? = null, onClick: () -> Unit) {
     val spacing = ScpdTheme.spacing
     val colors = MaterialTheme.colorScheme
     Surface(onClick = onClick, color = colors.surfaceContainerLowest, shape = MaterialTheme.shapes.large, modifier = Modifier.testTag("committee_event")) {
