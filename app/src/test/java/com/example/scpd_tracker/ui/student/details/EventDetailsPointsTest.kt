@@ -32,3 +32,4 @@ class EventDetailsPointsTest {
             eventPointsMessage(event.copy(pointsRequested = false), emptyList()),
         )
     }
+}
