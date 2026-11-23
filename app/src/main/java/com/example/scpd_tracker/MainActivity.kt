@@ -15,7 +15,10 @@ import com.example.scpd_tracker.ui.theme.ScpdTheme
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        NotificationNavigation.targetEventId.value = intent.getStringExtra(NotificationNavigation.EXTRA_EVENT_ID)
+        // Fresh launches only: after a rotation the same intent is still here and would reopen the booking.
+        if (savedInstanceState == null) {
+            NotificationNavigation.targetEventId.value = intent.getStringExtra(NotificationNavigation.EXTRA_EVENT_ID)
+        }
         enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT))
         setContent {
             ScpdTheme {

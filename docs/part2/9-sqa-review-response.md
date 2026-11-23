@@ -10,7 +10,7 @@ All times are Malaysia time (UTC+8) and are judged by the server's clock. "Befor
 
 ### Roles and accounts
 
-- **M1 · One account, two roles.** Every student has one university account with the Student role. Joining a club committee adds committee access for that club only, and never removes the Student role. A member of club A can book and attend club B's events and earn points, but cannot manage club B. At club A's own events they earn no points (US-28). *(Planned: the demo committee accounts still refuse the Student role, so `committeeAccountChoosingStudent_showsRoleNotAllowed` and `committeeAccount_cannotUseStudentApp` will change.)*
+- **M1 · One account, two roles.** Every student has one university account with the Student role. Joining a club committee adds committee access for that club only, and never removes the Student role. A member of club A can book and attend club B's events and earn points, but cannot manage club B. At club A's own events they earn no points (US-28). Tests: `committeeAccountChoosingStudent_opensStudentApp`, `committeeMember_cannotManageAnotherClub`, `ownClubCheckIn_addsNoPoints`, `committeeCanReadOwnClubOnly`.
 - **M5 · Admin accounts.** The s-CPD office uses separate staff accounts with the Admin role. They stay in the user table (the *admin* value in DG-07) so every decision records who made it, but they can sign in only to the backend console. The app refuses them with "Use the s-CPD office console". *(Planned)*
 
 ### Event submissions and points
@@ -45,7 +45,7 @@ All times are Malaysia time (UTC+8) and are judged by the server's clock. "Befor
   - *Waitlist place:* within 5 minutes of being booked from the waitlist.
   - *Checkpoint open:* when the organiser opens the checkpoint at an event the student has checked in to.
 
-  Cancellation and waitlist alerts can't be turned off, because they change the booking. If notifications are blocked in Android settings, My Events still shows the same information. *(Planned)*
+  Cancellation and waitlist alerts can't be turned off, because they change the booking. If notifications are blocked in Android settings, My Events still shows the same information. With quiet hours on (22:00–08:00), a reminder that would fall inside them moves to 21:59 or 08:00, whichever is closer and still before the event. Tests: `cancellationQueuesAnAlertForEveryAffectedStudent`, `waitlistPromotionQueuesAnAlertWithoutStudentLogin`, `remindersAre24And1HoursBeforeAnEvent`. *(Backend: the in-memory backend runs on one phone, so cancellation, waitlist and checkpoint alerts reach a student the next time they open the app. Push through Firebase Cloud Messaging is needed for the 5-minute target.)*
 
 ### Measurable non-functional requirements
 

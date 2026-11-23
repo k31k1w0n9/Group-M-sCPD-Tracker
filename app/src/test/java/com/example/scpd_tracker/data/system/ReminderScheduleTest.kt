@@ -29,6 +29,18 @@ class ReminderScheduleTest {
     }
 
     @Test
+    fun lateEveningEvent_remindersMoveToJustBeforeQuietHours() {
+        val start = local("2026-11-26T23:00")
+        assertEquals(local("2026-11-26T21:59"), ReminderSchedule.reminderAt(start, 1, true))
+        assertEquals(local("2026-11-25T21:59"), ReminderSchedule.reminderAt(start, 24, true))
+    }
+
+    @Test
+    fun earlyMorningEvent_oneHourReminderAtEightWhenStillBeforeStart() {
+        assertEquals(local("2026-11-26T08:00"), ReminderSchedule.reminderAt(local("2026-11-26T08:30"), 1, true))
+    }
+
+    @Test
     fun quietHoursDisabledKeepsTheRequestedTime() {
         val start = local("2026-11-26T08:30")
         assertEquals(local("2026-11-26T07:30"), ReminderSchedule.reminderAt(start, 1, false))

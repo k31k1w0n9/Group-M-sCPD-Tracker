@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,7 +51,8 @@ internal fun MyEventsRoute(
 ) {
     val vm = scpdViewModel { c, s -> MyEventsViewModel(c.events, c.bookings, c.attendance, c.network, c.clock, s) }
     val state by vm.state.collectAsStateWithLifecycle()
-    var handled by remember(initialEventId) { mutableStateOf(false) }
+    // Saved across rotation, so the booking from a notification opens once and not again on every rotation.
+    var handled by rememberSaveable(initialEventId) { mutableStateOf(false) }
     LaunchedEffect(initialEventId, state.upcoming, state.waitlisted, state.past) {
         if (handled || initialEventId == null) return@LaunchedEffect
         val match = (state.upcoming + state.waitlisted).firstOrNull { it.event.id == initialEventId }
