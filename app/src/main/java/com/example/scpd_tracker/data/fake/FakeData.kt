@@ -181,6 +181,7 @@ object FakeData {
             add(booking("u-daniel", LIVE_EVENT))
             add(booking("u-daniel", "garden-volunteering"))
             classmates.indices.forEach { add(booking("u-c$it", LIVE_EVENT)) }
+            classmates.indices.take(18).forEach { add(booking("u-c$it", "python-next-steps")) }
         }
 
         val evidence = buildMap {

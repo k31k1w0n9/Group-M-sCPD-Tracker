@@ -71,6 +71,16 @@ class FakeBookingRepositoryTest {
     }
 
     @Test
+    fun pythonDemoBookingCountMatchesCommitteeList() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInCommittee()
+        val event = app.backend.events.value.getValue("python-next-steps")
+        val rows = app.bookings.eventBookings(event.id).first()
+        assertEquals(19, event.bookedCount)
+        assertEquals(event.bookedCount, rows.count { it.first.status == BookingStatus.Booked })
+    }
+
+    @Test
     fun committeeAccount_canSignInAsStudent() = runTest {
         val app = TestApp(backgroundScope)
         val result = app.auth.signIn(FakeData.COMMITTEE_TECH, FakeData.PASSWORD, AccountRole.Student)

@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
@@ -21,6 +22,8 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.scpd_tracker.ScpdApplication
+import com.example.scpd_tracker.domain.Policy
 import com.example.scpd_tracker.model.BookingDecision
 import com.example.scpd_tracker.model.BookingStatus
 import com.example.scpd_tracker.model.Event
@@ -34,9 +37,11 @@ import com.example.scpd_tracker.ui.theme.ScpdTheme
 internal fun EventDetailsRoute(onBack: () -> Unit, onCheckIn: (String) -> Unit, onMyEvents: () -> Unit) {
     val vm = scpdViewModel { c, s -> EventDetailsViewModel(c.events, c.bookings, c.network, c.clock, s) }
     val state by vm.state.collectAsStateWithLifecycle()
+    val user by (LocalContext.current.applicationContext as ScpdApplication)
+        .container.auth.currentUser.collectAsStateWithLifecycle()
     ShowMessages(vm.messages.messages)
     EventDetailsScreen(
-        state = state, onBack = onBack,
+        state = state, onBack = onBack, memberClubIds = user?.clubIds.orEmpty(),
         onBook = vm::openReview, onConfirm = vm::confirmBooking, onDismissReview = vm::dismissReview,
         onJoinWaitlist = vm::joinWaitlist, onDismissResult = vm::dismissResult,
         onCheckIn = { state.event?.let { onCheckIn(it.id) } }, onMyEvents = onMyEvents,
@@ -55,6 +60,7 @@ internal fun EventDetailsScreen(
     onDismissResult: () -> Unit,
     onCheckIn: () -> Unit,
     onMyEvents: () -> Unit,
+    memberClubIds: List<String> = emptyList(),
 ) {
     val spacing = ScpdTheme.spacing
     val type = MaterialTheme.typography
@@ -82,7 +88,7 @@ internal fun EventDetailsScreen(
                     }
                     Text(event.description, style = type.bodyLarge)
                     AttendanceRequirement(event)
-                    FactRow(Icons.Rounded.Star, "Earn 3 s-CPD points once your attendance is verified.")
+                    FactRow(Icons.Rounded.Star, eventPointsMessage(event, memberClubIds))
                     FactRow(Icons.Rounded.EventBusy, "Cancel up to 2 hours before the start, so your place can go to someone else.")
                     FactRow(Icons.Rounded.Email, "Questions? Contact the organiser at ${event.organiserContact}")
                 }
@@ -122,13 +128,19 @@ internal fun AttendanceRequirement(event: Event) {
                 )
             }
             Text(
-                if (event.requiresCheckpoint) "Scan the QR on arrival, then again at a short checkpoint the organiser opens near the end. Points need both."
+                if (event.requiresCheckpoint) "Scan the QR on arrival, then again at a short checkpoint the organiser opens near the end. Both scans are needed to verify attendance."
                 else "Scan the QR on the organiser's screen when you arrive.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text("QR scans save offline. Backup codes need internet.", style = MaterialTheme.typography.bodySmall)
         }
     }
+}
+
+internal fun eventPointsMessage(event: Event, memberClubIds: List<String>): String = when {
+    event.clubId in memberClubIds -> "Own-club attendance earns 0 s-CPD points, even when verified."
+    !event.pointsRequested -> "This event does not award s-CPD points."
+    else -> "Earn ${Policy.POINTS_PER_EVENT} s-CPD points once your attendance is verified."
 }
 
 @Composable

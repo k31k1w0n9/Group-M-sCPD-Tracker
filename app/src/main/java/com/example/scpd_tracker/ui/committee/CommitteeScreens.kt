@@ -59,7 +59,9 @@ internal fun DashboardScreen(state: DashboardUiState, onCreate: () -> Unit, onOp
                     PrimaryAction("Create event", onClick = onCreate)
                     Text("The s-CPD office reviews each event before students can see it. Approved events are locked.", style = MaterialTheme.typography.bodySmall)
                     Section("Changes requested", state.changesRequested) { EventRow(it, "Review feedback") { onOpen(it.id) } }
-                    Section("Upcoming", state.upcoming) { EventRow(it, "View bookings") { onBookings(it.id) } }
+                    Section("Upcoming", state.upcoming) {
+                        EventRow(it, "View bookings", onClick = { onBookings(it.id) }, onManage = { onOpen(it.id) })
+                    }
                     Section("Waiting for review", state.pending) { EventRow(it, "View submission") { onOpen(it.id) } }
                     Section("Drafts", state.drafts) { EventRow(it, "Edit draft") { onOpen(it.id) } }
                     Section("Past", state.past) { EventRow(it, "Attendance summary") { onBookings(it.id) } }
@@ -94,7 +96,7 @@ private fun ReviewChip(event: Event) {
 }
 
 @Composable
-private fun EventRow(event: Event, action: String, onClick: () -> Unit) {
+private fun EventRow(event: Event, action: String, onClick: () -> Unit, onManage: (() -> Unit)? = null) {
     val spacing = ScpdTheme.spacing
     val colors = MaterialTheme.colorScheme
     Surface(onClick = onClick, color = colors.surfaceContainerLowest, shape = MaterialTheme.shapes.large, modifier = Modifier.testTag("committee_event")) {
@@ -107,7 +109,12 @@ private fun EventRow(event: Event, action: String, onClick: () -> Unit) {
                 Text("${event.bookedCount} / ${event.capacity} booked", style = MaterialTheme.typography.bodySmall)
             }
             event.reviewComment?.let { Text("s-CPD office: $it", style = MaterialTheme.typography.bodyMedium) }
-            Text(action, style = MaterialTheme.typography.labelLarge, color = colors.primary)
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Text(action, style = MaterialTheme.typography.labelLarge, color = colors.primary)
+                if (onManage != null) {
+                    TextButton(onClick = onManage, modifier = Modifier.testTag("manage_event")) { Text("Manage event") }
+                }
+            }
         }
     }
 }
