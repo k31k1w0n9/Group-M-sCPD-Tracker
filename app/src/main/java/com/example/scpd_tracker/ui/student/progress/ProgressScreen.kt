@@ -274,6 +274,9 @@ private fun HistoryCard(record: AttendanceRecord) {
                 if (settled) Text(if (record.points > 0) "+${record.points}" else "0", style = type.titleMedium)
             }
             TagChip(record.outcome.label, style.container, style.content, style.icon)
+            if (record.outcome == AttendanceOutcome.VERIFIED && !record.pointsEligible) {
+                Text(record.pointsReason ?: "Attendance verified · no points awarded", style = type.bodySmall)
+            }
             Text(
                 if (record.requiresCheckpoint) "Arrival: ${record.arrival.label} · Checkpoint: ${record.checkpoint.label}" else "Arrival: ${record.arrival.label}",
                 style = type.bodyMedium, color = colors.onSurfaceVariant,

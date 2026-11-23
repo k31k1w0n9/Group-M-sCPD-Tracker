@@ -12,8 +12,10 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.work.CoroutineWorker
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
@@ -22,21 +24,21 @@ import com.example.scpd_tracker.R
 import com.example.scpd_tracker.ScpdApplication
 import com.example.scpd_tracker.data.AppClock
 import com.example.scpd_tracker.data.AuthRepository
+import com.example.scpd_tracker.data.fake.BackendAlert
 import com.example.scpd_tracker.data.fake.FakeBackend
 import com.example.scpd_tracker.model.AccountRole
 import com.example.scpd_tracker.model.Booking
 import com.example.scpd_tracker.model.BookingStatus
 import com.example.scpd_tracker.model.Event
-import com.example.scpd_tracker.model.StageStatus
-import com.example.scpd_tracker.ui.components.whenLabel
+import com.example.scpd_tracker.model.UserProfile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 object NotificationNavigation {
@@ -54,61 +56,120 @@ internal object EventNotifications {
         }
     }
 
-    fun send(context: Context, event: Event, title: String, detail: String, kind: String) {
+    private fun canNotify(context: Context): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
-        ) return
-        if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) return
+        ) return false
+        return NotificationManagerCompat.from(context).areNotificationsEnabled()
+    }
+
+    fun sendEvent(
+        context: Context, eventId: String, eventTitle: String, startMillis: Long, venue: String,
+        title: String, detail: String, kind: String,
+    ): Boolean {
+        if (!canNotify(context)) return false
         createChannel(context)
-        val key = "${event.id}:$kind"
+        val key = "$eventId:$kind"
         val intent = Intent(context, MainActivity::class.java).apply {
             action = "com.example.scpd_tracker.OPEN_BOOKING"
-            putExtra(NotificationNavigation.EXTRA_EVENT_ID, event.id)
+            putExtra(NotificationNavigation.EXTRA_EVENT_ID, eventId)
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
         val pending = PendingIntent.getActivity(
             context, key.hashCode(), intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
-        val info = "${event.whenLabel} · ${event.venue}"
+        val time = Instant.ofEpochMilli(startMillis).atZone(ReminderSchedule.zone)
+            .format(DateTimeFormatter.ofPattern("EEE d MMM, h:mm a"))
+        val info = "$time · $venue"
         val notification = NotificationCompat.Builder(context, CHANNEL)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("$title · ${event.title}")
+            .setContentTitle("$title · $eventTitle")
             .setContentText(info)
             .setStyle(NotificationCompat.BigTextStyle().bigText("$info\n$detail"))
             .setAutoCancel(true)
             .setContentIntent(pending)
             .build()
         NotificationManagerCompat.from(context).notify(key.hashCode(), notification)
+        return true
+    }
+
+    fun sendStreak(context: Context) {
+        if (!canNotify(context)) return
+        createChannel(context)
+        val intent = Intent(context, MainActivity::class.java)
+        val pending = PendingIntent.getActivity(
+            context, "streak".hashCode(), intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+        val notification = NotificationCompat.Builder(context, CHANNEL)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Weekly streak reminder")
+            .setContentText("Find an eligible event to keep your weekly streak going.")
+            .setContentIntent(pending)
+            .setAutoCancel(true)
+            .build()
+        NotificationManagerCompat.from(context).notify("streak".hashCode(), notification)
     }
 }
 
 class EventReminderWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val app = applicationContext as ScpdApplication
-        val uid = inputData.getString(KEY_USER) ?: return Result.success()
-        val eventId = inputData.getString(KEY_EVENT) ?: return Result.success()
-        val expectedStart = inputData.getLong(KEY_START, 0L)
-        if (app.container.auth.currentUser.value?.uid != uid) return Result.success()
         val settings = app.container.notificationSettings.settings.first()
-        if (!settings.eventReminders) return Result.success()
-        val now = ZonedDateTime.now(ZoneId.of("Asia/Kuala_Lumpur"))
-        if (settings.quietHours && (now.hour >= 22 || now.hour < 8)) return Result.success()
-        val event = app.container.backend.events.value[eventId] ?: return Result.success()
-        if (event.start.toInstant().toEpochMilli() != expectedStart || event.isCancelled) return Result.success()
-        val booked = app.container.backend.bookings.value.any {
-            it.userId == uid && it.eventId == eventId && it.status == BookingStatus.Booked
+        val uid = inputData.getString(KEY_USER) ?: return Result.success()
+        if (!ReminderSchedule.canNotifyStudent(uid, app.container.notificationSettings.reminderRecipient.first()) ||
+            !settings.eventReminders) {
+            return Result.success()
         }
-        if (!booked) return Result.success()
-        EventNotifications.send(applicationContext, event, "Event reminder", "Your booked event is coming up.", "reminder-${inputData.getInt(KEY_HOURS, 1)}")
+        val eventId = inputData.getString(KEY_EVENT) ?: return Result.success()
+        val title = inputData.getString(KEY_TITLE) ?: return Result.success()
+        val venue = inputData.getString(KEY_VENUE) ?: return Result.success()
+        val start = inputData.getLong(KEY_START, 0L)
+        val hours = inputData.getInt(KEY_HOURS, 1)
+        if (start <= 0 || System.currentTimeMillis() >= start) return Result.success()
+        val now = Instant.now().atZone(ReminderSchedule.zone)
+        if (settings.quietHours && ReminderSchedule.inQuietHours(now)) {
+            // defer a late worker instead of discarding its reminder.
+            val morning = now.toLocalDate().atTime(8, 0).atZone(ReminderSchedule.zone)
+                .let { if (it.isAfter(now)) it else it.plusDays(1) }
+            if (morning.toInstant().toEpochMilli() < start) {
+                val retry = OneTimeWorkRequestBuilder<EventReminderWorker>()
+                    .setInitialDelay(morning.toInstant().toEpochMilli() - System.currentTimeMillis(), TimeUnit.MILLISECONDS)
+                    .setInputData(inputData)
+                    .build()
+                val key = inputData.getString(KEY_WORK) ?: return Result.success()
+                WorkManager.getInstance(applicationContext).enqueueUniqueWork(key, ExistingWorkPolicy.APPEND_OR_REPLACE, retry)
+            }
+            return Result.success()
+        }
+        EventNotifications.sendEvent(
+            applicationContext, eventId, title, start, venue,
+            "Event reminder", "Your booked event is coming up.", "reminder-$hours",
+        )
         return Result.success()
     }
 
     companion object {
         const val KEY_USER = "user"
         const val KEY_EVENT = "event"
+        const val KEY_TITLE = "title"
+        const val KEY_VENUE = "venue"
         const val KEY_START = "start"
         const val KEY_HOURS = "hours"
+        const val KEY_WORK = "work"
+    }
+}
+
+class StreakReminderWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+    override suspend fun doWork(): Result {
+        val app = applicationContext as ScpdApplication
+        val prefs = app.container.notificationSettings
+        if (ReminderSchedule.canNotifyStudent(inputData.getString(EventReminderWorker.KEY_USER), prefs.reminderRecipient.first()) &&
+            prefs.settings.first().streakReminders) {
+            EventNotifications.sendStreak(applicationContext)
+        }
+        return Result.success()
     }
 }
 
@@ -116,101 +177,116 @@ internal class EventNotificationMonitor(
     private val context: Context,
     private val backend: FakeBackend,
     auth: AuthRepository,
-    settings: NotificationSettingsStore,
+    private val settings: NotificationSettingsStore,
     private val clock: AppClock,
     scope: CoroutineScope,
 ) {
     private data class Snapshot(
-        val userId: String?,
+        val user: UserProfile?,
         val events: Map<String, Event>,
         val bookings: List<Booking>,
-        val evidence: Map<String, FakeBackend.Evidence>,
         val settings: NotificationPreferences,
     )
 
     private val work = WorkManager.getInstance(context)
-    private val scheduled = mutableMapOf<String, Long>()
-    private var previous: Snapshot? = null
+    private val scheduled = mutableMapOf<String, Pair<Long, Int>>()
+    private val seenAlerts = mutableSetOf<String>()
+    private var lastUid: String? = null
+    private var streakWork: String? = null
 
     init {
         EventNotifications.createChannel(context)
         scope.launch {
-            combine(auth.currentUser, backend.events, backend.bookings, backend.evidence, settings.settings) {
-                user, events, bookings, evidence, preferences ->
-                Snapshot(
-                    userId = user?.takeIf { it.role == AccountRole.Student }?.uid,
-                    events = events,
-                    bookings = bookings,
-                    evidence = evidence,
-                    settings = preferences,
-                )
-            }.collect { update(it) }
+            combine(auth.currentUser, backend.events, backend.bookings, settings.settings) { user, events, bookings, preferences ->
+                Snapshot(user, events, bookings, preferences)
+            }.collect { schedule(it) }
         }
-    }
-
-    private fun update(current: Snapshot) {
-        schedule(current)
-        val before = previous
-        previous = current
-        if (current.userId == null || before?.userId != current.userId) return
-        val uid = current.userId
-        val oldBookings = before.bookings.filter { it.userId == uid }.associateBy { it.id }
-        val newBookings = current.bookings.filter { it.userId == uid }
-        for (booking in newBookings) {
-            val event = current.events[booking.eventId] ?: continue
-            val oldBooking = oldBookings[booking.id]
-            if (oldBooking?.status == BookingStatus.Waitlisted && booking.status == BookingStatus.Booked) {
-                EventNotifications.send(context, event, "Waitlist place confirmed", "You now have a place at this event.", "waitlist")
-            }
-            if (oldBooking?.status == BookingStatus.Booked && !before.events[booking.eventId].isCancelledOrMissing() && event.isCancelled) {
-                EventNotifications.send(context, event, "Event cancelled", event.cancelReason.orEmpty(), "cancelled")
-            }
-        }
-        for ((id, event) in current.events) {
-            if (event.checkpointOpen && before.events[id]?.checkpointOpen == false &&
-                newBookings.any { it.eventId == id && it.status == BookingStatus.Booked } &&
-                current.evidence["$uid|$id"]?.arrival == StageStatus.VERIFIED
-            ) {
-                EventNotifications.send(context, event, "Checkpoint open", "Scan the checkpoint QR now.", "checkpoint")
-            }
-        }
-    }
-
-    private fun Event?.isCancelledOrMissing(): Boolean = this?.isCancelled != false
-
-    private fun schedule(current: Snapshot) {
-        val now = clock.now().toEpochMilli()
-        val desired = mutableMapOf<String, Pair<Event, Int>>()
-        val uid = current.userId
-        if (uid != null && current.settings.eventReminders) {
-            for (booking in current.bookings.filter { it.userId == uid && it.status == BookingStatus.Booked }) {
-                val event = current.events[booking.eventId] ?: continue
-                if (event.isCancelled) continue
-                for (hours in listOf(24, 1)) {
-                    val at = event.start.toInstant().toEpochMilli() - TimeUnit.HOURS.toMillis(hours.toLong())
-                    if (at > now) desired["reminder:$uid:${booking.id}:$hours"] = event to hours
+        scope.launch {
+            combine(auth.currentUser, backend.alerts) { user, alerts -> user to alerts }.collect { (user, alerts) ->
+                if (user?.role != AccountRole.Student) return@collect
+                // deliver pending alerts when the student returns to the app.
+                alerts.filter { it.recipientId == user.uid && it.id !in seenAlerts }.forEach { alert ->
+                    if (postAlert(alert)) seenAlerts.add(alert.id)
                 }
             }
         }
-        for (key in scheduled.keys - desired.keys) {
-            work.cancelUniqueWork(key)
-            scheduled.remove(key)
+    }
+
+    private fun postAlert(alert: BackendAlert): Boolean = EventNotifications.sendEvent(
+        context, alert.eventId, alert.eventTitle, alert.startMillis, alert.venue,
+        alert.kind.heading, alert.detail, "${alert.kind.name}-${alert.id}",
+    )
+
+    private suspend fun schedule(current: Snapshot) {
+        val user = current.user?.takeIf { it.role == AccountRole.Student }
+        if (user == null) {
+            // keep scheduled reminders after a cold start.
+            if (lastUid != null) cancelCurrent()
+            if (lastUid != null || current.user != null) settings.setReminderRecipient(null)
+            lastUid = null
+            return
         }
-        for ((key, pair) in desired) {
-            val (event, hours) = pair
-            val at = event.start.toInstant().toEpochMilli() - TimeUnit.HOURS.toMillis(hours.toLong())
-            if (scheduled[key] == at) continue
+        if (lastUid != user.uid) {
+            if (lastUid != null) cancelCurrent()
+            settings.setReminderRecipient(user.uid)
+        }
+        lastUid = user.uid
+
+        val now = clock.now().toEpochMilli()
+        val desired = mutableMapOf<String, Triple<Event, Int, Long>>()
+        if (current.settings.eventReminders) {
+            current.bookings.filter { it.userId == user.uid && it.status == BookingStatus.Booked }.forEach { booking ->
+                val event = current.events[booking.eventId] ?: return@forEach
+                if (event.isCancelled) return@forEach
+                for (hours in listOf(24, 1)) {
+                    val time = ReminderSchedule.reminderAt(event.start, hours.toLong(), current.settings.quietHours)
+                        .toInstant().toEpochMilli()
+                    if (time > now && time < event.start.toInstant().toEpochMilli()) {
+                        desired["reminder:${user.uid}:${booking.id}:$hours"] = Triple(event, hours, time)
+                    }
+                }
+            }
+        }
+        (scheduled.keys - desired.keys).forEach { key -> work.cancelUniqueWork(key); scheduled.remove(key) }
+        desired.forEach { (key, value) ->
+            val (event, hours, at) = value
+            val details = event.title.hashCode() * 31 + event.venue.hashCode()
+            if (scheduled[key] == (at to details)) return@forEach
             val request = OneTimeWorkRequestBuilder<EventReminderWorker>()
-                .setInitialDelay(at - now, TimeUnit.MILLISECONDS)
+                .setInitialDelay((at - now).coerceAtLeast(0), TimeUnit.MILLISECONDS)
                 .setInputData(workDataOf(
-                    EventReminderWorker.KEY_USER to uid,
+                    EventReminderWorker.KEY_USER to user.uid,
                     EventReminderWorker.KEY_EVENT to event.id,
+                    EventReminderWorker.KEY_TITLE to event.title,
+                    EventReminderWorker.KEY_VENUE to event.venue,
                     EventReminderWorker.KEY_START to event.start.toInstant().toEpochMilli(),
                     EventReminderWorker.KEY_HOURS to hours,
-                ))
-                .build()
+                    EventReminderWorker.KEY_WORK to key,
+                )).build()
             work.enqueueUniqueWork(key, ExistingWorkPolicy.REPLACE, request)
-            scheduled[key] = at
+            scheduled[key] = at to details
         }
+
+        val expectedStreak = if (current.settings.streakReminders) "streak:${user.uid}" else null
+        if (streakWork != expectedStreak) {
+            streakWork?.let(work::cancelUniqueWork)
+            streakWork = expectedStreak
+            if (expectedStreak != null) {
+                val next = ReminderSchedule.nextStreakAt(clock.now())
+                val delay = (next.toInstant().toEpochMilli() - now).coerceAtLeast(0)
+                val periodic = PeriodicWorkRequestBuilder<StreakReminderWorker>(7, TimeUnit.DAYS)
+                    .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                    .setInputData(workDataOf(EventReminderWorker.KEY_USER to user.uid))
+                    .build()
+                work.enqueueUniquePeriodicWork(expectedStreak, ExistingPeriodicWorkPolicy.KEEP, periodic)
+            }
+        }
+    }
+
+    private fun cancelCurrent() {
+        scheduled.keys.forEach(work::cancelUniqueWork)
+        scheduled.clear()
+        streakWork?.let(work::cancelUniqueWork)
+        streakWork = null
     }
 }

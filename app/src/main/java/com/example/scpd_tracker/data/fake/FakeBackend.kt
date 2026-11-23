@@ -64,6 +64,15 @@ class FakeBackend(private val clock: AppClock, seed: FakeSeed = FakeData.seed(cl
     val evidence = MutableStateFlow(seed.evidence)
     val ledger = MutableStateFlow(seed.ledger)
     val sessions = MutableStateFlow(seed.sessions)
+    val alerts = MutableStateFlow<List<BackendAlert>>(emptyList())
+
+    private fun notifyUsers(event: Event, kind: AlertKind, recipients: List<String>, detail: String) {
+        val notices = recipients.distinct().map { uid ->
+            BackendAlert(UUID.randomUUID().toString(), uid, event.id, event.title,
+                event.start.toInstant().toEpochMilli(), event.venue, kind, detail)
+        }
+        if (notices.isNotEmpty()) alerts.update { it + notices }
+    }
 
     private val processedBookings = mutableMapOf<String, BookResult>()
     private val processedClaims = mutableMapOf<String, ClaimResult>()
@@ -147,6 +156,8 @@ class FakeBackend(private val clock: AppClock, seed: FakeSeed = FakeData.seed(cl
         val event = events.value[eventId] ?: return Result.failure(NoSuchElementException("Event not found"))
         if (event.reviewStatus != ReviewStatus.Approved || event.isCancelled) return Result.failure(IllegalStateException("Only approved events can be cancelled."))
         if (reason.isBlank()) return Result.failure(IllegalArgumentException("Give students a reason."))
+        val affected = bookings.value.filter { it.eventId == eventId &&
+            (it.status == BookingStatus.Booked || it.status == BookingStatus.Waitlisted) }.map { it.userId }
         updateEvent(eventId) { it.copy(state = EventState.Cancelled, cancelReason = reason.trim()) }
         bookings.update { list ->
             list.map {
@@ -155,6 +166,7 @@ class FakeBackend(private val clock: AppClock, seed: FakeSeed = FakeData.seed(cl
                 } else it
             }
         }
+        notifyUsers(event, AlertKind.Cancelled, affected, reason.trim())
         Result.success(Unit)
     }
 
@@ -206,12 +218,14 @@ class FakeBackend(private val clock: AppClock, seed: FakeSeed = FakeData.seed(cl
             return Result.failure(IllegalStateException("Cancellations close 2 hours before the start."))
         }
         val wasBooked = booking.status == BookingStatus.Booked
+        var promotedUser: String? = null
         var list = bookings.value.map { if (it.id == bookingId) it.copy(status = BookingStatus.Cancelled, waitlistPosition = null) else it }
         if (wasBooked) {
             // The freed place goes to the first student on the waitlist, so the count stays the same.
             val next = list.filter { it.eventId == event.id && it.status == BookingStatus.Waitlisted }.minByOrNull { it.createdAt }
             if (next != null) {
                 list = list.map { if (it.id == next.id) it.copy(status = BookingStatus.Booked, waitlistPosition = null) else it }
+                promotedUser = next.userId
             } else {
                 updateEvent(event.id) { it.copy(bookedCount = (it.bookedCount - 1).coerceAtLeast(0)) }
             }
@@ -220,6 +234,7 @@ class FakeBackend(private val clock: AppClock, seed: FakeSeed = FakeData.seed(cl
         val queue = list.filter { it.eventId == event.id && it.status == BookingStatus.Waitlisted }.sortedBy { it.createdAt }
         list = list.map { b -> queue.indexOfFirst { it.id == b.id }.takeIf { it >= 0 }?.let { b.copy(waitlistPosition = it + 1) } ?: b }
         bookings.value = list
+        promotedUser?.let { notifyUsers(event, AlertKind.Waitlist, listOf(it), "You now have a place at this event.") }
         Result.success(Unit)
     }
 
@@ -251,7 +266,11 @@ class FakeBackend(private val clock: AppClock, seed: FakeSeed = FakeData.seed(cl
     fun openCheckpoint(eventId: String): Result<Unit> {
         val event = events.value[eventId] ?: return Result.failure(NoSuchElementException("Event not found"))
         if (event.state != EventState.CheckInOpen || !event.requiresCheckpoint) return Result.failure(IllegalStateException("Open check-in first."))
+        if (event.checkpointOpen) return Result.success(Unit)
         updateEvent(eventId) { it.copy(checkpointOpen = true) }
+        val arrived = bookings.value.filter { it.eventId == eventId && it.status == BookingStatus.Booked &&
+            evidence.value[key(it.userId, eventId)]?.arrival == StageStatus.VERIFIED }.map { it.userId }
+        notifyUsers(event, AlertKind.Checkpoint, arrived, "Scan the checkpoint QR now.")
         return Result.success(Unit)
     }
 
@@ -398,6 +417,13 @@ class FakeBackend(private val clock: AppClock, seed: FakeSeed = FakeData.seed(cl
                     eventEnded = now.isAfter(event.end) || booking.status == BookingStatus.NoShow,
                     requiresCheckpoint = event.requiresCheckpoint, arrival = ev.arrival, checkpoint = ev.checkpoint,
                     tags = event.tags, rejectReason = ev.rejectReason ?: ev.flagged,
+                    // checking in and earning points are separate.
+                    pointsEligible = event.pointsRequested && user(uid)?.clubIds?.contains(event.clubId) != true,
+                    pointsReason = when {
+                        user(uid)?.clubIds?.contains(event.clubId) == true -> "Own-club attendance does not earn points."
+                        !event.pointsRequested -> "This event does not award points."
+                        else -> null
+                    },
                 )
             }
             .sortedByDescending { it.eventDate }

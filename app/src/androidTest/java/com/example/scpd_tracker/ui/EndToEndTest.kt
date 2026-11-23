@@ -1,6 +1,9 @@
 package com.example.scpd_tracker.ui
 
 import android.content.pm.ActivityInfo
+import android.Manifest
+import android.os.Build
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -24,6 +27,11 @@ class EndToEndTest {
     /** The in-memory backend lives as long as the app process, so each test starts signed out. */
     @Before
     fun signedOut() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            InstrumentationRegistry.getInstrumentation().uiAutomation.grantRuntimePermission(
+                rule.activity.packageName, Manifest.permission.POST_NOTIFICATIONS,
+            )
+        }
         val container = (rule.activity.application as ScpdApplication).container
         runBlocking { container.auth.signOut() }
         rule.waitUntil(5_000) { rule.onAllNodes(hasText("Continue to sign in")).fetchSemanticsNodes().isNotEmpty() }

@@ -153,9 +153,13 @@ class FakeBookingRepository(
         return backend.cancelBooking(auth.requireUid(), bookingId)
     }
 
+    // bookings belong to the organising club.
     override fun eventBookings(eventId: String): Flow<List<Pair<Booking, UserProfile>>> =
-        combine(backend.bookings, backend.accounts) { list, _ ->
-            list.filter { it.eventId == eventId && it.status != BookingStatus.Cancelled }
+        combine(backend.bookings, backend.accounts, backend.events, auth.currentUser) { list, _, events, user ->
+            val allowed = user?.role == AccountRole.Committee &&
+                events[eventId]?.clubId in user.clubIds
+            if (!allowed) emptyList()
+            else list.filter { it.eventId == eventId && it.status != BookingStatus.Cancelled }
                 .mapNotNull { b -> backend.user(b.userId)?.let { b to it } }
         }
 }
@@ -278,11 +282,16 @@ class FakeAttendanceRepository(
     override suspend fun endCheckIn(eventId: String) =
         if (canManageCheckIn(eventId)) online { backend.endCheckIn(eventId) } else deniedCheckIn()
 
+    // live check-in details stay with the organiser.
     override suspend fun currentCode(eventId: String, stage: Stage): CheckInCode? =
-        if (network.isOnline.value) backend.currentCode(eventId, stage) else null
+        if (canManageCheckIn(eventId) && network.isOnline.value) backend.currentCode(eventId, stage) else null
 
     override fun liveAttendees(eventId: String): Flow<List<AttendeeRow>> =
-        combine(backend.bookings, backend.evidence) { bookings, evidence -> backend.attendeesFor(eventId, bookings, evidence) }
+        combine(backend.bookings, backend.evidence, backend.events, auth.currentUser) { bookings, evidence, events, user ->
+            val allowed = user?.role == AccountRole.Committee &&
+                events[eventId]?.clubId in user.clubIds
+            if (allowed) backend.attendeesFor(eventId, bookings, evidence) else emptyList()
+        }
 }
 
 class FakeProgressRepository(private val backend: FakeBackend, private val auth: FakeAuthRepository) : ProgressRepository {

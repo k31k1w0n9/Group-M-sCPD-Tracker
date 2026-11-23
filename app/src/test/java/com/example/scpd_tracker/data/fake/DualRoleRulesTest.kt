@@ -7,6 +7,8 @@ import com.example.scpd_tracker.model.Booking
 import com.example.scpd_tracker.model.BookingStatus
 import com.example.scpd_tracker.model.ClaimResult
 import com.example.scpd_tracker.model.Stage
+import com.example.scpd_tracker.domain.outcome
+import com.example.scpd_tracker.domain.points
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -48,5 +50,8 @@ class DualRoleRulesTest {
         backend.openCheckpoint(FakeData.LIVE_EVENT)
         assertEquals(ClaimResult.Verified, backend.verifyClaim("u-cs", claim(Stage.Checkpoint, "checkpoint"), false))
         assertEquals(0, backend.ledger.value.filter { it.userId == "u-cs" }.sumOf { it.entry.points })
+        val record = backend.attendanceFor("u-cs").first { it.eventId == FakeData.LIVE_EVENT }
+        assertEquals(com.example.scpd_tracker.model.AttendanceOutcome.VERIFIED, record.outcome)
+        assertEquals(0, record.points)
     }
 }

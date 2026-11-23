@@ -119,7 +119,8 @@ internal fun CheckInScreen(
                 Column(Modifier.padding(spacing.gutter), verticalArrangement = Arrangement.spacedBy(spacing.space4)) {
                     Text(event?.title.orEmpty(), Modifier.semantics { heading() }, style = type.headlineSmall)
                     Text(
-                        if (event?.requiresCheckpoint == true) "This event needs an arrival scan and one checkpoint scan. You earn 3 points once both are verified."
+                        if (state.pointsEligible == false) state.pointsReason ?: "This event does not award points."
+                        else if (event?.requiresCheckpoint == true) "This event needs an arrival scan and one checkpoint scan. You earn 3 points once both are verified."
                         else "This event needs one scan on arrival. You earn 3 points once it's verified.",
                         style = type.bodyMedium,
                     )

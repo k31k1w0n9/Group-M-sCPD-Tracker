@@ -34,6 +34,8 @@ data class AttendanceRecord(
     val checkpoint: StageStatus = StageStatus.NOT_SCANNED,
     val tags: List<String> = emptyList(),
     val rejectReason: String? = null,
+    val pointsEligible: Boolean = true,
+    val pointsReason: String? = null,
 )
 
 /** A scan or backup code a student submits. [capturedAt] is only for diagnosis: the server never trusts it. */

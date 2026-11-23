@@ -44,6 +44,8 @@ data class CheckInUiState(
     val activeStage: Stage? = null,
     val outcome: AttendanceOutcome = AttendanceOutcome.IN_PROGRESS,
     val pointsEarned: Int = 0,
+    val pointsEligible: Boolean? = null,
+    val pointsReason: String? = null,
     val pendingUploads: Int = 0,
     val isOffline: Boolean = false,
     val lastSyncedLabel: String? = null,
@@ -121,6 +123,8 @@ class CheckInViewModel(
         return CheckInUiState(
             event = event, stages = stages, activeStage = active,
             outcome = remote.record?.outcome ?: AttendanceOutcome.IN_PROGRESS, pointsEarned = remote.record?.points ?: 0,
+            pointsEligible = remote.record?.pointsEligible,
+            pointsReason = remote.record?.pointsReason,
             pendingUploads = remote.pending, isOffline = !remote.online, lastSyncedLabel = remote.lastSynced?.let { syncedLabel(it) },
             codeInput = codeText, codeError = l.codeError, rateLimited = l.rateLimited, isSubmitting = l.isSubmitting,
             awaitingIdentity = l.pending != null, lastResult = l.lastResult, identityNotice = l.identityNotice,

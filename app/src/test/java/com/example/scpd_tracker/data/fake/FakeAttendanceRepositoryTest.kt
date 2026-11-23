@@ -168,6 +168,7 @@ class FakeAttendanceRepositoryTest {
             ClaimResult.Rejected("Flagged for review: this phone has already checked in another account at this event."),
             result,
         )
+        app.signInCommittee()
         val rows = app.attendance.liveAttendees(event).first()
         assertEquals("Same phone used by another account", rows.first { it.userId == "u-daniel" }.flagged)
     }

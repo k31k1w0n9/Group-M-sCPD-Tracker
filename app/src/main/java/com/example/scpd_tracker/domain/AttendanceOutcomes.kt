@@ -22,7 +22,7 @@ val AttendanceRecord.outcome: AttendanceOutcome
     }
 
 /** 3 points only when ALL required stages are verified. */
-val AttendanceRecord.points: Int get() = if (outcome == AttendanceOutcome.VERIFIED) Policy.POINTS_PER_EVENT else 0
+val AttendanceRecord.points: Int get() = if (pointsEligible && outcome == AttendanceOutcome.VERIFIED) Policy.POINTS_PER_EVENT else 0
 
 /** Progress-screen numbers: milestones, interest stamps and scans still waiting to sync. */
 object AttendanceStats {
