@@ -44,7 +44,11 @@ data class HomeUiState(
     val isOffline: Boolean = false,
 ) {
     val showFeatured: Boolean get() = !browsing && query.isBlank() && filter == FOR_YOU && featured != null
-    val sectionTitle: String get() = if (browsing || query.isNotBlank()) "Events" else "Recommended for you"
+    val sectionTitle: String get() = when {
+        query.isNotBlank() -> "Search results"
+        browsing || filter != FOR_YOU -> "Events"
+        else -> "Recommended for you"
+    }
 
     companion object {
         const val FOR_YOU = "For you"

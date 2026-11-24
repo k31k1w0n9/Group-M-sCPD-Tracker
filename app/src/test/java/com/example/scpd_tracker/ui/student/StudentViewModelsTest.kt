@@ -86,6 +86,15 @@ class StudentViewModelsTest {
     }
 
     @Test
+    fun homeFilteredFeed_isNotLabelledRecommendations() = runTest {
+        val vm = signedIn().home(browsing = false)
+        keepCollecting(vm.state)
+        vm.onFilter("All interests")
+        runCurrent()
+        assertEquals("Events", vm.state.value.sectionTitle)
+    }
+
+    @Test
     fun exploreSearch_filtersByText() = runTest {
         val vm = signedIn().home(browsing = true)
         keepCollecting(vm.state)
@@ -252,7 +261,7 @@ class StudentViewModelsTest {
         app.attendance.submitClaim(
             com.example.scpd_tracker.model.AttendanceClaim("p2", FakeData.LIVE_EVENT, com.example.scpd_tracker.model.Stage.Arrival, token, "phone-A", app.clock.now(), false),
         )
-        val vm = ProfileViewModel(app.auth, app.attendance)
+        val vm = ProfileViewModel(app.auth, app.attendance, app.bookings, app.events)
         keepCollecting(vm.state)
         vm.requestSignOut()
         runCurrent()
@@ -266,7 +275,7 @@ class StudentViewModelsTest {
     @Test
     fun signOutWithNoPending_signsOutDirectly() = runTest {
         val app = signedIn()
-        val vm = ProfileViewModel(app.auth, app.attendance)
+        val vm = ProfileViewModel(app.auth, app.attendance, app.bookings, app.events)
         keepCollecting(vm.state)
         vm.requestSignOut()
         advanceUntilIdle()

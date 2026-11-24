@@ -2,14 +2,19 @@ package com.example.scpd_tracker.ui
 
 import androidx.compose.ui.test.DeviceConfigurationOverride
 import androidx.compose.ui.test.ForcedSize
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipe
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.example.scpd_tracker.domain.Policy
@@ -96,6 +101,26 @@ class ScreenTests {
         }
         rule.onNodeWithText("Hello, Aisha!").assertIsDisplayed()
         rule.onAllNodesWithTag("event_card").onFirst().assertIsDisplayed()
+    }
+
+    @Test
+    fun homeAfterShortScroll_onlyOneSearchFieldIsExposed() {
+        val cards = (1..12).map { EventCardUi(event("e$it"), "Because you like Tech", booked = false) }
+        rule.setContent {
+            ScpdTheme {
+                DeviceConfigurationOverride(DeviceConfigurationOverride.ForcedSize(pixel2)) {
+                    HomeScreen(HomeUiState(greetingName = "Aisha", cards = cards), {}, {}, {}, {}, {}, {}, {})
+                }
+            }
+        }
+        rule.onNodeWithTag("home_list").performTouchInput {
+            swipe(
+                start = Offset(center.x, height * 0.66f),
+                end = Offset(center.x, height * 0.52f),
+                durationMillis = 750,
+            )
+        }
+        rule.onAllNodesWithContentDescription("Search events, clubs or skills").assertCountEquals(1)
     }
 
     @Test

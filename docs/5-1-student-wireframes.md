@@ -4,7 +4,7 @@
 
 *Part 1 of 2: Student journeys. The [Committee journeys](5-2-committee-wireframes.md) are on the next page. Every image links to its frame in the [Figma file](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=0-1).*
 
-Main tabs open with an expanded campus header that collapses into a compact dark-blue bar when the student scrolls. Secondary screens use the compact bar. The screens use sample accounts and static states, and canvas annotations are left out of the exports. Open a section's drop-down to see its other states.
+In the Part 1 proposal, main tabs open with an expanded campus header that collapses into a compact dark-blue bar when the student scrolls. Secondary screens use the compact bar. The screens use sample accounts and static states, and canvas annotations are left out of the exports. See the [Part 2 design changes](part2/6-changes-since-part1.md#design-changes) for the headers used in the app.
 
 ### Student entry and interests — R6
 

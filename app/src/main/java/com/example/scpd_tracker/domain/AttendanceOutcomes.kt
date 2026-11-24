@@ -2,6 +2,9 @@ package com.example.scpd_tracker.domain
 
 import com.example.scpd_tracker.model.AttendanceOutcome
 import com.example.scpd_tracker.model.AttendanceRecord
+import com.example.scpd_tracker.model.Event
+import com.example.scpd_tracker.model.EventState
+import com.example.scpd_tracker.model.Stage
 import com.example.scpd_tracker.model.StageStatus
 
 private val AttendanceRecord.requiredStages: List<StageStatus>
@@ -24,6 +27,19 @@ val AttendanceRecord.outcome: AttendanceOutcome
 
 /** 3 points only when ALL required stages are verified. */
 val AttendanceRecord.points: Int get() = if (pointsEligible && outcome == AttendanceOutcome.VERIFIED) Policy.POINTS_PER_EVENT else 0
+
+/** The scanner and its entry points use the same stage even when an arrival is still queued. */
+internal fun Event?.activeCheckInStage(record: AttendanceRecord?): Stage? {
+    if (this == null || state != EventState.CheckInOpen) return null
+    val arrival = record?.arrival ?: StageStatus.NOT_SCANNED
+    val checkpoint = record?.checkpoint ?: StageStatus.NOT_SCANNED
+    return when {
+        arrival == StageStatus.NOT_SCANNED -> Stage.Arrival
+        requiresCheckpoint && checkpointOpen && checkpoint == StageStatus.NOT_SCANNED -> Stage.Checkpoint
+        arrival == StageStatus.REJECTED -> Stage.Arrival
+        else -> null
+    }
+}
 
 /** Progress-screen numbers: milestones, interest stamps and scans still waiting to sync. */
 object AttendanceStats {

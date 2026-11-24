@@ -186,13 +186,23 @@ private fun LedgerCard(entries: List<LedgerRowUi>) {
 }
 
 @Composable
-private fun StreakCard(streak: Int, weeks: List<Boolean>) {
+internal fun StreakCard(
+    streak: Int,
+    weeks: List<Boolean>,
+    onHistory: (() -> Unit)? = null,
+    mascot: @Composable () -> Unit = {
+        Image(painterResource(R.drawable.gilbert), contentDescription = null, Modifier.size(72.dp))
+    },
+) {
     val spacing = ScpdTheme.spacing
     val colors = MaterialTheme.colorScheme
     ProgressCard {
-        Text("Weekly streak", Modifier.semantics { heading() }, style = MaterialTheme.typography.titleLarge)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("Weekly streak", Modifier.weight(1f).semantics { heading() }, style = MaterialTheme.typography.titleLarge)
+            if (onHistory != null) TextButton(onClick = onHistory) { Text("Attendance history") }
+        }
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacing.space4)) {
-            Image(painterResource(R.drawable.gilbert), contentDescription = null, Modifier.size(72.dp))
+            mascot()
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacing.space2)) {
                 Text(when (streak) { 0 -> "No streak yet"; 1 -> "1-week streak"; else -> "$streak-week streak" }, style = MaterialTheme.typography.headlineSmall)
                 if (weeks.last()) TagChip("This week: verified", colors.secondaryContainer, colors.onSecondaryContainer, Icons.Rounded.Check)

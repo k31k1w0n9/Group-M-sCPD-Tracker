@@ -46,7 +46,7 @@ The Kotlin app uses MVVM with repositories, Room for offline data and Firebase f
 
 ## 5. UI design and wireframes
 
-The wireframes are exported from the [Figma file](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=0-1) and cover every state in the Student and Committee journeys. [Student wireframes](docs/5-1-student-wireframes.md) · [Committee wireframes](docs/5-2-committee-wireframes.md).
+The Part 1 wireframes show the main journeys and example states. The Part 2 frontend uses Refined v3 as its layout reference, with behaviour documented in the Part 2 changes and SQA response. [Student proposal wireframes](docs/5-1-student-wireframes.md) · [Committee proposal wireframes](docs/5-2-committee-wireframes.md) · [Refined v3](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=368-2)
 
 
 ## 6–9. Part 2 changes

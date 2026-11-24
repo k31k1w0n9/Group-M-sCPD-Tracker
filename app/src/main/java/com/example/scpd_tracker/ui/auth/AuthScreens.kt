@@ -28,6 +28,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.input.*
@@ -118,6 +119,12 @@ internal fun SignIn(
     val student = role == AccountRole.Student
     val passwordFocus = remember { FocusRequester() }
     val focus = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
+    val submit = {
+        keyboard?.hide()
+        focus.clearFocus(force = true)
+        onSignIn()
+    }
     val colors = MaterialTheme.colorScheme
     val type = MaterialTheme.typography
     EntryCanvas(expanded = true, committee = !student) {
@@ -143,10 +150,7 @@ internal fun SignIn(
         AuthField(
             label = "Password", value = password, placeholder = "Enter your password",
             onValueChange = onPassword, keyboardType = KeyboardType.Password, imeAction = ImeAction.Done,
-            onIme = {
-                focus.clearFocus()
-                onSignIn()
-            },
+            onIme = submit,
             focusRequester = passwordFocus, secret = true,
         )
         TextButton(onClick = onPasswordHelp, contentPadding = PaddingValues(horizontal = ScpdTheme.spacing.space2)) {
@@ -160,10 +164,7 @@ internal fun SignIn(
             SecondaryAction("Return to Sign in", onClick = onReturnToSignIn)
         } else {
             // Disabled while the request is in flight, so a double tap can't send two sign-ins.
-            PrimaryAction(if (isSubmitting) "Signing in…" else "Sign in", enabled = !isSubmitting) {
-                focus.clearFocus()
-                onSignIn()
-            }
+            PrimaryAction(if (isSubmitting) "Signing in…" else "Sign in", enabled = !isSubmitting, onClick = submit)
         }
     }
 }

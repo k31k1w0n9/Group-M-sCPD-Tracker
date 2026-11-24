@@ -14,7 +14,9 @@ The fake keeps everything in memory, so data resets when the app process ends. S
 
 | Area | Part 1 | Now | Why |
 |---|---|---|---|
-| Home header | Tall campus photo, logo row and mascot above the fold | About 200 dp, collapsing to a sticky search bar on scroll | The marking device is a Pixel 2 (411 × 731 dp). The old header pushed the first event below the fold. |
+| Student headers | Tall campus header on the main tabs | Home and Explore start with a short campus banner. The banner scrolls away and its one search field stays pinned. Profile has a campus banner above its account card. My Events and Progress use compact bars. | Leaves room for content on the Pixel 2 (411 × 731 dp) while keeping search available. |
+| Profile and Settings | Profile with a live check-in card and a separate Privacy & settings screen | Profile shows the account, weekly streak and a shortcut when a booked event has a scan available. Settings links to Notifications, where reminder preferences are saved, and explains how offline check-ins work. | The check-in shortcut uses the same stage as the scanner. Students change reminders in one place. |
+| Committee navigation | Separate Dashboard, Events, Scan and Submissions destinations | Events groups submissions and scheduled events. Check-in and Account have their own tabs. | Matches the three destinations in the Refined v3 redesign. |
 | Event day | Check-in reached from My Events only | A **Happening now** card on Home opens check-in in one tap | Checking in is the most important task on the day, so it should not be hidden. |
 | Check-in screen | Separate prototype screen with its own two-tab bar and demo buttons | Themed screen inside the student navigation, with simulation controls only in a debug-build menu | It looked like a different app, and demo controls should never reach a release build. |
 | Event details | Facts and a Book button | Adds the description, a "Needs 1 scan" or "Needs 2 scans" card, the cancellation rule and the organiser's contact. The bottom navigation is hidden on this screen. | Part 1 said students see the attendance requirement before booking. The screen now does that. |
@@ -50,7 +52,7 @@ The Part 1 diagram (DG-02 in [Architecture](../4-1-architecture.md)) shows the f
 flowchart LR
   subgraph Device["Android App (Kotlin, Jetpack Compose, MVVM)"]
     UIS["Student Screens: Home, Explore, My Events, Check-in, Progress, Profile, Settings"]
-    UIC["Committee Screens: Dashboard, Events, Scan, Attendance"]
+    UIC["Committee screens: Events and submissions, Check-in and attendance, Account"]
     VM["ViewModels"]
     Dom["Domain Rules: Policy, BookingRules, AttendanceOutcomes, StreakCalculator, RecommendationRanker"]
     Repo["Repository Interfaces: Auth, Event, Booking, Attendance, Progress"]

@@ -5,6 +5,8 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,16 +18,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.scpd_tracker.BuildConfig
+import com.example.scpd_tracker.R
 import com.example.scpd_tracker.ScpdApplication
 import com.example.scpd_tracker.model.AttendanceOutcome
 import com.example.scpd_tracker.model.Stage
@@ -33,6 +38,7 @@ import com.example.scpd_tracker.ui.components.*
 import com.example.scpd_tracker.ui.scpdViewModel
 import com.example.scpd_tracker.ui.student.ShellTopBar
 import com.example.scpd_tracker.ui.theme.ScpdTheme
+import com.example.scpd_tracker.ui.theme.PillShape
 
 @Composable
 internal fun CheckInRoute(onBack: () -> Unit, onProgress: () -> Unit) {
@@ -40,10 +46,10 @@ internal fun CheckInRoute(onBack: () -> Unit, onProgress: () -> Unit) {
     val container = (LocalContext.current.applicationContext as ScpdApplication).container
     val state by vm.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    var scanning by rememberSaveable { mutableStateOf(false) }
+    var scanningStage by rememberSaveable { mutableStateOf<Stage?>(null) }
     var cameraDenied by rememberSaveable { mutableStateOf(false) }
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) scanning = true else cameraDenied = true
+        if (granted) scanningStage = state.activeStage else cameraDenied = true
     }
 
     // Identity check before anything leaves the phone.
@@ -63,12 +69,18 @@ internal fun CheckInRoute(onBack: () -> Unit, onProgress: () -> Unit) {
         }
     }
 
-    BackHandler(scanning) { scanning = false }
-    if (scanning) {
+    BackHandler(scanningStage != null) { scanningStage = null }
+    val activeScanner = scanningStage
+    if (activeScanner != null) {
         ScannerOverlay(
-            onQr = { scanning = false; vm.onScanned(it) },
-            onCancel = { scanning = false },
-            onUnavailable = { scanning = false; cameraDenied = true },
+            stage = activeScanner,
+            requiresCheckpoint = state.event?.requiresCheckpoint == true,
+            onQr = {
+                scanningStage = null
+                if (activeScanner == state.activeStage) vm.onScanned(it)
+            },
+            onCancel = { scanningStage = null },
+            onUnavailable = { scanningStage = null; cameraDenied = true },
         )
         return
     }
@@ -77,7 +89,7 @@ internal fun CheckInRoute(onBack: () -> Unit, onProgress: () -> Unit) {
         cameraDenied = cameraDenied,
         onBack = onBack,
         onScan = {
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) scanning = true
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) scanningStage = state.activeStage
             else permission.launch(Manifest.permission.CAMERA)
         },
         onCode = vm::onCodeChange,
@@ -222,18 +234,47 @@ private fun BackupCodeEntry(state: CheckInUiState, onCode: (String) -> Unit, onS
 }
 
 @Composable
-private fun ScannerOverlay(onQr: (String) -> Unit, onCancel: () -> Unit, onUnavailable: () -> Unit) {
+private fun ScannerOverlay(
+    stage: Stage,
+    requiresCheckpoint: Boolean,
+    onQr: (String) -> Unit,
+    onCancel: () -> Unit,
+    onUnavailable: () -> Unit,
+) {
     val spacing = ScpdTheme.spacing
+    val colors = MaterialTheme.colorScheme
+    val total = if (requiresCheckpoint) 2 else 1
+    val step = if (stage == Stage.Checkpoint) 2 else 1
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         QrScanner(onQr = onQr, onUnavailable = onUnavailable, modifier = Modifier.fillMaxSize())
-        Text(
-            "Point your camera at the QR on the organiser's screen",
-            Modifier.align(Alignment.TopCenter).statusBarsPadding().padding(spacing.space5),
-            color = Color.White, style = MaterialTheme.typography.titleMedium,
-        )
-        Box(Modifier.align(Alignment.Center).size(240.dp).background(Color.White.copy(alpha = 0.08f), MaterialTheme.shapes.large))
-        Column(Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(spacing.space5)) {
-            SecondaryAction("Cancel", onClick = onCancel)
+        Box(Modifier.matchParentSize().background(colors.primary.copy(alpha = 0.62f)))
+        Column(
+            Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(spacing.space4),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(spacing.space2),
+        ) {
+            Text(
+                "Point your camera at the QR on the organiser's screen",
+                color = colors.onPrimary, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center,
+            )
+            TagChip("${stage.label} · scan $step of $total", colors.surfaceContainerLowest, colors.primary)
+            BoxWithConstraints(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Image(
+                    painterResource(R.drawable.scanner_viewfinder),
+                    contentDescription = null,
+                    modifier = Modifier.size(minOf(240.dp, maxHeight, maxWidth)),
+                )
+            }
+            Text("Hold steady. It scans automatically.", color = colors.onPrimary, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
+            ReadableWidth {
+                OutlinedButton(
+                    onClick = onCancel,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = spacing.buttonHeight),
+                    shape = PillShape,
+                    border = BorderStroke(1.dp, colors.onPrimary),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.onPrimary),
+                ) { Text("Cancel") }
+            }
         }
     }
 }

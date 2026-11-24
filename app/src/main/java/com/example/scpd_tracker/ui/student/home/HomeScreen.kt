@@ -1,6 +1,7 @@
 package com.example.scpd_tracker.ui.student.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
@@ -30,6 +31,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -46,6 +48,7 @@ import com.example.scpd_tracker.ui.theme.PillShape
 import com.example.scpd_tracker.ui.theme.ScpdTheme
 
 /** Home (ranked for the student) and Explore (every upcoming event). Stateless: it renders [state] only. */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun HomeScreen(
     state: HomeUiState,
@@ -59,14 +62,15 @@ internal fun HomeScreen(
 ) {
     val spacing = ScpdTheme.spacing
     val listState = rememberLazyListState()
-    val compact by remember { derivedStateOf { listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 160 } }
     val title = if (state.browsing) "Explore" else "Home"
-    BoxWithConstraints(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        val short = maxHeight < 480.dp
-        LazyColumn(state = listState, modifier = Modifier.fillMaxSize().testTag("home_list")) {
-            item {
-                if (short) CompactHomeHeader(title, state.query, onQuery)
-                else HomeHeader(state.browsing, state.greetingName, state.query, onQuery)
+    val colors = MaterialTheme.colorScheme
+    BoxWithConstraints(Modifier.fillMaxSize().background(colors.primary).statusBarsPadding()) {
+        val keyboardHeight = with(LocalDensity.current) { WindowInsets.ime.getBottom(this).toDp() }
+        val short = maxHeight + keyboardHeight < 480.dp
+        LazyColumn(state = listState, modifier = Modifier.fillMaxSize().background(colors.background).testTag("home_list")) {
+            if (!short) item(key = "campus_header") { HomeHeader(state.browsing, state.greetingName) }
+            stickyHeader(key = "event_search") {
+                PinnedHomeSearch(if (short) title else null, state.query, onQuery)
             }
             if (state.isOffline) item { OfflineBanner(body = "You're offline. Showing saved events; booking needs a connection.") }
             item {
@@ -110,7 +114,6 @@ internal fun HomeScreen(
                 }
             }
         }
-        if (compact && !short) CompactHomeHeader(title, state.query, onQuery)
     }
 }
 
@@ -172,17 +175,16 @@ private fun NoResults(searching: Boolean, onClear: () -> Unit) {
 }
 
 /**
- * Compact hero: brand row, greeting and search fit in about 200dp, so on the 731dp-tall Pixel 2 the first
- * card shows without scrolling. It collapses to the sticky [CompactHomeHeader] on scroll.
+ * The campus artwork scrolls with the feed. Search is the next item and stays pinned on scroll.
  */
 @Composable
-private fun HomeHeader(browsing: Boolean, name: String, query: String, onQuery: (String) -> Unit) {
+private fun HomeHeader(browsing: Boolean, name: String) {
     val spacing = ScpdTheme.spacing
     val extra = ScpdTheme.colors
     Box(Modifier.fillMaxWidth()) {
         CampusBackground(Modifier.matchParentSize(), home = true)
-        ReadableWidth(Modifier.statusBarsPadding()) {
-            Column(Modifier.padding(horizontal = spacing.gutter)) {
+        ReadableWidth {
+            Column(Modifier.padding(start = spacing.gutter, end = spacing.gutter, bottom = spacing.space2)) {
                 BrandIdentities(Modifier.padding(top = spacing.space2, bottom = spacing.space2))
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(spacing.space3)) {
                     Column(Modifier.weight(1f)) {
@@ -197,7 +199,6 @@ private fun HomeHeader(browsing: Boolean, name: String, query: String, onQuery: 
                     }
                     GilbertWave()
                 }
-                HomeSearch(query, onQuery, Modifier.padding(top = spacing.space2, bottom = spacing.space3))
             }
         }
     }
@@ -347,15 +348,17 @@ private fun EventCard(card: EventCardUi, onOpen: () -> Unit) {
     }
 }
 
-/** Navy title bar with search. Sticky on scroll, and the whole header when the screen is short. */
+/** One search field stays in the same composition as it pins, preserving focus and query. */
 @Composable
-private fun CompactHomeHeader(title: String, query: String, onQuery: (String) -> Unit) {
+private fun PinnedHomeSearch(title: String?, query: String, onQuery: (String) -> Unit) {
     val spacing = ScpdTheme.spacing
     Box(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primary)) {
-        ReadableWidth(Modifier.statusBarsPadding()) {
+        ReadableWidth {
             Column(Modifier.padding(horizontal = spacing.gutter, vertical = spacing.space2)) {
-                Text(title, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleLarge, color = ScpdTheme.colors.onHero)
-                Spacer(Modifier.height(spacing.space2))
+                if (title != null) {
+                    Text(title, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleLarge, color = ScpdTheme.colors.onHero)
+                    Spacer(Modifier.height(spacing.space2))
+                }
                 HomeSearch(query, onQuery)
             }
         }

@@ -55,6 +55,21 @@ class EndToEndTest {
     }
 
     @Test
+    fun studentProfile_opensLiveCheckInAndSavedNotificationPreferences() {
+        signIn(FakeData.STUDENT_1)
+        rule.waitUntil(5_000) { rule.onAllNodes(hasText("Hello, Aisha!")).fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithText("Profile").performClick()
+        rule.onNodeWithText("Weekly streak").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("Scan arrival QR").performScrollTo().performClick()
+        rule.onNodeWithText("Check-in").assertIsDisplayed()
+        rule.onNodeWithContentDescription("Back").performClick()
+        rule.onNodeWithText("Settings").performScrollTo().performClick()
+        rule.onNodeWithText("Event reminders").assertDoesNotExist()
+        rule.onNodeWithText("Notifications").performScrollTo().performClick()
+        rule.onNodeWithText("Quiet hours").performScrollTo().assertIsDisplayed()
+    }
+
+    @Test
     fun committeeAccount_canUseStudentApp() {
         signIn(FakeData.COMMITTEE_TECH)
         rule.waitUntil(5_000) { rule.onAllNodes(hasText("My Events")).fetchSemanticsNodes().isNotEmpty() }

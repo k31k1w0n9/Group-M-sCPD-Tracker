@@ -8,6 +8,7 @@ import com.example.scpd_tracker.data.AttendanceRepository
 import com.example.scpd_tracker.data.DeviceIdSource
 import com.example.scpd_tracker.data.EventRepository
 import com.example.scpd_tracker.data.NetworkMonitor
+import com.example.scpd_tracker.domain.activeCheckInStage
 import com.example.scpd_tracker.domain.outcome
 import com.example.scpd_tracker.domain.points
 import com.example.scpd_tracker.model.AttendanceClaim
@@ -112,16 +113,8 @@ class CheckInViewModel(
                 add(StageUi(Stage.Checkpoint, checkpoint, cpOpen, if (cpOpen) "The checkpoint is open now. Scan the new QR." else "Not open yet. The organiser announces it near the end."))
             }
         }
-        fun done(s: StageStatus) = s == StageStatus.VERIFIED || s == StageStatus.PENDING_SYNC
-        val active = when {
-            !open -> null
-            !done(arrival) && arrival != StageStatus.REJECTED -> Stage.Arrival
-            event?.requiresCheckpoint == true && event.checkpointOpen && !done(checkpoint) && checkpoint != StageStatus.REJECTED -> Stage.Checkpoint
-            arrival == StageStatus.REJECTED -> Stage.Arrival
-            else -> null
-        }
         return CheckInUiState(
-            event = event, stages = stages, activeStage = active,
+            event = event, stages = stages, activeStage = event.activeCheckInStage(remote.record),
             outcome = remote.record?.outcome ?: AttendanceOutcome.IN_PROGRESS, pointsEarned = remote.record?.points ?: 0,
             pointsEligible = remote.record?.pointsEligible,
             pointsReason = remote.record?.pointsReason,

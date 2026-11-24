@@ -13,10 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -103,6 +106,14 @@ private fun NavHostController.openTab(route: String) = navigate(route) {
 @Composable
 fun StudentShell(onSignOut: () -> Unit) {
     val context = LocalContext.current
+    val focus = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
+    LaunchedEffect(Unit) {
+        // Focus can move from the removed sign-in form to the first field in the new screen.
+        withFrameNanos { }
+        focus.clearFocus(force = true)
+        keyboard?.hide()
+    }
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
     LaunchedEffect(Unit) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
@@ -114,7 +125,7 @@ fun StudentShell(onSignOut: () -> Unit) {
     val entry by nav.currentBackStackEntryAsState()
     val route = entry?.destination?.route
     val tab = Tabs.firstOrNull { it.route == route } ?: when (route) {
-        StudentRoutes.NOTIFICATIONS -> Tabs.first { it.route == StudentRoutes.PROFILE }
+        StudentRoutes.NOTIFICATIONS, StudentRoutes.SETTINGS -> Tabs.first { it.route == StudentRoutes.PROFILE }
         StudentRoutes.NOTIFICATION_EVENT -> Tabs.first { it.route == StudentRoutes.MY_EVENTS }
         else -> null
     }
@@ -187,6 +198,8 @@ private fun StudentNavHost(nav: NavHostController, onSignOut: () -> Unit) {
                 onNotifications = { nav.navigate(StudentRoutes.NOTIFICATIONS) },
                 onSignOut = onSignOut,
                 onOpenSettings = { nav.navigate(StudentRoutes.SETTINGS) },
+                onHistory = { nav.navigate(StudentRoutes.HISTORY) },
+                onCheckIn = { nav.navigate(StudentRoutes.checkIn(it)) },
             )
         }
         composable(StudentRoutes.NOTIFICATIONS) {
@@ -201,9 +214,14 @@ private fun StudentNavHost(nav: NavHostController, onSignOut: () -> Unit) {
                 initialEventId = nav.currentBackStackEntry?.arguments?.getString("eventId"),
             )
         }
-        composable(StudentRoutes.SETTINGS) { SettingsScreen(onBack = { nav.popBackStack() }) }
+        composable(StudentRoutes.SETTINGS) {
+            SettingsScreen(
+                onBack = { nav.popBackStack() },
+                onNotifications = { nav.navigate(StudentRoutes.NOTIFICATIONS) },
+            )
+        }
         composable(StudentRoutes.EDIT_INTERESTS) {
-            val vm = scpdViewModel { c, _ -> ProfileViewModel(c.auth, c.attendance) }
+            val vm = scpdViewModel { c, _ -> ProfileViewModel(c.auth, c.attendance, c.bookings, c.events) }
             val profile by vm.state.collectAsStateWithLifecycle()
             var chosen by rememberSaveable(profile.interests) { mutableStateOf(profile.interests) }
             InterestsScreen(
