@@ -54,14 +54,14 @@ internal fun SettingsScreen(onBack: () -> Unit) {
 
                     SectionTitle("Offline check-ins")
                     InfoCard(
-                        "Awaiting sync",
-                        "If you scan without internet, the scan is saved on this phone and shows as Awaiting sync. " +
+                        "Pending sync",
+                        "If you scan without internet, the scan is saved on this phone and shows as Pending sync. " +
                             "It uploads when you are back online, and points are added only after it is verified.",
                     )
                     InfoCard(
                         "Upload deadline",
                         "Saved scans must reach the server within ${Policy.OFFLINE_UPLOAD_WINDOW.toHours()} hours after check-in closes. " +
-                            "Late or unusual records go to Under review.",
+                            "Later uploads are Rejected. If the office flags a record, it shows as Under review until they decide.",
                     )
 
                     SectionTitle("About")
