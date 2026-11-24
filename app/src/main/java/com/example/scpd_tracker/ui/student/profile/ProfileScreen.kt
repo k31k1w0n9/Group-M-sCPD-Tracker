@@ -1,6 +1,7 @@
 package com.example.scpd_tracker.ui.student.profile
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -16,6 +17,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -127,27 +129,33 @@ internal fun ProfileScreen(
 private fun ProfileIdentity(state: ProfileUiState) {
     val spacing = ScpdTheme.spacing
     val colors = MaterialTheme.colorScheme
-    Surface(
-        Modifier.fillMaxWidth(),
-        color = colors.surfaceContainerLowest,
-        shape = MaterialTheme.shapes.large,
-    ) {
-        Column(
-            Modifier.padding(spacing.space4),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(spacing.space2),
+    val avatarSize = 76.dp
+    val avatarRadius = avatarSize / 2
+    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+        Surface(
+            Modifier.fillMaxWidth().padding(top = avatarRadius).testTag("profile_identity_card"),
+            color = colors.surfaceContainerLowest,
+            shape = MaterialTheme.shapes.large,
         ) {
-            Box(
-                Modifier.size(76.dp).background(colors.secondaryContainer, CircleShape),
-                contentAlignment = Alignment.Center,
+            Column(
+                Modifier.padding(horizontal = spacing.space4)
+                    .padding(top = avatarRadius + spacing.space3, bottom = spacing.space4),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(spacing.space2),
             ) {
-                Text(state.initials, style = MaterialTheme.typography.titleLarge, color = colors.onSecondaryContainer)
+                Text(state.name, style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
+                if (state.studentId.isNotBlank()) {
+                    Text("Student ID: ${state.studentId}", style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+                    TagChip("Account verified", colors.secondaryContainer, colors.onSecondaryContainer, Icons.Rounded.VerifiedUser)
+                }
             }
-            Text(state.name, style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
-            if (state.studentId.isNotBlank()) {
-                Text("Student ID: ${state.studentId}", style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
-                TagChip("Account verified", colors.secondaryContainer, colors.onSecondaryContainer, Icons.Rounded.VerifiedUser)
-            }
+        }
+        Box(
+            Modifier.size(avatarSize).background(colors.secondaryContainer, CircleShape)
+                .border(2.dp, colors.outlineVariant, CircleShape).testTag("profile_avatar"),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(state.initials, style = MaterialTheme.typography.titleLarge, color = colors.onSecondaryContainer)
         }
     }
 }

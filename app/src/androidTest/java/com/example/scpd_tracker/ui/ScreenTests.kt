@@ -37,7 +37,11 @@ import com.example.scpd_tracker.ui.student.details.EventDetailsUiState
 import com.example.scpd_tracker.ui.student.home.EventCardUi
 import com.example.scpd_tracker.ui.student.home.HomeScreen
 import com.example.scpd_tracker.ui.student.home.HomeUiState
+import com.example.scpd_tracker.ui.student.profile.ProfileScreen
+import com.example.scpd_tracker.ui.student.profile.ProfileUiState
+import com.example.scpd_tracker.ui.student.progress.ProgressUiState
 import com.example.scpd_tracker.ui.theme.ScpdTheme
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import java.time.ZonedDateTime
@@ -135,6 +139,18 @@ class ScreenTests {
         }
         rule.onNodeWithText("Hello, Aisha!").assertIsDisplayed()
         rule.onNodeWithContentDescription("University of Nottingham").assertIsDisplayed()
+    }
+
+    @Test
+    fun profileAvatar_straddlesTopEdgeOfIdentityCard() {
+        rule.setContent {
+            ScpdTheme {
+                ProfileScreen(ProfileUiState(name = "Aisha Rahman", initials = "AR"), ProgressUiState(), {}, {}, {}, {}, {}, {}, {}, {})
+            }
+        }
+        val avatar = rule.onNodeWithTag("profile_avatar").fetchSemanticsNode().boundsInRoot
+        val card = rule.onNodeWithTag("profile_identity_card").fetchSemanticsNode().boundsInRoot
+        assertEquals("Card must start halfway down the avatar", avatar.center.y, card.top, 1f)
     }
 
     @Test
