@@ -250,6 +250,7 @@ private fun outcomeStyle(record: AttendanceRecord): OutcomeStyle {
     return when (record.outcome) {
         AttendanceOutcome.VERIFIED -> OutcomeStyle(colors.secondaryContainer, colors.onSecondaryContainer, Icons.Rounded.CheckCircle, null)
         AttendanceOutcome.PENDING_SYNC -> OutcomeStyle(colors.tertiaryContainer, colors.onTertiaryContainer, Icons.Rounded.CloudUpload, "Saved on this phone. Points follow after sync.")
+        AttendanceOutcome.UNDER_REVIEW -> OutcomeStyle(colors.tertiaryContainer, colors.onTertiaryContainer, Icons.Rounded.WarningAmber, "The s-CPD office is checking this record. Points are held until it is cleared.")
         AttendanceOutcome.INCOMPLETE -> OutcomeStyle(colors.tertiaryContainer, colors.onTertiaryContainer, Icons.Rounded.WarningAmber, "Checkpoint scan missing, so no points.")
         AttendanceOutcome.REJECTED -> OutcomeStyle(colors.errorContainer, colors.onErrorContainer, Icons.Rounded.Block, record.rejectReason ?: "Scan rejected. Contact the organiser.")
         AttendanceOutcome.NO_SHOW -> OutcomeStyle(colors.primaryContainer, colors.onSurfaceVariant, Icons.Rounded.Remove, "No scan was received.")
@@ -270,7 +271,8 @@ private fun HistoryCard(record: AttendanceRecord) {
                     Text(record.eventTitle, style = type.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
                     Text(record.eventDate.label(), style = type.bodySmall, color = colors.onSurfaceVariant)
                 }
-                val settled = record.outcome != AttendanceOutcome.IN_PROGRESS && record.outcome != AttendanceOutcome.PENDING_SYNC
+                val settled = record.outcome != AttendanceOutcome.IN_PROGRESS && record.outcome != AttendanceOutcome.PENDING_SYNC &&
+                    record.outcome != AttendanceOutcome.UNDER_REVIEW
                 if (settled) Text(if (record.points > 0) "+${record.points}" else "0", style = type.titleMedium)
             }
             TagChip(record.outcome.label, style.container, style.content, style.icon)

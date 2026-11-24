@@ -10,6 +10,7 @@ import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Interests
 import androidx.compose.material.icons.rounded.NotificationsNone
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.VerifiedUser
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,11 +26,24 @@ import com.example.scpd_tracker.ui.student.ShellTopBar
 import com.example.scpd_tracker.ui.theme.ScpdTheme
 
 @Composable
-internal fun ProfileRoute(onEditInterests: () -> Unit, onNotifications: () -> Unit, onSignOut: () -> Unit) {
+internal fun ProfileRoute(
+    onEditInterests: () -> Unit,
+    onNotifications: () -> Unit,
+    onOpenSettings: () -> Unit,
+    onSignOut: () -> Unit,
+) {
     val vm = scpdViewModel { c, _ -> ProfileViewModel(c.auth, c.attendance) }
     val state by vm.state.collectAsStateWithLifecycle()
     LaunchedEffect(state.signOutConfirmed) { if (state.signOutConfirmed) onSignOut() }
-    ProfileScreen(state, onEditInterests, onNotifications, vm::requestSignOut, vm::confirmSignOut, vm::dismissSignOut)
+    ProfileScreen(
+        state = state,
+        onEditInterests = onEditInterests,
+        onNotifications = onNotifications,
+        onSignOut = vm::requestSignOut,
+        onConfirmSignOut = vm::confirmSignOut,
+        onDismissSignOut = vm::dismissSignOut,
+        onOpenSettings = onOpenSettings,
+    )
 }
 
 @Composable
@@ -40,6 +54,7 @@ internal fun ProfileScreen(
     onSignOut: () -> Unit,
     onConfirmSignOut: () -> Unit,
     onDismissSignOut: () -> Unit,
+    onOpenSettings: () -> Unit = {},
 ) {
     val spacing = ScpdTheme.spacing
     val colors = MaterialTheme.colorScheme
@@ -62,6 +77,7 @@ internal fun ProfileScreen(
                     Spacer(Modifier.height(spacing.space2))
                     ActionRow("Notifications", Icons.Rounded.NotificationsNone, onNotifications, supporting = "Reminders and quiet hours")
                     ActionRow("Interests", Icons.Rounded.Interests, onEditInterests, supporting = state.interests.joinToString(", ").ifEmpty { "None chosen" })
+                    ActionRow("Settings", Icons.Rounded.Settings, onOpenSettings, supporting = "Reminders and offline check-ins")
                     ActionRow(
                         "Sign out", Icons.AutoMirrored.Rounded.Logout, onSignOut, tint = colors.error,
                         supporting = if (state.pendingCount > 0) "${state.pendingCount} check-ins still on this phone" else null,

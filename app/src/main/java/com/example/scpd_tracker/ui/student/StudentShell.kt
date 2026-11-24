@@ -54,6 +54,7 @@ import androidx.compose.runtime.LaunchedEffect
 import com.example.scpd_tracker.ui.student.profile.ProfileViewModel
 import com.example.scpd_tracker.ui.student.progress.AttendanceHistoryRoute
 import com.example.scpd_tracker.ui.student.progress.ProgressRoute
+import com.example.scpd_tracker.ui.student.settings.SettingsScreen
 import com.example.scpd_tracker.ui.theme.ScpdTheme
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -69,6 +70,7 @@ object StudentRoutes {
     const val CHECK_IN = "checkIn/{eventId}"
     const val HISTORY = "history"
     const val EDIT_INTERESTS = "editInterests"
+    const val SETTINGS = "settings"
     const val NOTIFICATIONS = "notifications"
     const val NOTIFICATION_EVENT = "notificationEvent/{eventId}"
 
@@ -184,6 +186,7 @@ private fun StudentNavHost(nav: NavHostController, onSignOut: () -> Unit) {
                 onEditInterests = { nav.navigate(StudentRoutes.EDIT_INTERESTS) },
                 onNotifications = { nav.navigate(StudentRoutes.NOTIFICATIONS) },
                 onSignOut = onSignOut,
+                onOpenSettings = { nav.navigate(StudentRoutes.SETTINGS) },
             )
         }
         composable(StudentRoutes.NOTIFICATIONS) {
@@ -198,6 +201,7 @@ private fun StudentNavHost(nav: NavHostController, onSignOut: () -> Unit) {
                 initialEventId = nav.currentBackStackEntry?.arguments?.getString("eventId"),
             )
         }
+        composable(StudentRoutes.SETTINGS) { SettingsScreen(onBack = { nav.popBackStack() }) }
         composable(StudentRoutes.EDIT_INTERESTS) {
             val vm = scpdViewModel { c, _ -> ProfileViewModel(c.auth, c.attendance) }
             val profile by vm.state.collectAsStateWithLifecycle()

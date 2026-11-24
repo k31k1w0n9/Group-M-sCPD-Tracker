@@ -66,6 +66,25 @@ class AttendanceOutcomesTest {
     }
 
     @Test
+    fun flaggedRecord_isUnderReview_withNoPoints() {
+        val r = record(V, V, ended = true).copy(reviewReason = "Same phone used by another account")
+        assertEquals(AttendanceOutcome.UNDER_REVIEW, r.outcome)
+        assertEquals(0, r.points)
+    }
+
+    @Test
+    fun underReviewBeatsARefusedUpload() {
+        val r = record(R, V, ended = true).copy(reviewReason = "Same phone used by another account")
+        assertEquals(AttendanceOutcome.UNDER_REVIEW, r.outcome)
+    }
+
+    @Test
+    fun studentPhoneLabelStaysPendingSync() {
+        // The committee list says "Awaiting sync"; the two words are kept apart on purpose (SQA finding P1).
+        assertEquals("Pending sync", PENDING_SYNC.label)
+    }
+
+    @Test
     fun milestoneIsTheNextTargetAbovePoints() {
         assertEquals(15, AttendanceStats.nextMilestone(0))
         assertEquals(30, AttendanceStats.nextMilestone(15))
