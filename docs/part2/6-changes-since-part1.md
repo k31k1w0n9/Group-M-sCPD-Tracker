@@ -48,32 +48,37 @@ The Part 1 diagram (DG-02 in [Architecture](../4-1-architecture.md)) shows the f
 
 ```mermaid
 flowchart LR
-  subgraph Device["Android app (Kotlin, Jetpack Compose, MVVM)"]
-    UIS["Student screens: Home, Explore, My Events, Check-in, Progress, Profile, Settings"]
-    UIC["Committee screens: Dashboard, Events, Scan, Attendance"]
+  subgraph Device["Android App (Kotlin, Jetpack Compose, MVVM)"]
+    UIS["Student Screens: Home, Explore, My Events, Check-in, Progress, Profile, Settings"]
+    UIC["Committee Screens: Dashboard, Events, Scan, Attendance"]
     VM["ViewModels"]
-    Dom["Domain rules: Policy, BookingRules, AttendanceOutcomes, StreakCalculator, RecommendationRanker"]
-    Repo["Repository interfaces: Auth, Event, Booking, Attendance, Progress"]
-    Queue[("On-device scan queue: in memory today, Room planned")]
-    Sys["Device sources: CameraX and ML Kit scanner, biometric prompt, DataStore device ID, network monitor"]
+    Dom["Domain Rules: Policy, BookingRules, AttendanceOutcomes, StreakCalculator, RecommendationRanker"]
+    Repo["Repository Interfaces: Auth, Event, Booking, Attendance, Progress"]
+    Queue[("On-device Scan Queue: In-memory today, Room planned")]
+    Sys["Device Sources: CameraX, ML Kit Scanner, Biometric Prompt, DataStore Device ID, Network Monitor"]
     DI["AppContainer builds every repository"]
+
     UIS --> VM
     UIC --> VM
     VM --> Dom
     VM --> Repo
     Repo <--> Queue
     Repo --> Sys
-    DI -.->|creates| Repo
+    DI -.-> Repo
   end
-  subgraph Today["Today: in-memory backend"]
-    Fake["FakeBackend: bookings and waitlist, signed rotating codes, claim checks, points ledger, review flags"]
+
+  subgraph Today["Today: In-memory Backend"]
+    Fake["FakeBackend: Bookings, Waitlist, Signed Rotating Codes, Claim Checks, Points Ledger, Review Flags"]
   end
-  subgraph Later["Next: Firebase backend"]
-    FB["Authentication, Firestore, Cloud Functions, Cloud Messaging, security rules"]
+
+  subgraph Later["Next: Firebase Backend"]
+    FB["Authentication, Firestore, Cloud Functions, Cloud Messaging, Security Rules"]
   end
-  Office(["s-CPD office: Developer menu in debug builds, Firebase console later"])
-  Repo -->|book, cancel, check in| Fake
-  Repo -.->|same interfaces replace the fake| FB
+
+  Office(["s-CPD Office: Developer Menu in Debug Builds, Firebase Console Later"])
+
+  Repo -->|Book, Cancel, Check-in| Fake
+  Repo -.->|Same interfaces replace the fake| FB
   Queue -.->|WorkManager upload planned| FB
   Office --> Fake
   Office -.-> FB
