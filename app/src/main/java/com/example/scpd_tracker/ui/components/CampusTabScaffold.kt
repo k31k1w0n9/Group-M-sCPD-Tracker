@@ -20,13 +20,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.scpd_tracker.R
 import com.example.scpd_tracker.ui.theme.ScpdTheme
@@ -42,7 +40,6 @@ internal fun CampusTabScaffold(
     mascot: CampusMascot = CampusMascot.Wave,
     context: (@Composable ColumnScope.() -> Unit)? = null,
     search: (@Composable () -> Unit)? = null,
-    contentOverlap: Dp = 0.dp,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val spacing = ScpdTheme.spacing
@@ -144,24 +141,7 @@ internal fun CampusTabScaffold(
                     }
                 }
             }
-            if (contentOverlap == 0.dp) {
-                content()
-            } else {
-                Column(
-                    Modifier.weight(1f).fillMaxWidth().layout { measurable, constraints ->
-                        // Profile's avatar crosses the extended edge. The scroll pane clears the title
-                        // bar as it collapses, and starts below it on short or large-text layouts.
-                        val overlap = if (compactOnly || fontScale >= 1.3f) 0 else
-                            (contentOverlap.toPx() * (1f - 2f * appBarState.collapsedFraction).coerceAtLeast(0f)).roundToInt()
-                        val body = measurable.measure(constraints.copy(
-                            minHeight = constraints.minHeight + overlap,
-                            maxHeight = constraints.maxHeight + overlap,
-                        ))
-                        layout(body.width, body.height - overlap) { body.placeRelative(0, -overlap) }
-                    },
-                    content = content,
-                )
-            }
+            content()
         }
     }
 }
