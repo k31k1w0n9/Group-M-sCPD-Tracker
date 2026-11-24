@@ -51,8 +51,8 @@ flowchart LR
   subgraph Device["Android app (Kotlin, Jetpack Compose, MVVM)"]
     UIS["Student screens: Home, Explore, My Events, Check-in, Progress, Profile, Settings"]
     UIC["Committee screens: Dashboard, Events, Scan, Attendance"]
-    VM["ViewModels: one per screen, expose StateFlow state"]
-    Dom["domain: Policy, BookingRules, AttendanceOutcomes, StreakCalculator, RecommendationRanker"]
+    VM["ViewModels"]
+    Dom["Domain rules: Policy, BookingRules, AttendanceOutcomes, StreakCalculator, RecommendationRanker"]
     Repo["Repository interfaces: Auth, Event, Booking, Attendance, Progress"]
     Queue[("On-device scan queue: in memory today, Room planned")]
     Sys["Device sources: CameraX and ML Kit scanner, biometric prompt, DataStore device ID, network monitor"]
@@ -63,20 +63,20 @@ flowchart LR
     VM --> Repo
     Repo <--> Queue
     Repo --> Sys
-    DI -.creates.-> Repo
+    DI -.->|creates| Repo
   end
   subgraph Today["Today: in-memory backend"]
     Fake["FakeBackend: bookings and waitlist, signed rotating codes, claim checks, points ledger, review flags"]
   end
-  subgraph Next["Next: Firebase"]
+  subgraph Later["Next: Firebase backend"]
     FB["Authentication, Firestore, Cloud Functions, Cloud Messaging, security rules"]
   end
   Office(["s-CPD office: Developer menu in debug builds, Firebase console later"])
-  Repo -->|"submit claim, book, cancel"| Fake
-  Repo -.->|"same interfaces, replaces the fake"| FB
+  Repo -->|book, cancel, check in| Fake
+  Repo -.->|same interfaces replace the fake| FB
+  Queue -.->|WorkManager upload planned| FB
   Office --> Fake
   Office -.-> FB
-  Queue -.->|"WorkManager upload, planned"| FB
 ```
 
 ### Check-in and offline sync as built
@@ -99,7 +99,7 @@ sequenceDiagram
   else Student is offline (QR scan only, backup codes need internet)
     S->>Q: Save claim
     S->>S: Show Pending sync (Saved on phone)
-    Note over C,B: Committee sees only what the server knows, so this stage shows Awaiting sync after check-in closes
+    Note over C,B: Committee list shows Awaiting sync
     Q->>B: Upload automatically when the network returns
     alt Accepted within 2 hours of check-in closing
       B-->>S: Verified
