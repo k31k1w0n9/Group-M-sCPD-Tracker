@@ -1,7 +1,7 @@
 package com.example.scpd_tracker.ui.student.profile
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -17,23 +17,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.scpd_tracker.BuildConfig
-import com.example.scpd_tracker.R
 import com.example.scpd_tracker.model.Stage
 import com.example.scpd_tracker.ui.components.*
 import com.example.scpd_tracker.ui.debug.DebugMenu
 import com.example.scpd_tracker.ui.scpdViewModel
-import com.example.scpd_tracker.ui.student.ShellTopBar
 import com.example.scpd_tracker.ui.student.progress.ProgressUiState
 import com.example.scpd_tracker.ui.student.progress.ProgressViewModel
 import com.example.scpd_tracker.ui.student.progress.StreakCard
@@ -83,34 +76,34 @@ internal fun ProfileScreen(
     val spacing = ScpdTheme.spacing
     val colors = MaterialTheme.colorScheme
     var showDebug by remember { mutableStateOf(false) }
-    BoxWithConstraints(Modifier.fillMaxSize().background(colors.background)) {
-        val short = maxHeight < 480.dp
-        Column(Modifier.fillMaxSize()) {
-            if (short) ShellTopBar("Profile")
-            Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
-                if (!short) ProfileHeader(progress, state.checkIn != null)
-                ReadableWidth {
-                    Column(
-                        Modifier.padding(horizontal = spacing.gutter).padding(top = if (short) spacing.space4 else 0.dp, bottom = spacing.space4),
-                        verticalArrangement = Arrangement.spacedBy(spacing.space4),
-                    ) {
-                        ProfileIdentity(state, overlapHeader = !short)
-                        StreakCard(progress.streakWeeks, progress.recentWeeks, onHistory) {
-                            ProfileGilbert(Modifier.size(64.dp), scale = 4.1801f, x = -0.0417f, y = -2.1667f)
-                        }
-                        state.checkIn?.let { checkIn ->
-                            ProfileCheckInCard(checkIn) { onCheckIn(checkIn.event.id) }
-                        }
-                        Text("Account", Modifier.semantics { heading() }, style = MaterialTheme.typography.titleLarge)
-                        ActionRow("Notifications", Icons.Rounded.NotificationsNone, onNotifications, supporting = "Reminders and quiet hours")
-                        ActionRow("Interests", Icons.Rounded.Interests, onEditInterests, supporting = state.interests.joinToString(", ").ifEmpty { "None chosen" })
-                        ActionRow("Settings", Icons.Rounded.Settings, onOpenSettings, supporting = "Preferences and offline check-ins")
-                        ActionRow(
-                            "Sign out", Icons.AutoMirrored.Rounded.Logout, onSignOut, tint = colors.error,
-                            supporting = if (state.pendingCount > 0) "${state.pendingCount} check-ins still on this phone" else null,
-                        )
-                        if (BuildConfig.DEBUG) ActionRow("Developer menu", Icons.Rounded.BugReport, { showDebug = true }, supporting = "Debug builds only")
+    CampusTabScaffold(
+        title = "Profile",
+        subtitle = "${progress.total}/${progress.milestone} verified points" + if (state.checkIn != null) " · Live event" else "",
+        mascot = CampusMascot.Profile,
+        contentOverlap = 30.dp,
+    ) {
+        Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+            ReadableWidth {
+                Column(
+                    Modifier.padding(horizontal = spacing.gutter).padding(bottom = spacing.space4),
+                    verticalArrangement = Arrangement.spacedBy(spacing.space4),
+                ) {
+                    ProfileIdentity(state)
+                    StreakCard(progress.streakWeeks, progress.recentWeeks, onHistory) {
+                        GilbertSprite(Modifier.size(64.dp), scale = 4.1801f, x = -0.0417f, y = -2.1667f)
                     }
+                    state.checkIn?.let { checkIn ->
+                        ProfileCheckInCard(checkIn) { onCheckIn(checkIn.event.id) }
+                    }
+                    Text("Account", Modifier.semantics { heading() }, style = MaterialTheme.typography.titleLarge)
+                    ActionRow("Notifications", Icons.Rounded.NotificationsNone, onNotifications, supporting = "Reminders and quiet hours")
+                    ActionRow("Interests", Icons.Rounded.Interests, onEditInterests, supporting = state.interests.joinToString(", ").ifEmpty { "None chosen" })
+                    ActionRow("Settings", Icons.Rounded.Settings, onOpenSettings, supporting = "Preferences and offline check-ins")
+                    ActionRow(
+                        "Sign out", Icons.AutoMirrored.Rounded.Logout, onSignOut, tint = colors.error,
+                        supporting = if (state.pendingCount > 0) "${state.pendingCount} check-ins still on this phone" else null,
+                    )
+                    if (BuildConfig.DEBUG) ActionRow("Developer menu", Icons.Rounded.BugReport, { showDebug = true }, supporting = "Debug builds only")
                 }
             }
         }
@@ -133,66 +126,17 @@ internal fun ProfileScreen(
 }
 
 @Composable
-private fun ProfileHeader(progress: ProgressUiState, live: Boolean) {
-    val spacing = ScpdTheme.spacing
-    val hero = ScpdTheme.colors
-    Box(Modifier.fillMaxWidth()) {
-        CampusBackground(Modifier.matchParentSize(), home = true)
-        ReadableWidth(Modifier.statusBarsPadding()) {
-            Column(Modifier.padding(spacing.gutter)) {
-                BrandIdentities()
-                Row(
-                    Modifier.fillMaxWidth().padding(top = spacing.space4, bottom = spacing.space5),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(spacing.space3),
-                ) {
-                    Column(Modifier.weight(1f)) {
-                        Text("Profile", Modifier.semantics { heading() }, style = MaterialTheme.typography.headlineSmall, color = hero.onHero)
-                        Text(
-                            "${progress.total}/${progress.milestone} verified points" + if (live) " · Live event" else "",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = hero.onHeroMuted,
-                        )
-                    }
-                    // Crop past the neighbouring sprite's feet at the top of this cell.
-                    ProfileGilbert(Modifier.size(75.dp), scale = 3.9809f, x = -2.9619f, y = -3.02f)
-                }
-            }
-        }
-    }
-}
-
-/** Two crops from the same Gilbert sprite sheet used by the Figma Profile frame. */
-@Composable
-private fun ProfileGilbert(modifier: Modifier, scale: Float, x: Float, y: Float) {
-    Box(modifier.clipToBounds()) {
-        Image(
-            painterResource(R.drawable.gilbert_sheet),
-            contentDescription = null,
-            modifier = Modifier.matchParentSize().graphicsLayer {
-                transformOrigin = TransformOrigin(0f, 0f)
-                scaleX = scale
-                scaleY = scale
-                translationX = x * size.width
-                translationY = y * size.height
-            },
-            contentScale = ContentScale.FillBounds,
-        )
-    }
-}
-
-@Composable
-private fun ProfileIdentity(state: ProfileUiState, overlapHeader: Boolean) {
+private fun ProfileIdentity(state: ProfileUiState) {
     val spacing = ScpdTheme.spacing
     val colors = MaterialTheme.colorScheme
     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
         Surface(
-            Modifier.fillMaxWidth(),
+            Modifier.fillMaxWidth().padding(top = 34.dp),
             color = colors.surfaceContainerLowest,
             shape = MaterialTheme.shapes.large,
         ) {
             Column(
-                Modifier.padding(horizontal = spacing.space4).padding(top = if (overlapHeader) 52.dp else 80.dp, bottom = spacing.space4),
+                Modifier.padding(horizontal = spacing.space4).padding(top = 52.dp, bottom = spacing.space4),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(spacing.space2),
             ) {
@@ -204,9 +148,8 @@ private fun ProfileIdentity(state: ProfileUiState, overlapHeader: Boolean) {
             }
         }
         Box(
-            Modifier.offset(y = if (overlapHeader) (-30).dp else spacing.space3)
-                .size(76.dp).background(colors.surfaceContainerLowest, CircleShape).padding(3.dp)
-                .background(colors.secondaryContainer, CircleShape),
+            Modifier.size(76.dp).background(colors.secondaryContainer, CircleShape)
+                .border(3.dp, colors.surfaceContainerLowest, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             Text(state.initials, style = MaterialTheme.typography.titleLarge, color = colors.onSecondaryContainer)

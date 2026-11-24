@@ -46,7 +46,7 @@ The Kotlin app uses MVVM with repositories, Room for offline data and Firebase f
 
 ## 5. UI design and wireframes
 
-The Part 1 wireframes show the main journeys and example states. The Part 2 frontend uses Refined v3 as its layout reference, with behaviour documented in the Part 2 changes and SQA response. [Student proposal wireframes](docs/5-1-student-wireframes.md) · [Committee proposal wireframes](docs/5-2-committee-wireframes.md) · [Refined v3](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=368-2)
+The Part 1 wireframes show the main journeys and example states. The Part 2 frontend uses Refined v3 for navigation and Refined v2 for the expandable campus headers on the Student and Club Committee tabs. The Part 2 changes and SQA response explain the app's behaviour. [Student proposal wireframes](docs/5-1-student-wireframes.md) · [Committee proposal wireframes](docs/5-2-committee-wireframes.md) · [Refined v2](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=325-2998) · [Refined v3](https://www.figma.com/design/Um4ZLQMFP2mEoEEnYOL8oM/Mobile-Device-Programming?node-id=368-2)
 
 
 ## 6–9. Part 2 changes

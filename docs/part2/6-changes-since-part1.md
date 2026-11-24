@@ -14,7 +14,7 @@ The fake keeps everything in memory, so data resets when the app process ends. S
 
 | Area | Part 1 | Now | Why |
 |---|---|---|---|
-| Student headers | Tall campus header on the main tabs | Home and Explore start with a short campus banner. The banner scrolls away and its one search field stays pinned. Profile has a campus banner above its account card. My Events and Progress use compact bars. | Leaves room for content on the Pixel 2 (411 × 731 dp) while keeping search available. |
+| Tab headers | Expanded campus headers with a compact scroll state | Student and Club Committee tabs share the Refined v2 campus header. It collapses into a navy title bar on scroll. Home and Explore keep search visible. Secondary screens and short viewports use compact bars. | Keeps the roles visually consistent and frees space for content while scrolling. |
 | Profile and Settings | Profile with a live check-in card and a separate Privacy & settings screen | Profile shows the account, weekly streak and a shortcut when a booked event has a scan available. Settings links to Notifications, where reminder preferences are saved, and explains how offline check-ins work. | The check-in shortcut uses the same stage as the scanner. Students change reminders in one place. |
 | Committee navigation | Separate Dashboard, Events, Scan and Submissions destinations | Events groups submissions and scheduled events. Check-in and Account have their own tabs. | Matches the three destinations in the Refined v3 redesign. |
 | Event day | Check-in reached from My Events only | A **Happening now** card on Home opens check-in in one tap | Checking in is the most important task on the day, so it should not be hidden. |

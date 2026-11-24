@@ -5,6 +5,7 @@ import android.Manifest
 import android.os.Build
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -58,7 +59,7 @@ class EndToEndTest {
     fun studentProfile_opensLiveCheckInAndSavedNotificationPreferences() {
         signIn(FakeData.STUDENT_1)
         rule.waitUntil(5_000) { rule.onAllNodes(hasText("Hello, Aisha!")).fetchSemanticsNodes().isNotEmpty() }
-        rule.onNodeWithText("Profile").performClick()
+        rule.onNode(hasText("Profile") and hasClickAction()).performClick()
         rule.onNodeWithText("Weekly streak").performScrollTo().assertIsDisplayed()
         rule.onNodeWithText("Scan arrival QR").performScrollTo().performClick()
         rule.onNodeWithText("Check-in").assertIsDisplayed()
@@ -79,8 +80,24 @@ class EndToEndTest {
     @Test
     fun committeeSignsIn_seesOwnClubDashboard() {
         signIn(FakeData.COMMITTEE_TECH, committee = true)
-        rule.waitUntil(5_000) { rule.onAllNodes(hasText("Events · Computer Science Society")).fetchSemanticsNodes().isNotEmpty() }
+        rule.waitUntil(5_000) { rule.onAllNodes(hasText("Manage your upcoming and past events.")).fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithContentDescription("University of Nottingham").assertIsDisplayed()
+        rule.onNodeWithText("Computer Science Society", substring = true).assertIsDisplayed()
         rule.onNodeWithText("Create event").assertIsDisplayed()
+        for (tab in listOf("Check-in", "Account")) {
+            rule.onNode(hasText(tab) and hasClickAction()).performClick()
+            rule.onNodeWithContentDescription("University of Nottingham").assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun studentTabs_startWithBrandedCampusHeaders() {
+        signIn(FakeData.STUDENT_1)
+        rule.waitUntil(5_000) { rule.onAllNodes(hasText("Hello, Aisha!")).fetchSemanticsNodes().isNotEmpty() }
+        for (tab in listOf("Home", "Explore", "My Events", "Progress", "Profile")) {
+            rule.onNode(hasText(tab) and hasClickAction()).performClick()
+            rule.onNodeWithContentDescription("University of Nottingham").assertIsDisplayed()
+        }
     }
 
     @Test

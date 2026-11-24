@@ -50,8 +50,12 @@ import java.time.ZoneOffset
 @Composable
 internal fun DashboardScreen(state: DashboardUiState, onCreate: () -> Unit, onOpen: (String) -> Unit, onBookings: (String) -> Unit) {
     val spacing = ScpdTheme.spacing
-    Column(Modifier.fillMaxSize()) {
-        ShellTopBar("Events · ${state.clubName}")
+    CampusTabScaffold(
+        title = "Events",
+        subtitle = "Manage your upcoming and past events.",
+        mascot = CampusMascot.Calendar,
+        context = if (state.clubName.isNotBlank()) ({ CommitteeHeaderAccess(state.clubName) }) else null,
+    ) {
         if (state.isOffline) OfflineBanner(body = "You're offline. Changes and check-in codes need a connection.")
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
             ReadableWidth {
@@ -122,8 +126,12 @@ private fun EventRow(event: Event, action: String, onManage: (() -> Unit)? = nul
 @Composable
 internal fun CheckInHubScreen(state: DashboardUiState, onRun: (String) -> Unit) {
     val spacing = ScpdTheme.spacing
-    Column(Modifier.fillMaxSize()) {
-        ShellTopBar("Check-in")
+    CampusTabScaffold(
+        title = "Check-in",
+        subtitle = "Run check-in for today's events.",
+        mascot = CampusMascot.Scan,
+        context = if (state.clubName.isNotBlank()) ({ CommitteeHeaderAccess(state.clubName) }) else null,
+    ) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
             ReadableWidth {
                 Column(Modifier.padding(spacing.gutter), verticalArrangement = Arrangement.spacedBy(spacing.space3)) {
@@ -139,20 +147,28 @@ internal fun CheckInHubScreen(state: DashboardUiState, onRun: (String) -> Unit) 
 }
 
 @Composable
+private fun CommitteeHeaderAccess(clubName: String) {
+    val colors = MaterialTheme.colorScheme
+    Text("Logged in as: $clubName", style = MaterialTheme.typography.labelMedium, color = ScpdTheme.colors.onHero)
+    TagChip("Access verified", colors.secondaryContainer, colors.onSecondaryContainer, Icons.Rounded.VerifiedUser)
+}
+
+@Composable
 internal fun CommitteeAccountScreen(name: String, email: String, onSignOut: () -> Unit) {
     val spacing = ScpdTheme.spacing
     val colors = MaterialTheme.colorScheme
     var debug by remember { mutableStateOf(false) }
-    Column(Modifier.fillMaxSize()) {
-        ShellTopBar("Account")
-        ReadableWidth {
-            Column(Modifier.padding(spacing.gutter), verticalArrangement = Arrangement.spacedBy(spacing.space3)) {
-                Text(name, style = MaterialTheme.typography.titleLarge)
-                Text(email, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
-                TagChip("Committee access verified", colors.secondaryContainer, colors.onSecondaryContainer, Icons.Rounded.VerifiedUser)
-                Text("You can manage this club's events only. The s-CPD office approves events and corrects attendance.", style = MaterialTheme.typography.bodyMedium)
-                ActionRow("Sign out", Icons.AutoMirrored.Rounded.Logout, onSignOut, tint = colors.error)
-                if (BuildConfig.DEBUG) ActionRow("Developer menu", Icons.Rounded.BugReport, { debug = true }, supporting = "Play the s-CPD office in the demo")
+    CampusTabScaffold(title = "Account", subtitle = "Club Committee") {
+        Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+            ReadableWidth {
+                Column(Modifier.padding(spacing.gutter), verticalArrangement = Arrangement.spacedBy(spacing.space3)) {
+                    Text(name, style = MaterialTheme.typography.titleLarge)
+                    Text(email, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+                    TagChip("Committee access verified", colors.secondaryContainer, colors.onSecondaryContainer, Icons.Rounded.VerifiedUser)
+                    Text("You can manage this club's events only. The s-CPD office approves events and corrects attendance.", style = MaterialTheme.typography.bodyMedium)
+                    ActionRow("Sign out", Icons.AutoMirrored.Rounded.Logout, onSignOut, tint = colors.error)
+                    if (BuildConfig.DEBUG) ActionRow("Developer menu", Icons.Rounded.BugReport, { debug = true }, supporting = "Play the s-CPD office in the demo")
+                }
             }
         }
     }

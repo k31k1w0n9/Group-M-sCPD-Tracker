@@ -64,8 +64,11 @@ internal fun AttendanceHistoryRoute(onBack: () -> Unit) {
 @Composable
 internal fun ProgressScreen(state: ProgressUiState, onHistory: () -> Unit) {
     val spacing = ScpdTheme.spacing
-    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        ShellTopBar("Progress")
+    CampusTabScaffold(
+        title = "Progress",
+        subtitle = "Every event, a step forward.",
+        mascot = CampusMascot.Garden,
+    ) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
             ReadableWidth {
                 Column(Modifier.padding(spacing.gutter), verticalArrangement = Arrangement.spacedBy(spacing.space4)) {

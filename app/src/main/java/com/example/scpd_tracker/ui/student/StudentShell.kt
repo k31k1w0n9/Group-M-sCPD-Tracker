@@ -297,7 +297,7 @@ private fun StudentRail(selected: String, onSelect: (String) -> Unit) {
     }
 }
 
-/** Navy title bar used by every student screen that is not Home or Explore. */
+/** Navy title bar for secondary screens. */
 @Composable
 internal fun ShellTopBar(title: String, onBack: (() -> Unit)? = null) {
     val spacing = ScpdTheme.spacing

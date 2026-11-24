@@ -6,10 +6,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performScrollTo
@@ -121,6 +123,18 @@ class ScreenTests {
             )
         }
         rule.onAllNodesWithContentDescription("Search events, clubs or skills").assertCountEquals(1)
+        rule.onNodeWithTag("home_list").performTouchInput {
+            swipe(Offset(center.x, height * 0.85f), Offset(center.x, height * 0.15f), durationMillis = 550)
+        }
+        rule.onNodeWithText("Home").assertIsDisplayed()
+        rule.onNodeWithContentDescription("University of Nottingham").assertIsNotDisplayed()
+        rule.onAllNodesWithContentDescription("Search events, clubs or skills").assertCountEquals(1)
+
+        rule.onNodeWithTag("home_list").performTouchInput {
+            swipe(Offset(center.x, height * 0.1f), Offset(center.x, height * 0.95f), durationMillis = 550)
+        }
+        rule.onNodeWithText("Hello, Aisha!").assertIsDisplayed()
+        rule.onNodeWithContentDescription("University of Nottingham").assertIsDisplayed()
     }
 
     @Test

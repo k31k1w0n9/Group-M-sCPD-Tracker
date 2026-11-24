@@ -87,8 +87,11 @@ internal fun MyEventsList(
     onHistory: () -> Unit,
 ) {
     val spacing = ScpdTheme.spacing
-    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        ShellTopBar("My Events")
+    CampusTabScaffold(
+        title = "My Events",
+        subtitle = "Good things on your calendar.",
+        mascot = CampusMascot.Calendar,
+    ) {
         if (state.isOffline) OfflineBanner()
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
             ReadableWidth {

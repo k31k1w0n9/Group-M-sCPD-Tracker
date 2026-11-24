@@ -1,7 +1,5 @@
 package com.example.scpd_tracker.ui.student.home
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
@@ -26,29 +24,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.scpd_tracker.R
 import com.example.scpd_tracker.model.Event
 import com.example.scpd_tracker.ui.components.*
 import com.example.scpd_tracker.ui.theme.PillShape
 import com.example.scpd_tracker.ui.theme.ScpdTheme
 
 /** Home (ranked for the student) and Explore (every upcoming event). Stateless: it renders [state] only. */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun HomeScreen(
     state: HomeUiState,
@@ -63,15 +53,13 @@ internal fun HomeScreen(
     val spacing = ScpdTheme.spacing
     val listState = rememberLazyListState()
     val title = if (state.browsing) "Explore" else "Home"
-    val colors = MaterialTheme.colorScheme
-    BoxWithConstraints(Modifier.fillMaxSize().background(colors.primary).statusBarsPadding()) {
-        val keyboardHeight = with(LocalDensity.current) { WindowInsets.ime.getBottom(this).toDp() }
-        val short = maxHeight + keyboardHeight < 480.dp
-        LazyColumn(state = listState, modifier = Modifier.fillMaxSize().background(colors.background).testTag("home_list")) {
-            if (!short) item(key = "campus_header") { HomeHeader(state.browsing, state.greetingName) }
-            stickyHeader(key = "event_search") {
-                PinnedHomeSearch(if (short) title else null, state.query, onQuery)
-            }
+    CampusTabScaffold(
+        title = title,
+        expandedTitle = if (state.browsing) title else if (state.greetingName.isBlank()) "Hello!" else "Hello, ${state.greetingName}!",
+        subtitle = if (state.browsing) "Find your next campus event." else "Discover events, clubs and skills.",
+        search = { HomeSearch(state.query, onQuery) },
+    ) {
+        LazyColumn(state = listState, modifier = Modifier.fillMaxSize().testTag("home_list")) {
             if (state.isOffline) item { OfflineBanner(body = "You're offline. Showing saved events; booking needs a connection.") }
             item {
                 ReadableWidth {
@@ -171,54 +159,6 @@ private fun NoResults(searching: Boolean, onClear: () -> Unit) {
             )
             if (searching) SecondaryAction("Clear search", onClick = onClear)
         }
-    }
-}
-
-/**
- * The campus artwork scrolls with the feed. Search is the next item and stays pinned on scroll.
- */
-@Composable
-private fun HomeHeader(browsing: Boolean, name: String) {
-    val spacing = ScpdTheme.spacing
-    val extra = ScpdTheme.colors
-    Box(Modifier.fillMaxWidth()) {
-        CampusBackground(Modifier.matchParentSize(), home = true)
-        ReadableWidth {
-            Column(Modifier.padding(start = spacing.gutter, end = spacing.gutter, bottom = spacing.space2)) {
-                BrandIdentities(Modifier.padding(top = spacing.space2, bottom = spacing.space2))
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(spacing.space3)) {
-                    Column(Modifier.weight(1f)) {
-                        Text(
-                            if (browsing) "Explore" else if (name.isBlank()) "Hello!" else "Hello, $name!",
-                            Modifier.semantics { heading() }, style = MaterialTheme.typography.headlineSmall, color = extra.onHero,
-                        )
-                        Text(
-                            if (browsing) "Every approved event, in one place." else "Discover events, clubs and skills.",
-                            style = MaterialTheme.typography.bodySmall, color = extra.onHeroMuted,
-                        )
-                    }
-                    GilbertWave()
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun GilbertWave(modifier: Modifier = Modifier) {
-    // Crops one pose out of the Gilbert sprite sheet; the numbers are sprite coordinates, not layout.
-    Box(modifier.size(52.dp).clipToBounds()) {
-        Image(
-            painterResource(R.drawable.gilbert_sheet), null,
-            Modifier.fillMaxSize().graphicsLayer {
-                scaleX = 4f
-                scaleY = 4f
-                transformOrigin = TransformOrigin(0f, 0f)
-                translationX = -4.935.dp.toPx() * (52f / 75f)
-                translationY = -5.9175.dp.toPx() * (52f / 75f)
-            },
-            contentScale = ContentScale.FillBounds,
-        )
     }
 }
 
@@ -343,23 +283,6 @@ private fun EventCard(card: EventCardUi, onOpen: () -> Unit) {
                 EventFacts(card)
                 // One short, specific reason from the ranker instead of a generic "For you" badge.
                 Text(card.reason, style = MaterialTheme.typography.labelMedium, color = colors.onSecondaryContainer)
-            }
-        }
-    }
-}
-
-/** One search field stays in the same composition as it pins, preserving focus and query. */
-@Composable
-private fun PinnedHomeSearch(title: String?, query: String, onQuery: (String) -> Unit) {
-    val spacing = ScpdTheme.spacing
-    Box(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primary)) {
-        ReadableWidth {
-            Column(Modifier.padding(horizontal = spacing.gutter, vertical = spacing.space2)) {
-                if (title != null) {
-                    Text(title, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleLarge, color = ScpdTheme.colors.onHero)
-                    Spacer(Modifier.height(spacing.space2))
-                }
-                HomeSearch(query, onQuery)
             }
         }
     }
