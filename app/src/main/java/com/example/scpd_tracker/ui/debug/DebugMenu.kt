@@ -39,6 +39,7 @@ fun DebugMenu(onDismiss: () -> Unit) {
     val events by backend.events.collectAsStateWithLifecycle()
     val user by container.auth.currentUser.collectAsStateWithLifecycle()
     val ledger by backend.ledger.collectAsStateWithLifecycle()
+    val evidence by backend.evidence.collectAsStateWithLifecycle()
     var hours by remember { mutableIntStateOf((container.clock.offset.toMinutes() / 60).toInt()) }
 
     ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.surfaceContainerLowest) {
@@ -82,6 +83,13 @@ fun DebugMenu(onDismiss: () -> Unit) {
                 if (lastAward != null && uid != null) {
                     SecondaryAction("Office: reverse award for ${lastAward.entry.eventTitle}") {
                         backend.reverseAward(uid, lastAward.entry.eventId, "Office review: attendance record found invalid.")
+                    }
+                }
+                val flaggedEntry = evidence.entries.firstOrNull { it.key.startsWith("$uid|") && it.value.flagged != null }
+                if (flaggedEntry != null && uid != null) {
+                    val flaggedEventId = flaggedEntry.key.substringAfter('|')
+                    SecondaryAction("Office: clear review flag for ${events[flaggedEventId]?.title ?: flaggedEventId}") {
+                        backend.clearFlag(uid, flaggedEventId)
                     }
                 }
                 Spacer(Modifier.height(spacing.space6))

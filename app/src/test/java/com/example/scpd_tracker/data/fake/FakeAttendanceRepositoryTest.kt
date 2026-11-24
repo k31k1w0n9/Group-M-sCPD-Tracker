@@ -4,6 +4,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import com.example.scpd_tracker.data.system.DataStoreDeviceId
 import com.example.scpd_tracker.domain.Policy
 import com.example.scpd_tracker.model.AttendanceClaim
+import com.example.scpd_tracker.model.AttendanceOutcome
 import com.example.scpd_tracker.model.ClaimResult
 import com.example.scpd_tracker.model.Stage
 import com.example.scpd_tracker.model.StageStatus
@@ -170,6 +171,41 @@ class FakeAttendanceRepositoryTest {
         )
         val rows = app.attendance.liveAttendees(event).first()
         assertEquals("Same phone used by another account", rows.first { it.userId == "u-daniel" }.flagged)
+    }
+
+    @Test
+    fun flaggedRecord_holdsPoints_untilTheOfficeClearsIt() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        val before = app.progress.ledger().first().sumOf { it.points }
+        app.attendance.submitClaim(qrClaim(app, "r-a1", device = "shared-phone"))
+        app.backend.openCheckpoint(event)
+        app.attendance.submitClaim(qrClaim(app, "r-a2", stage = Stage.Checkpoint, device = "shared-phone"))
+        assertEquals(before + 3, app.progress.ledger().first().sumOf { it.points })
+        app.auth.signOut()
+        app.signInStudent2()
+        app.attendance.submitClaim(qrClaim(app, "r-b", device = "shared-phone"))
+        app.auth.signOut()
+        app.signInStudent1()
+        assertEquals(before, app.progress.ledger().first().sumOf { it.points })
+        app.backend.clearFlag("u-aisha", event)
+        assertEquals(before + 3, app.progress.ledger().first().sumOf { it.points })
+    }
+
+    @Test
+    fun offlineScanOnSharedPhone_showsUnderReview_notRejected() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        assertEquals(ClaimResult.Verified, app.attendance.submitClaim(qrClaim(app, "r-a", device = "shared-phone")))
+        app.auth.signOut()
+        app.signInStudent2()
+        app.network.set(false)
+        advanceTimeBy(5_000); runCurrent()
+        assertEquals(ClaimResult.PendingSync, app.attendance.submitClaim(qrClaim(app, "r-b", device = "shared-phone")))
+        app.network.set(true)
+        advanceTimeBy(5_000); runCurrent()
+        val record = app.attendance.myAttendance().first().first { it.eventId == event }
+        assertEquals(AttendanceOutcome.UNDER_REVIEW, record.outcome)
     }
 
     @Test

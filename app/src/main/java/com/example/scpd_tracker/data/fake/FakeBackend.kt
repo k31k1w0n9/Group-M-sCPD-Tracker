@@ -39,6 +39,10 @@ import java.util.UUID
  *
  * The signing secret below is only for this demo. In the real build it lives in Secret Manager on the server.
  */
+/** Ledger reasons for points held while a record is under review, and given back when the office clears it. */
+private const val HOLD_REASON = "On hold: attendance is under review"
+private const val RELEASE_REASON = "Review cleared by the office"
+
 class FakeBackend(private val clock: AppClock, seed: FakeSeed = FakeData.seed(clock.now())) {
 
     data class Account(val profile: UserProfile, val password: String)
@@ -342,6 +346,9 @@ class FakeBackend(private val clock: AppClock, seed: FakeSeed = FakeData.seed(cl
                 all + (k to (all[k] ?: Evidence()).copy(flagged = flag)) +
                     (key(owner, event.id) to (all[key(owner, event.id)] ?: Evidence()).copy(flagged = flag))
             }
+            // Points already earned by either account are held until the office decides.
+            holdAward(owner, event)
+            holdAward(uid, event)
             return ClaimResult.Rejected("Flagged for review: this phone has already checked in another account at this event.")
         }
 
@@ -356,6 +363,7 @@ class FakeBackend(private val clock: AppClock, seed: FakeSeed = FakeData.seed(cl
     /** Points are written once, together with the outcome, so a retried request can never add a second award (R5). */
     private fun awardIfComplete(uid: String, event: Event) {
         val ev = evidence.value[key(uid, event.id)] ?: return
+        if (ev.flagged != null) return // no new points while the office is reviewing
         val complete = ev.arrival == StageStatus.VERIFIED && (!event.requiresCheckpoint || ev.checkpoint == StageStatus.VERIFIED)
         val net = ledger.value.filter { it.userId == uid && it.entry.eventId == event.id }.sumOf { it.entry.points }
         if (complete && event.pointsRequested && net == 0 && ledger.value.none { it.userId == uid && it.entry.eventId == event.id }) {
@@ -369,10 +377,37 @@ class FakeBackend(private val clock: AppClock, seed: FakeSeed = FakeData.seed(cl
     fun reverseAward(uid: String, eventId: String, reason: String) {
         val event = events.value[eventId] ?: return
         val net = ledger.value.filter { it.userId == uid && it.entry.eventId == eventId }.sumOf { it.entry.points }
-        evidence.update { all -> all + (key(uid, eventId) to (all[key(uid, eventId)] ?: Evidence()).copy(arrival = StageStatus.REJECTED, rejectReason = reason)) }
+        evidence.update { all -> all + (key(uid, eventId) to (all[key(uid, eventId)] ?: Evidence()).copy(arrival = StageStatus.REJECTED, rejectReason = reason, flagged = null)) }
         if (net > 0) {
             ledger.update {
                 it + LedgerRow(uid, PointsEntry(UUID.randomUUID().toString(), eventId, event.title, event.start.toLocalDate(), -net, reason))
+            }
+        }
+    }
+
+    /** Points a student already earned for this event are held, so the total is not overstated while it is reviewed. */
+    private fun holdAward(uid: String, event: Event) {
+        val net = ledger.value.filter { it.userId == uid && it.entry.eventId == event.id }.sumOf { it.entry.points }
+        if (net > 0) {
+            ledger.update {
+                it + LedgerRow(uid, PointsEntry(UUID.randomUUID().toString(), event.id, event.title, event.start.toLocalDate(), -net, HOLD_REASON))
+            }
+        }
+    }
+
+    /** The office decides a flagged record is fine: the flag goes and any held points come back (R5). */
+    fun clearFlag(uid: String, eventId: String) {
+        val event = events.value[eventId] ?: return
+        val k = key(uid, eventId)
+        val current = evidence.value[k] ?: return
+        if (current.flagged == null) return
+        evidence.update { all -> all + (k to current.copy(flagged = null)) }
+        val rows = ledger.value.filter { it.userId == uid && it.entry.eventId == eventId }
+        val held = rows.any { it.entry.reason == HOLD_REASON }
+        val complete = current.arrival == StageStatus.VERIFIED && (!event.requiresCheckpoint || current.checkpoint == StageStatus.VERIFIED)
+        if (held && complete && rows.sumOf { it.entry.points } == 0) {
+            ledger.update {
+                it + LedgerRow(uid, PointsEntry(UUID.randomUUID().toString(), eventId, event.title, event.start.toLocalDate(), Policy.POINTS_PER_EVENT, RELEASE_REASON))
             }
         }
     }

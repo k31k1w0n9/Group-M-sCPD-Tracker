@@ -73,9 +73,9 @@ class AttendanceOutcomesTest {
     }
 
     @Test
-    fun rejectedBeatsUnderReview() {
-        val r = record(R, V, ended = true).copy(reviewReason = "Checked by the office")
-        assertEquals(REJECTED, r.outcome)
+    fun underReviewBeatsARefusedUpload() {
+        val r = record(R, V, ended = true).copy(reviewReason = "Same phone used by another account")
+        assertEquals(AttendanceOutcome.UNDER_REVIEW, r.outcome)
     }
 
     @Test

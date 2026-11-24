@@ -12,8 +12,8 @@ val AttendanceRecord.outcome: AttendanceOutcome
     get() {
         val stages = requiredStages
         return when {
-            stages.any { it == StageStatus.REJECTED } -> AttendanceOutcome.REJECTED
             reviewReason != null -> AttendanceOutcome.UNDER_REVIEW
+            stages.any { it == StageStatus.REJECTED } -> AttendanceOutcome.REJECTED
             stages.all { it == StageStatus.VERIFIED } -> AttendanceOutcome.VERIFIED
             stages.any { it == StageStatus.PENDING_SYNC } -> AttendanceOutcome.PENDING_SYNC
             !eventEnded -> AttendanceOutcome.IN_PROGRESS
