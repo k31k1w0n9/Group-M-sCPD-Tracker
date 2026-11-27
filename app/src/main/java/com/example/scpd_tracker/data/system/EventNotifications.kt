@@ -25,7 +25,7 @@ import com.example.scpd_tracker.ScpdApplication
 import com.example.scpd_tracker.data.AppClock
 import com.example.scpd_tracker.data.AuthRepository
 import com.example.scpd_tracker.data.fake.BackendAlert
-import com.example.scpd_tracker.data.fake.FakeBackend
+import kotlinx.coroutines.flow.Flow
 import com.example.scpd_tracker.model.AccountRole
 import com.example.scpd_tracker.model.Booking
 import com.example.scpd_tracker.model.BookingStatus
@@ -175,7 +175,7 @@ class StreakReminderWorker(context: Context, params: WorkerParameters) : Corouti
 
 internal class EventNotificationMonitor(
     private val context: Context,
-    private val backend: FakeBackend,
+    private val feed: NotificationFeed,
     auth: AuthRepository,
     private val settings: NotificationSettingsStore,
     private val clock: AppClock,
@@ -197,12 +197,12 @@ internal class EventNotificationMonitor(
     init {
         EventNotifications.createChannel(context)
         scope.launch {
-            combine(auth.currentUser, backend.events, backend.bookings, settings.settings) { user, events, bookings, preferences ->
+            combine(auth.currentUser, feed.events, feed.bookings, settings.settings) { user, events, bookings, preferences ->
                 Snapshot(user, events, bookings, preferences)
             }.collect { schedule(it) }
         }
         scope.launch {
-            combine(auth.currentUser, backend.alerts) { user, alerts -> user to alerts }.collect { (user, alerts) ->
+            combine(auth.currentUser, feed.alerts) { user, alerts -> user to alerts }.collect { (user, alerts) ->
                 if (user?.role != AccountRole.Student) return@collect
                 // deliver pending alerts when the student returns to the app.
                 alerts.filter { it.recipientId == user.uid && it.id !in seenAlerts }.forEach { alert ->
@@ -289,4 +289,11 @@ internal class EventNotificationMonitor(
         streakWork?.let(work::cancelUniqueWork)
         streakWork = null
     }
+}
+
+/** What the notification monitor watches. The fake backend and Firebase each supply one. */
+interface NotificationFeed {
+    val events: Flow<Map<String, Event>>
+    val bookings: Flow<List<Booking>>
+    val alerts: Flow<List<BackendAlert>>
 }

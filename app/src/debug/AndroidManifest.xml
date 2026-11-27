@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug builds only: lets the app reach the Firebase emulators over plain HTTP (see res/xml/network_security_config.xml).
+     The release manifest has no network security config, so release builds refuse cleartext traffic. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:networkSecurityConfig="@xml/network_security_config" />
+</manifest>

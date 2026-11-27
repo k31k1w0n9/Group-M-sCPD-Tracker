@@ -1,0 +1,17 @@
+{
+  "name": "scpd-firebase",
+  "private": true,
+  "type": "module",
+  "description": "Firestore rules, rules tests and demo seed data for s-CPD Tracker (free Spark plan, no Cloud Functions)",
+  "scripts": {
+    "emulators": "firebase emulators:start --project demo-scpd",
+    "test": "bash run-tests.sh",
+    "seed": "node scripts/seed.mjs"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^4.0.1",
+    "firebase": "^11.10.0",
+    "firebase-admin": "^13.4.0",
+    "firebase-tools": "^14.11.0"
+  }
+}

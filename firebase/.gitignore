@@ -1,0 +1,8 @@
+node_modules/
+*-debug.log
+.firebase/
+
+# Firebase config and service-account keys never go in git
+google-services.json
+*-firebase-adminsdk-*.json
+serviceAccount*.json

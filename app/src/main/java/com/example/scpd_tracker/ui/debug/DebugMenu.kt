@@ -67,6 +67,16 @@ fun DebugMenu(onDismiss: () -> Unit) {
 
                 HorizontalDivider()
                 Text("s-CPD office (backend console)", style = MaterialTheme.typography.titleMedium)
+                if (container.usesFirebase) {
+                    // On Firebase the office edits documents directly: the Emulator UI locally, the Firebase console live.
+                    Text(
+                        "This build uses Firebase. Approve events, clear flags and reverse awards in the Firestore " +
+                            "data viewer (Emulator UI at http://localhost:4000, or the Firebase console).",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Spacer(Modifier.height(spacing.space6))
+                    return@Column
+                }
                 val pending = events.values.filter { it.reviewStatus == ReviewStatus.PendingReview }
                 if (pending.isEmpty()) Text("No submissions waiting for review.", style = MaterialTheme.typography.bodyMedium)
                 pending.forEach { event ->

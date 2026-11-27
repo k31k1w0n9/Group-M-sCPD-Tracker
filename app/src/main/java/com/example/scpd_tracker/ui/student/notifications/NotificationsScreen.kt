@@ -1,10 +1,5 @@
 package com.example.scpd_tracker.ui.student.notifications
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,21 +11,19 @@ import androidx.compose.material.icons.rounded.NightsStay
 import androidx.compose.material.icons.rounded.NotificationsNone
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.scpd_tracker.data.system.NotificationPreferences
 import com.example.scpd_tracker.ui.components.ReadableWidth
+import com.example.scpd_tracker.ui.components.rememberNotificationPermission
 import com.example.scpd_tracker.ui.scpdViewModel
 import com.example.scpd_tracker.ui.student.ShellTopBar
 import com.example.scpd_tracker.ui.theme.ScpdTheme
@@ -39,16 +32,8 @@ import com.example.scpd_tracker.ui.theme.ScpdTheme
 internal fun NotificationsRoute(onBack: () -> Unit) {
     val vm = scpdViewModel { c, _ -> NotificationsViewModel(c.notificationSettings) }
     val state by vm.state.collectAsStateWithLifecycle()
-    val context = LocalContext.current
-    val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {}
-
-    LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
-        ) {
-            permission.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
-    }
+    // Asked only when the student taps the button below, never on opening the screen.
+    val permission = rememberNotificationPermission()
 
     NotificationsScreen(
         settings = state,
@@ -56,6 +41,8 @@ internal fun NotificationsRoute(onBack: () -> Unit) {
         onEventReminders = { vm.eventReminders(it) },
         onStreakReminders = { vm.streakReminders(it) },
         onQuietHours = { vm.quietHours(it) },
+        notificationsBlocked = !permission.allowed,
+        onAllowNotifications = permission.request,
     )
 }
 
@@ -66,6 +53,8 @@ internal fun NotificationsScreen(
     onEventReminders: (Boolean) -> Unit,
     onStreakReminders: (Boolean) -> Unit,
     onQuietHours: (Boolean) -> Unit,
+    notificationsBlocked: Boolean = false,
+    onAllowNotifications: () -> Unit = {},
 ) {
     val spacing = ScpdTheme.spacing
     val colors = MaterialTheme.colorScheme
@@ -90,6 +79,18 @@ internal fun NotificationsScreen(
                         style = type.bodyLarge,
                         color = colors.onSurfaceVariant,
                     )
+                    if (notificationsBlocked) {
+                        Surface(color = colors.secondaryContainer, shape = MaterialTheme.shapes.extraLarge) {
+                            Column(Modifier.fillMaxWidth().padding(spacing.space5), verticalArrangement = Arrangement.spacedBy(spacing.space3)) {
+                                Text("Notifications are off for s-CPD", style = type.titleMedium, color = colors.onSecondaryContainer)
+                                Text(
+                                    "Your reminders below won't appear until you allow them. My Events always shows the same updates.",
+                                    style = type.bodyMedium, color = colors.onSecondaryContainer,
+                                )
+                                Button(onClick = onAllowNotifications) { Text("Allow notifications") }
+                            }
+                        }
+                    }
                     Surface(color = colors.surfaceContainerLowest, shape = MaterialTheme.shapes.extraLarge) {
                         Column(Modifier.fillMaxWidth().padding(spacing.space5)) {
                             NotificationSwitchRow(

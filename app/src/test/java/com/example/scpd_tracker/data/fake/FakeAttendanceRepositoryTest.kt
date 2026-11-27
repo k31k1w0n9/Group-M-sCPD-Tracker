@@ -195,6 +195,46 @@ class FakeAttendanceRepositoryTest {
     }
 
     @Test
+    fun offlineSharedPhoneFlag_clearedByOffice_paysTheFirstAward() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        app.attendance.submitClaim(qrClaim(app, "r-a", device = "shared-phone"))
+        app.auth.signOut()
+        app.signInStudent2()
+        val before = app.progress.ledger().first().sumOf { it.points }
+        app.backend.openCheckpoint(event)
+        app.network.set(false)
+        advanceTimeBy(5_000); runCurrent()
+        app.attendance.submitClaim(qrClaim(app, "r-b1", device = "shared-phone"))
+        app.attendance.submitClaim(qrClaim(app, "r-b2", stage = Stage.Checkpoint, device = "shared-phone"))
+        app.network.set(true)
+        advanceTimeBy(5_000); runCurrent()
+        assertEquals(before, app.progress.ledger().first().sumOf { it.points }) // no points while under review
+        app.backend.clearFlag("u-daniel", event)
+        val ledger = app.progress.ledger().first()
+        assertEquals(before + 3, ledger.sumOf { it.points })
+        assertEquals("Verified attendance", ledger.first { it.eventId == event }.reason)
+        assertEquals(AttendanceOutcome.VERIFIED, app.attendance.myAttendance().first().first { it.eventId == event }.outcome)
+    }
+
+    @Test
+    fun clearingAFlagOnAnOwnClubEvent_paysNothing() = runTest {
+        val app = TestApp(backgroundScope)
+        app.signInStudent1()
+        app.attendance.submitClaim(qrClaim(app, "r-a", device = "shared-phone"))
+        app.auth.signOut()
+        app.signInStudent2()
+        app.attendance.submitClaim(qrClaim(app, "r-b", device = "shared-phone"))
+        // Daniel joins the CS Society, which organises the live event.
+        val cs = app.backend.accounts.value.first { it.profile.uid == "u-cs" }
+        app.backend.accounts.value = app.backend.accounts.value.map {
+            if (it.profile.uid == "u-daniel") it.copy(profile = it.profile.copy(clubIds = cs.profile.clubIds)) else it
+        }
+        app.backend.clearFlag("u-daniel", event)
+        assertTrue(app.backend.ledger.value.none { it.userId == "u-daniel" && it.entry.eventId == event })
+    }
+
+    @Test
     fun offlineScanOnSharedPhone_showsUnderReview_notRejected() = runTest {
         val app = TestApp(backgroundScope)
         app.signInStudent1()

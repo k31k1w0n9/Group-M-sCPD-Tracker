@@ -5,6 +5,7 @@ import androidx.compose.ui.test.ForcedSize
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -173,6 +174,19 @@ class ScreenTests {
         rule.setContent { ScpdTheme { CheckInScreen(state, false, {}, {}, {}, {}, {}, {}, null) } }
         rule.onNodeWithText("Saved on phone").assertIsDisplayed()
         rule.onNodeWithText("1 scan waiting to upload").assertExists()
+    }
+
+    /** Camera refused or switched off in Settings: never a dead end, the backup code is right there. */
+    @Test
+    fun cameraDenied_offersTheBackupCode() {
+        val state = CheckInUiState(
+            event = event("live"), activeStage = Stage.Arrival,
+            stages = listOf(StageUi(Stage.Arrival, StageStatus.NOT_SCANNED, true, "")),
+        )
+        rule.setContent { ScpdTheme { CheckInScreen(state, true, {}, {}, {}, {}, {}, {}, null) } }
+        rule.onNodeWithText("Camera unavailable").assertExists()
+        rule.onNodeWithText("Use the backup code below, or allow the camera in Settings.").assertExists()
+        rule.onNodeWithTag("backup_code").performScrollTo().assertIsDisplayed().assertIsEnabled()
     }
 
     @Test

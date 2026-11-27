@@ -1,0 +1,482 @@
+rules_version = '2';
+
+// s-CPD Tracker security rules.
+//
+// We are on the free Spark plan, so there are no Cloud Functions. These rules are the server: they run on
+// Google's side, so a modified app can't skip them. See docs/part2/10-free-tier-backend.md for the design.
+//
+// Times: request.time is the server clock. The phone clock is never trusted.
+// Code windows: one window = 30 seconds, window = floor(epochMillis / 30000).
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- Shared helpers ------------------------------------------------------------------------
+
+    function signedIn() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+    function docIn(coll, id) { return /databases/$(database)/documents/$(coll)/$(id); }
+    function isAdmin() { return signedIn() && exists(docIn('admins', uid())); }
+    function isClubMember(clubId) {
+      return signedIn() && exists(/databases/$(database)/documents/clubs/$(clubId)/members/$(uid()));
+    }
+    // Several personal accounts per club (no shared club login). owner and committee run events; a scanner only
+    // runs check-in. The office adds members in clubs/{clubId}/members/{uid} with a role field.
+    function isClubManager(clubId) {
+      return isClubMember(clubId)
+        && get(/databases/$(database)/documents/clubs/$(clubId)/members/$(uid())).data.role in ['owner', 'committee'];
+    }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function changedKeys() { return incoming().diff(existing()).affectedKeys(); }
+    function onlyChanged(keys) { return changedKeys().hasOnly(keys); }
+
+    function eventDoc(eventId) { return get(docIn('events', eventId)).data; }
+    function eventAfter(eventId) { return getAfter(docIn('events', eventId)).data; }
+
+    function windowMs() { return 30000; }
+    function nowMs() { return request.time.toMillis(); }
+
+    // ---- Accounts ------------------------------------------------------------------------------
+
+    match /admins/{adminId} {
+      allow read: if signedIn() && adminId == uid();
+      allow write: if false; // the office adds admins in the Firebase console
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (userId == uid() || isAdmin());
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (userId == uid() && validSelfUpdate());
+
+      function validSelfUpdate() {
+        return onlyChanged(['interests', 'hasChosenInterests', 'deviceId', 'deviceBoundAt'])
+          && incoming().interests is list && incoming().interests.size() <= 6
+          && incoming().hasChosenInterests is bool
+          && validDeviceChange();
+      }
+
+      // One account, one phone. Switching phones is allowed once the 24-hour cooldown has passed.
+      function validDeviceChange() {
+        return incoming().get('deviceId', null) == existing().get('deviceId', null)
+          || (incoming().deviceId is string && incoming().deviceId.size() <= 64
+              && incoming().deviceBoundAt == request.time
+              && (existing().get('deviceId', null) == null
+                  || request.time > existing().deviceBoundAt + duration.value(24, 'h')));
+      }
+    }
+
+    match /clubs/{clubId} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+
+      match /members/{memberId} {
+        allow read: if signedIn() && (memberId == uid() || isClubMember(clubId) || isAdmin());
+        allow write: if isAdmin();
+      }
+    }
+
+    // ---- Events (R1) ---------------------------------------------------------------------------
+
+    match /events/{eventId} {
+      allow read: if signedIn() && (
+        resource.data.reviewStatus == 'Approved' || isClubMember(resource.data.clubId) || isAdmin());
+      allow delete: if isAdmin();
+
+      allow create: if isAdmin() || (
+        isClubManager(incoming().clubId)
+        && incoming().reviewStatus == 'Draft'
+        && incoming().state == 'BookingOpen'
+        && incoming().bookedCount == 0
+        && incoming().waitlist == []
+        && incoming().featured == false
+        && incoming().createdBy == uid()
+        && validContent(incoming()));
+
+      allow update: if isAdmin()
+        || (isClubMember(existing().clubId) && committeeUpdate())
+        || (signedIn() && bookingCountUpdate());
+
+      // A draft may be half-filled, but every field has the right type.
+      function validContent(e) {
+        return e.title is string && e.title.size() <= 80
+          && e.description is string && e.description.size() <= 2000
+          && e.venue is string && e.venue.size() <= 120
+          && e.capacity is int && e.capacity >= 0 && e.capacity <= 500
+          && e.start is timestamp && e.end is timestamp
+          && e.attendanceMode in ['ArrivalOnly', 'ArrivalAndCheckpoint']
+          && e.pointsRequested is bool
+          && e.tags is list && e.tags.size() <= 6;
+      }
+
+      // What the office needs before it can review the event (the phone runs EventFormValidator for the details).
+      function readyForReview(e) {
+        return e.title.size() >= 3 && e.venue.size() >= 2 && e.capacity >= 1 && e.end > e.start
+          && e.tags.size() >= 1 && e.start > request.time + duration.value(2, 'd');
+      }
+
+      // Fields only the office (or a booking batch) may change.
+      function protectedUnchanged() {
+        return !changedKeys().hasAny(['clubId', 'bookedCount', 'waitlist', 'featured', 'reviewComment', 'createdBy']);
+      }
+
+      function committeeUpdate() {
+        return protectedUnchanged() && (
+          (isClubManager(existing().clubId) && (editDraft() || withdraw() || cancel()))
+          || openCheckIn() || openCheckpoint() || endCheckIn());
+      }
+
+      // Drafts and "changes requested" can be edited, then submitted (Pending review) at least 2 days ahead.
+      function editDraft() {
+        return existing().reviewStatus in ['Draft', 'ChangesRequested']
+          && validContent(incoming())
+          && !changedKeys().hasAny(['state', 'checkInOpenedAt', 'checkInClosedAt', 'checkpointOpen', 'checkpointOpenedAt', 'cancelReason'])
+          && (incoming().reviewStatus == existing().reviewStatus
+              || (incoming().reviewStatus == 'PendingReview'
+                  && incoming().submittedAt == request.time
+                  && readyForReview(incoming())));
+      }
+
+      function withdraw() {
+        return existing().reviewStatus == 'PendingReview' && incoming().reviewStatus == 'Draft'
+          && onlyChanged(['reviewStatus', 'submittedAt']) && incoming().submittedAt == null;
+      }
+
+      function cancel() {
+        return existing().reviewStatus == 'Approved' && existing().state != 'Cancelled'
+          && incoming().state == 'Cancelled'
+          && incoming().cancelReason is string && incoming().cancelReason.size() >= 3
+          && onlyChanged(['state', 'cancelReason', 'checkpointOpen']);
+      }
+
+      // Check-in needs the session secret to exist, so codes can be checked.
+      function openCheckIn() {
+        return existing().reviewStatus == 'Approved'
+          && existing().state in ['BookingOpen', 'CheckInClosed']
+          && incoming().state == 'CheckInOpen'
+          && incoming().checkInClosedAt == null
+          && incoming().openedBy == uid()
+          && (incoming().checkInOpenedAt == request.time
+              || (existing().get('checkInOpenedAt', null) != null && incoming().checkInOpenedAt == existing().checkInOpenedAt))
+          && existsAfter(docIn('eventSecrets', eventId))
+          && onlyChanged(['state', 'checkInOpenedAt', 'checkInClosedAt', 'openedBy']);
+      }
+
+      function openCheckpoint() {
+        return existing().state == 'CheckInOpen'
+          && existing().attendanceMode == 'ArrivalAndCheckpoint'
+          && incoming().checkpointOpen == true
+          && incoming().checkpointOpenedAt == request.time
+          && onlyChanged(['checkpointOpen', 'checkpointOpenedAt']);
+      }
+
+      function endCheckIn() {
+        return existing().state == 'CheckInOpen'
+          && incoming().state == 'CheckInClosed'
+          && incoming().checkpointOpen == false
+          && incoming().checkInClosedAt == request.time
+          && onlyChanged(['state', 'checkpointOpen', 'checkInClosedAt']);
+      }
+
+      // A student's booking batch moves bookedCount or the waitlist. The booking rules below check the rest;
+      // here we only check that the event change matches the student's own booking change in the same batch.
+      function bookingCountUpdate() {
+        let me = uid();
+        let bookingPath = docIn('bookings', eventId + '_' + me);
+        let before = exists(bookingPath) ? get(bookingPath).data.status : 'none';
+        let after = getAfter(bookingPath).data.status;
+        let count = existing().bookedCount;
+        let next = incoming().bookedCount;
+        let queue = existing().waitlist;
+        let nextQueue = incoming().waitlist;
+        return onlyChanged(['bookedCount', 'waitlist'])
+          && (
+            // book a free place
+            (before != 'booked' && before != 'waitlisted' && after == 'booked'
+              && next == count + 1 && next <= existing().capacity && nextQueue == queue)
+            // join the waitlist of a full event
+            || (before != 'booked' && before != 'waitlisted' && after == 'waitlisted'
+              && count >= existing().capacity && next == count
+              && !(me in queue) && nextQueue == queue.concat([me]))
+            // leave the waitlist
+            || (before == 'waitlisted' && after == 'cancelled'
+              && next == count && nextQueue == queue.removeAll([me]))
+            // cancel a place: nobody waiting, so the count goes down
+            || (before == 'booked' && after == 'cancelled' && queue.size() == 0
+              && next == count - 1 && nextQueue == queue)
+            // cancel a place: the first student on the waitlist takes it, so the count stays the same
+            || (before == 'booked' && after == 'cancelled' && queue.size() > 0
+              && next == count && nextQueue == queue.removeAll([queue[0]])
+              && getAfter(docIn('bookings', eventId + '_' + queue[0])).data.status == 'booked')
+          );
+      }
+    }
+
+    // The session secret for signed codes. Students never read it; the rules do, with get().
+    match /eventSecrets/{eventId} {
+      allow read: if isClubMember(eventDoc(eventId).clubId) || isAdmin();
+      allow create, update: if isClubMember(eventDoc(eventId).clubId)
+        && incoming().secret is string && incoming().secret.size() >= 32
+        && incoming().createdBy == uid();
+      allow delete: if isAdmin();
+    }
+
+    // ---- Bookings (R2) -------------------------------------------------------------------------
+
+    match /bookings/{bookingId} {
+      allow read: if signedIn() && (
+        resource.data.userId == uid() || isClubMember(resource.data.clubId) || isAdmin());
+      // The app reads its own booking by ID before it exists (so a retried booking is safe).
+      allow get: if signedIn() && resource == null && bookingId.matches('^.+_' + uid() + '$');
+      allow delete: if isAdmin();
+
+      allow create: if signedIn()
+        && bookingId == incoming().eventId + '_' + uid()
+        && incoming().keys().hasOnly(['eventId', 'userId', 'clubId', 'status', 'createdAt', 'name', 'studentId', 'requestId'])
+        && incoming().userId == uid()
+        && incoming().createdAt == request.time
+        && incoming().status in ['booked', 'waitlisted']
+        && sameEventAndProfile()
+        && bookable(incoming().eventId)
+        && eventMoved(incoming().eventId, 'none', incoming().status);
+
+      allow update: if signedIn() && (ownUpdate() || promotedByCanceller());
+
+      function sameEventAndProfile() {
+        let profile = get(docIn('users', uid())).data;
+        return incoming().clubId == eventDoc(incoming().eventId).clubId
+          && incoming().name == profile.displayName
+          && incoming().studentId == profile.studentId
+          && profile.studentId != null;
+      }
+
+      // Approved, not cancelled and not started yet.
+      function bookable(eventId) {
+        let e = eventDoc(eventId);
+        return e.reviewStatus == 'Approved' && e.state != 'Cancelled' && request.time < e.start;
+      }
+
+      // The event must change in the same batch. The event rule checks the exact numbers; this check makes
+      // sure the student can't write a booking and skip the event update.
+      function eventMoved(eventId, from, to) {
+        let e = eventDoc(eventId);
+        let a = eventAfter(eventId);
+        return (to == 'booked' && a.bookedCount == e.bookedCount + 1)
+          || (to == 'waitlisted' && uid() in a.waitlist && !(uid() in e.waitlist))
+          || (from == 'waitlisted' && to == 'cancelled' && !(uid() in a.waitlist))
+          || (from == 'booked' && to == 'cancelled'
+            && (a.bookedCount == e.bookedCount - 1
+              || (e.waitlist.size() > 0 && a.waitlist.size() == e.waitlist.size() - 1)));
+      }
+
+      function ownUpdate() {
+        return existing().userId == uid()
+          && onlyChanged(['status', 'createdAt', 'requestId'])
+          && eventMoved(existing().eventId, existing().status, incoming().status)
+          && (
+            // cancel: up to 2 hours before the start; leaving a waitlist is always fine
+            (existing().status == 'booked' && incoming().status == 'cancelled'
+              && request.time < eventDoc(existing().eventId).start - duration.value(2, 'h'))
+            || (existing().status == 'waitlisted' && incoming().status == 'cancelled')
+            // book again after cancelling
+            || (existing().status == 'cancelled' && incoming().status in ['booked', 'waitlisted']
+              && incoming().createdAt == request.time && bookable(existing().eventId))
+          );
+      }
+
+      // The student at the front of the waitlist is moved to Booked by the canceller's batch.
+      function promotedByCanceller() {
+        let eventId = existing().eventId;
+        let canceller = docIn('bookings', eventId + '_' + uid());
+        return existing().status == 'waitlisted' && incoming().status == 'booked'
+          && onlyChanged(['status'])
+          && eventDoc(eventId).waitlist.size() > 0
+          && eventDoc(eventId).waitlist[0] == existing().userId
+          && get(canceller).data.status == 'booked'
+          && getAfter(canceller).data.status == 'cancelled';
+      }
+    }
+
+    // ---- Attendance (R3, R4) -------------------------------------------------------------------
+
+    // First account to check in with a phone at an event. Readable by ID so the app can tell the student
+    // up front that this phone was already used.
+    match /deviceUse/{useId} {
+      allow get: if signedIn();
+      allow create: if signedIn()
+        && useId == incoming().eventId + '_' + incoming().deviceId
+        && incoming().uid == uid()
+        && incoming().at == request.time
+        && incoming().keys().hasOnly(['eventId', 'deviceId', 'uid', 'at']);
+    }
+
+    // Each backup-code try must be written here first, so wrong guesses are counted on the server.
+    match /codeAttempts/{attemptId} {
+      allow read: if signedIn() && attemptId.matches('^.*_' + uid() + '$');
+      allow create: if signedIn()
+        && attemptId == incoming().eventId + '_' + uid()
+        && incoming().count == 1 && validAttempt();
+      allow update: if signedIn()
+        && attemptId == existing().eventId + '_' + uid()
+        && onlyChanged(['count', 'lastCode', 'at'])
+        && incoming().count == existing().count + 1 && incoming().count <= 5
+        && validAttempt();
+
+      function validAttempt() {
+        return incoming().lastCode is string && incoming().lastCode.matches('^[0-9]{6}$')
+          && incoming().at == request.time;
+      }
+    }
+
+    match /attendance/{recordId} {
+      allow read: if signedIn() && (
+        resource.data.userId == uid() || isClubMember(resource.data.clubId) || isAdmin());
+      allow get: if signedIn() && resource == null && recordId.matches('^.+_' + uid() + '$');
+      allow delete: if isAdmin();
+
+      allow create: if signedIn()
+        && recordId == incoming().eventId + '_' + uid()
+        && incoming().userId == uid()
+        && incoming().clubId == eventDoc(incoming().eventId).clubId
+        && incoming().keys().hasOnly(['eventId', 'userId', 'clubId', 'deviceId', 'arrival', 'checkpoint', 'flagged'])
+        && (
+          (incoming().get('checkpoint', null) == null && validStage('arrival', incoming().arrival))
+          || (incoming().get('arrival', null) == null && validStage('checkpoint', incoming().checkpoint))
+        )
+        && validFlag();
+
+      allow update: if isAdmin() || (signedIn() && (ownStageUpdate() || flagOtherAccount()));
+
+      // Adds the one stage that was missing. A stage that is already saved can never be changed.
+      function ownStageUpdate() {
+        return existing().userId == uid()
+          && (
+            (existing().get('arrival', null) == null && onlyChanged(['arrival', 'flagged', 'deviceId'])
+              && validStage('arrival', incoming().arrival))
+            || (existing().get('checkpoint', null) == null && onlyChanged(['checkpoint', 'flagged', 'deviceId'])
+              && validStage('checkpoint', incoming().checkpoint))
+          )
+          && validFlag();
+      }
+
+      // A flag can be set by the student but never removed (only the office clears it).
+      function validFlag() {
+        let flag = incoming().get('flagged', null);
+        let wasFlagged = resource == null ? null : existing().get('flagged', null);
+        return (wasFlagged == null || flag == wasFlagged)
+          && (flag == null ? cleanDevice() : (flag is string && flag.size() <= 120));
+      }
+
+      // Unflagged claims must come from the account's bound phone, and that phone must not have been
+      // used by another account at this event.
+      function cleanDevice() {
+        let device = incoming().deviceId;
+        let use = getAfter(docIn('deviceUse', incoming().eventId + '_' + device));
+        return device is string
+          && get(docIn('users', uid())).data.get('deviceId', null) == device
+          && use != null && use.data.uid == uid();
+      }
+
+      // A second account on the same phone flags the first account's record too, so neither earns
+      // points until the office decides.
+      function flagOtherAccount() {
+        let mine = getAfter(docIn('attendance', existing().eventId + '_' + uid())).data;
+        let use = get(docIn('deviceUse', existing().eventId + '_' + mine.deviceId));
+        return existing().userId != uid()
+          && onlyChanged(['flagged'])
+          && existing().get('flagged', null) == null
+          && incoming().flagged is string && incoming().flagged.size() <= 120
+          && mine.get('flagged', null) != null
+          && use.data.uid == existing().userId;
+      }
+
+      // ---- One stage claim -----------------------------------------------------------------
+
+      function validStage(stage, s) {
+        let eventId = incoming().eventId;
+        let e = eventDoc(eventId);
+        let booking = get(docIn('bookings', eventId + '_' + uid()));
+        return s is map
+          && s.keys().hasOnly(['method', 'window', 'sig', 'code', 'offline', 'receivedAt', 'requestId'])
+          && s.receivedAt == request.time
+          && s.requestId is string
+          && s.window is int
+          && s.offline is bool
+          && booking.data.status == 'booked'
+          && e.get('checkInOpenedAt', null) != null
+          && inSession(e, stage, s)
+          && codeMatches(eventId, stage, s);
+      }
+
+      // Live claims: the code is the current one or the one before (30 seconds of grace), on the server clock.
+      // Saved-offline claims: the code was issued during check-in and the upload arrives within 2 hours of
+      // check-in closing.
+      function inSession(e, stage, s) {
+        let issued = s.window * windowMs();
+        let closed = e.get('checkInClosedAt', null);
+        let stageOpenedAt = stage == 'arrival' ? e.checkInOpenedAt : e.get('checkpointOpenedAt', null);
+        return stageOpenedAt != null
+          && issued >= stageOpenedAt.toMillis() - windowMs()
+          && (
+            (!s.offline && e.state == 'CheckInOpen'
+              && (stage == 'arrival' || e.checkpointOpen == true)
+              && issued <= nowMs() + windowMs()
+              && nowMs() - issued < 2 * windowMs())
+            || (s.offline && s.method == 'qr'
+              && (closed == null || issued <= closed.toMillis())
+              && (closed == null || request.time <= closed + duration.value(2, 'h')))
+          );
+      }
+
+      function secretOf(eventId) { return get(docIn('eventSecrets', eventId)).data.secret; }
+
+      function codeMatches(eventId, stage, s) {
+        let secret = secretOf(eventId);
+        return (s.method == 'qr'
+            && s.sig == hashing.sha256(secret + '|' + eventId + '|' + stage + '|' + string(s.window)).toHexString().lower())
+          || (s.method == 'code' && !s.offline && backupCodeMatches(secret, eventId, stage, s));
+      }
+
+      // The 6-digit code is the hash written in hex with a-f turned into 0-5, first 6 characters.
+      // It must also be the code the student registered as an attempt (counted, max 5 per event).
+      function backupCodeMatches(secret, eventId, stage, s) {
+        let digits = hashing.sha256(secret + '|code|' + eventId + '|' + stage + '|' + string(s.window))
+          .toHexString().lower()
+          .replace('a', '0').replace('b', '1').replace('c', '2')
+          .replace('d', '3').replace('e', '4').replace('f', '5');
+        let attempt = get(docIn('codeAttempts', eventId + '_' + uid()));
+        return s.code is string && s.code.matches('^[0-9]{6}$')
+          && digits.matches('^' + s.code + '.*')
+          && attempt.data.lastCode == s.code;
+      }
+    }
+
+    // ---- Points (R5) ---------------------------------------------------------------------------
+
+    match /ledger/{entryId} {
+      allow read: if signedIn() && (resource.data.userId == uid() || isAdmin());
+      allow update, delete: if false; // the ledger is append-only
+      allow create: if isAdmin() || (signedIn() && validAward(entryId));
+
+      // A student may write their own +3 once (fixed ID), only for a complete, unflagged record of an
+      // event that awards points and is not run by the student's own club.
+      function validAward(entryId) {
+        let eventId = incoming().eventId;
+        let e = eventDoc(eventId);
+        let record = getAfter(docIn('attendance', eventId + '_' + uid())).data;
+        return entryId == eventId + '_' + uid() + '_award'
+          && incoming().keys().hasOnly(['userId', 'eventId', 'eventTitle', 'eventDate', 'points', 'reason', 'createdAt'])
+          && incoming().userId == uid()
+          && incoming().points == 3
+          && incoming().reason == 'Verified attendance'
+          && incoming().createdAt == request.time
+          && incoming().eventTitle == e.title
+          && e.pointsRequested == true
+          && !exists(/databases/$(database)/documents/clubs/$(e.clubId)/members/$(uid()))
+          && record.get('flagged', null) == null
+          && record.get('arrival', null) != null
+          && (e.attendanceMode == 'ArrivalOnly' || record.get('checkpoint', null) != null);
+      }
+    }
+  }
+}

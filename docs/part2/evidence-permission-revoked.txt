@@ -1,0 +1,43 @@
+# Evidence: permission revoked while the app is closed (Pixel 7a emulator, API 37, Firebase emulators)
+# Produced by firebase/scripts/revoke-evidence.sh on 2026-11-26
+
+== Fresh demo data and tunnels to the laptop's emulators
+Seeded 27 accounts, 18 events into demo-scpd. Password for every account: scpd-demo
+
+== Install the Firebase build and its tests
+Installed on 1 device.
+Installed on 1 device.
+
+== Phase 1: sign in as student1, go offline, scan the arrival QR (saved on the phone)
+OK (1 test)
+
+== Room queue on the phone
+-rw-rw---- 1 u0_a234 u0_a234   4096 2026-11-26 08:45 scpd.db
+-rw------- 1 u0_a234 u0_a234  32768 2026-11-26 08:45 scpd.db-shm
+-rw------- 1 u0_a234 u0_a234  53592 2026-11-26 08:45 scpd.db-wal
+
+== Open the app, send it to the background, then switch the camera off
+pid before revoke: 11280
+pid after revoke:  none   (Android killed the process)
+
+== Phase 2: new process, still signed in, scan still queued, camera denied; online again it uploads
+OK (1 test)
+
+
+# Same check on the marking device: Pixel 2 emulator, 1080x1920, 420 dpi, API 31 (2026-11-26)
+== Fresh demo data and tunnels to the laptop's emulators
+Seeded 27 accounts, 18 events into demo-scpd. Password for every account: scpd-demo
+== Install the Firebase build and its tests
+Installed on 1 device.
+Installed on 1 device.
+== Phase 1: sign in as student1, go offline, scan the arrival QR (saved on the phone)
+OK (1 test)
+== Room queue on the phone
+-rw-rw---- 1 u0_a149 u0_a149   4096 2026-11-26 09:31 scpd.db
+-rw------- 1 u0_a149 u0_a149  32768 2026-11-26 09:31 scpd.db-shm
+-rw------- 1 u0_a149 u0_a149  53592 2026-11-26 09:31 scpd.db-wal
+== Open the app, send it to the background, then switch the camera off
+pid before revoke: 5564
+pid after revoke:  none   (Android killed the process)
+== Phase 2: new process, still signed in, scan still queued, camera denied; online again it uploads
+OK (1 test)

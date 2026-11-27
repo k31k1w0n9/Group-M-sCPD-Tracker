@@ -46,12 +46,6 @@ import com.example.scpd_tracker.ui.student.profile.ProfileRoute
 import com.example.scpd_tracker.ui.student.notifications.NotificationsRoute
 import com.example.scpd_tracker.data.system.NotificationNavigation
 import android.net.Uri
-import android.Manifest
-import android.os.Build
-import android.content.pm.PackageManager
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.LaunchedEffect
 import com.example.scpd_tracker.ui.student.profile.ProfileViewModel
@@ -105,7 +99,6 @@ private fun NavHostController.openTab(route: String) = navigate(route) {
  */
 @Composable
 fun StudentShell(onSignOut: () -> Unit) {
-    val context = LocalContext.current
     val focus = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
     LaunchedEffect(Unit) {
@@ -114,13 +107,7 @@ fun StudentShell(onSignOut: () -> Unit) {
         focus.clearFocus(force = true)
         keyboard?.hide()
     }
-    val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
-    LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            permission.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
-    }
+    // Notifications are not asked for here: see ui/components/NotificationPermission.kt (asked in context instead).
     val nav = rememberNavController()
     val entry by nav.currentBackStackEntryAsState()
     val route = entry?.destination?.route

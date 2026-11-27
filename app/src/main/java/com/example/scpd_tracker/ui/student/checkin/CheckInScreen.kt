@@ -98,7 +98,7 @@ internal fun CheckInRoute(onBack: () -> Unit, onProgress: () -> Unit) {
         onProgress = onProgress,
         // Debug builds only: stands in for the camera reading the organiser's screen, so the QR flow (offline
         // included) can be demoed on an emulator that has no camera pointed at a second phone.
-        onDebugScan = if (BuildConfig.DEBUG) {
+        onDebugScan = if (BuildConfig.DEBUG && !container.usesFirebase) {
             {
                 val stage = state.activeStage
                 val id = state.event?.id

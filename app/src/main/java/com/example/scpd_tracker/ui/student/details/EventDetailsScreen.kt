@@ -11,6 +11,7 @@ import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +41,13 @@ internal fun EventDetailsRoute(onBack: () -> Unit, onCheckIn: (String) -> Unit, 
     val user by (LocalContext.current.applicationContext as ScpdApplication)
         .container.auth.currentUser.collectAsStateWithLifecycle()
     ShowMessages(vm.messages.messages)
+    // The moment reminders become useful: ask for notifications once, after the first booking that succeeds.
+    val notifications = rememberNotificationPermission()
+    LaunchedEffect(state.result) {
+        if (state.result is BookingOutcomeUi.Confirmed || state.result is BookingOutcomeUi.Waitlisted) {
+            notifications.requestAfterFirstBooking()
+        }
+    }
     EventDetailsScreen(
         state = state, onBack = onBack, memberClubIds = user?.clubIds.orEmpty(),
         onBook = vm::openReview, onConfirm = vm::confirmBooking, onDismissReview = vm::dismissReview,

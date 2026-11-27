@@ -361,8 +361,12 @@ class FakeBackend(private val clock: AppClock, seed: FakeSeed = FakeData.seed(cl
         val owner = deviceUse.getOrPut("${event.id}|${claim.deviceId}") { uid }
         if (owner != uid) {
             val flag = "Same phone used by another account"
+            // The scan itself was valid, so it is kept with the flag: if the office clears it, the record is complete.
             evidence.update { all ->
-                all + (k to (all[k] ?: Evidence()).copy(flagged = flag)) +
+                val mine = (all[k] ?: Evidence()).let {
+                    if (claim.stage == Stage.Arrival) it.copy(arrival = StageStatus.VERIFIED) else it.copy(checkpoint = StageStatus.VERIFIED)
+                }
+                all + (k to mine.copy(flagged = flag)) +
                     (key(owner, event.id) to (all[key(owner, event.id)] ?: Evidence()).copy(flagged = flag))
             }
             // Points already earned by either account are held until the office decides.
@@ -415,19 +419,25 @@ class FakeBackend(private val clock: AppClock, seed: FakeSeed = FakeData.seed(cl
         }
     }
 
-    /** The office decides a flagged record is fine: the flag goes and any held points come back (R5). */
+    /**
+     * The office decides a flagged record is fine: the flag goes and the points are paid (R5). Points that were held
+     * come back; a record that was flagged before it ever earned points (for example a scan saved offline on a
+     * shared phone) gets its first award now. Own-club events still earn nothing.
+     */
     fun clearFlag(uid: String, eventId: String) {
         val event = events.value[eventId] ?: return
         val k = key(uid, eventId)
         val current = evidence.value[k] ?: return
         if (current.flagged == null) return
         evidence.update { all -> all + (k to current.copy(flagged = null)) }
+        if (user(uid)?.clubIds?.contains(event.clubId) == true || !event.pointsRequested) return
         val rows = ledger.value.filter { it.userId == uid && it.entry.eventId == eventId }
         val held = rows.any { it.entry.reason == HOLD_REASON }
         val complete = current.arrival == StageStatus.VERIFIED && (!event.requiresCheckpoint || current.checkpoint == StageStatus.VERIFIED)
-        if (held && complete && rows.sumOf { it.entry.points } == 0) {
+        if (complete && rows.sumOf { it.entry.points } == 0) {
+            val reason = if (held) RELEASE_REASON else "Verified attendance"
             ledger.update {
-                it + LedgerRow(uid, PointsEntry(UUID.randomUUID().toString(), eventId, event.title, event.start.toLocalDate(), Policy.POINTS_PER_EVENT, RELEASE_REASON))
+                it + LedgerRow(uid, PointsEntry(UUID.randomUUID().toString(), eventId, event.title, event.start.toLocalDate(), Policy.POINTS_PER_EVENT, reason))
             }
         }
     }

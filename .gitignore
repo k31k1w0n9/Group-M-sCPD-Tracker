@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Firebase app config (real project IDs live in ~/.gradle/gradle.properties)
+google-services.json
